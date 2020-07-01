@@ -63,6 +63,10 @@ exports('vorp_inventoryApi',function()
         end,weaponId)
         return weap
     end
+        
+    self.RegisterUsableItem = function(itemName,cb)
+        TriggerEvent("vorpCore:registerUsableItem",itemName,cb)
+    end
     
     return self
 end)
