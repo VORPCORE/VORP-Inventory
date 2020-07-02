@@ -20,6 +20,7 @@ namespace vorpinventory_sv
         public Config()
         {
             EventHandlers["vorp:firstSpawn"] += new Action<int>(itemsConfig);
+            EventHandlers[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(getConfig);
 
             if (File.Exists($"{resourcePath}/Config.json"))
             {
@@ -49,6 +50,11 @@ namespace vorpinventory_sv
                     Debug.WriteLine($"{API.GetCurrentResourceName()}: {config["defaultlang"]}.json Not Found");
                 }
             }
+        }
+
+        private void getConfig([FromSource]Player source)
+        {
+            source.TriggerEvent($"{API.GetCurrentResourceName()}:SendConfig", ConfigString, lang);
         }
 
         private async void itemsConfig(int player)

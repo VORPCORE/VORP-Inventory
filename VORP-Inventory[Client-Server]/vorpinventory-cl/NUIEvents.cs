@@ -279,17 +279,25 @@ namespace vorpinventory_cl
             CloseInv();
         }
 
+        [Tick]
         private async Task OnKey()
         {
-            if (API.IsControlJustReleased(1, 0x4CC0E2FE) && API.IsInputDisabled(0))
+            if (!GetConfig.loaded)
+            {
+                return;
+            }
+
+            if (API.IsControlJustReleased(1, GetConfig.openKey) && API.IsInputDisabled(0))
             {
                 if (InInventory)
                 {
-                    await CloseInv();
+                    CloseInv();
+                    await Delay(1000);
                 }
                 else
                 {
-                    await OpenInv();
+                    OpenInv();
+                    await Delay(1000);
                 }
             }
 

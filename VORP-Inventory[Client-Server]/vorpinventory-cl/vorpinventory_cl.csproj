@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GetConfig.cs" />
     <Compile Include="InventoryAPI.cs" />
     <Compile Include="ItemClass.cs" />
     <Compile Include="NUIEvents.cs" />
