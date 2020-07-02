@@ -17,6 +17,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(addItem);
             EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(subItem);
             EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
+            EventHandlers["vorpCore:getUserInventory"] += new Action<int, CallbackDelegate>(getInventory);
             EventHandlers["vorpCore:subBullets"] += new Action<int, int, string, int>(subBullets);
             EventHandlers["vorpCore:addBullets"] += new Action<int, int, string, int>(addBullets);
             EventHandlers["vorpCore:getWeaponComponents"] += new Action<int, CallbackDelegate, int>(getWeaponComponents);
@@ -26,6 +27,33 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
             EventHandlers["vorpCore:registerUsableItem"] += new Action<string,CallbackDelegate>(registerUsableItem);
             EventHandlers["vorp:use"] += new Action<Player,string,object[]>(useItem);
+        }
+
+        private void getInventory(int source, CallbackDelegate cb)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[source];
+            string identifier = "steam:" + p.Identifiers["steam"];
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            {
+                List<object> useritems = new List<object>();
+                
+                foreach (var items in ItemDatabase.usersInventory[identifier])
+                {
+                    Dictionary<string, object> item = new Dictionary<string, object>()
+                    {
+                        {"label", items.Value.getLabel()},
+                        {"name", items.Value.getName()},
+                        {"type", items.Value.getType()},
+                        {"count", items.Value.getCount()},
+                        {"limit", items.Value.getLimit()},
+                        {"usable", items.Value.getUsable()}
+                    };
+                    useritems.Add(item);
+                }
+
+                cb.Invoke(useritems);
+            }
         }
 
         private void useItem([FromSource]Player source,string itemname ,params object []args)

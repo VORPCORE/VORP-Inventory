@@ -67,6 +67,14 @@ exports('vorp_inventoryApi',function()
     self.RegisterUsableItem = function(itemName,cb)
         TriggerEvent("vorpCore:registerUsableItem",itemName,cb)
     end
+
+    self.getUserInventory = function(source)
+        local inv
+        TriggerEvent("vorpCore:getUserInventory",source,function(invent)
+            inv = invent
+        end)
+        return inv
+    end
     
     return self
 end)
