@@ -288,12 +288,19 @@ namespace vorpinventory_sv
                 }
             }
         }
-        private void addItem(int player, string name, int cuantity)
+        private async void addItem(int player, string name, int cuantity)
         {
             PlayerList pl = new PlayerList();
+
+            if (pl[player] == null)
+            {
+                return;
+            }
+
             Player p = pl[player];
             bool added = false;
             string identifier = "steam:" + p.Identifiers["steam"];
+
             if (!ItemDatabase.usersInventory.ContainsKey(identifier))
             {
                 Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
@@ -302,7 +309,6 @@ namespace vorpinventory_sv
 
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-
                 if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
                     if (ItemDatabase.usersInventory[identifier][name].getCount() + cuantity <= ItemDatabase.usersInventory[identifier][name].getLimit())
@@ -330,7 +336,7 @@ namespace vorpinventory_sv
                         ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
                             ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
                     }
-                    else if (ItemDatabase.usersInventory[identifier][name].getLimit() == -1)
+                    else if (ItemDatabase.svItems[name].getLimit() == -1)
                     {
                         added = true;
                         ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),

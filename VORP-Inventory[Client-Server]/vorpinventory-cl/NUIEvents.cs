@@ -175,7 +175,6 @@ namespace vorpinventory_cl
                 foreach (var thing in obj)
                 {
                     item.Add(thing.Key, thing.Value);
-                    Debug.WriteLine($"{thing.Key}, {thing.Value}");
                 }
                 if (!item.ContainsKey("id"))
                 {
@@ -200,7 +199,6 @@ namespace vorpinventory_cl
                 nuireturn.Add("type", item["type"]);
                 nuireturn.Add("what", item["what"]);
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(nuireturn);
-                Debug.WriteLine(json);
                 API.SendNuiMessage(json);
             }
         }
@@ -265,7 +263,6 @@ namespace vorpinventory_cl
 
         private void NUIUseItem(ExpandoObject obj)
         {
-            Debug.WriteLine("Llego");
             Dictionary<string, object> data = Utils.expandoProcessing(obj);
             // foreach (var VARIABLE in data)
             // {
@@ -275,7 +272,6 @@ namespace vorpinventory_cl
             {
                 // string eventString = "vorp:use" + data["item"];
                 // TriggerServerEvent(eventString); Version antigua
-                Debug.WriteLine(data["item"] + "Usado");
                 TriggerServerEvent("vorp:use",data["item"]);
             }
             else if(data["type"].ToString().Contains("item_weapon"))
@@ -289,7 +285,6 @@ namespace vorpinventory_cl
                 }
                 else
                 {
-                    Debug.WriteLine($"No uso el arma {data["id"]}");
                     //TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma", 3000);
                 }
                 LoadInv();
@@ -301,13 +296,9 @@ namespace vorpinventory_cl
             Dictionary<string, dynamic> aux = Utils.expandoProcessing(obj);
             string itemname = aux["item"];
             string type = aux["type"].ToString();
-            Debug.WriteLine(type);
-            Debug.WriteLine(itemname);
             if (type == "item_money")
             {
                 TriggerServerEvent("vorpinventory:serverDropMoney", double.Parse(aux["number"].ToString()));
-                Debug.WriteLine("Soltando dinero");
-                Debug.WriteLine("Soltando dinero");
             }
             else if (type == "item_standard")
             {
@@ -325,8 +316,6 @@ namespace vorpinventory_cl
             else
             {
                 //Function.Call((Hash) 0x4899CB088EDF59B8, API.PlayerPedId(), (uint) int.Parse(aux["hash"]),false,false);
-                Debug.WriteLine("Tirando Arma");
-                Debug.WriteLine(aux["id"].ToString());
                 TriggerServerEvent("vorpinventory:serverDropWeapon", int.Parse(aux["id"].ToString()));
                 if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
                 {
@@ -410,15 +399,12 @@ namespace vorpinventory_cl
                 weapon.Add("canRemove", true);
                 weapon.Add("id", userwp.Value.getId());
                 weapon.Add("used", userwp.Value.getUsed());
-                Debug.WriteLine(userwp.Value.getId().ToString());
                 gg.Add(weapon);
             }
             items.Add("action", "setItems");
             items.Add("itemList", gg);
 
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-
-            Debug.WriteLine(json);
 
             API.SendNuiMessage(json);
         }

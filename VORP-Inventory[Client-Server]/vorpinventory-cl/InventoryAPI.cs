@@ -6,7 +6,6 @@ namespace vorpinventory_cl
 {
     public class InventoryAPI : BaseScript
     {
-        //TODO HACER QUE CUANDO LA TENGAS COGIDA SI TE DAN O TE QUITAN MUNICION TE LA QUITE Y TE LA AÑADA TAMBIEN AL PJ
         public InventoryAPI()
         {
             EventHandlers["vorpCoreClient:addItem"] += new Action<int, int, string, string, string, bool, bool>(addItem);
