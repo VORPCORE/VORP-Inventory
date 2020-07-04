@@ -75,6 +75,10 @@ exports('vorp_inventoryApi',function()
         end)
         return inv
     end
+
+    self.CloseInv = function(source)
+        TriggerClientEvent("vorp_inventory:CloseInv",source)
+    end
     
     return self
 end)
