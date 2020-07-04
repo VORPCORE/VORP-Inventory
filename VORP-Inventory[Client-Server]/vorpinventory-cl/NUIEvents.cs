@@ -1,5 +1,6 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -19,22 +20,7 @@ namespace vorpinventory_cl
         public NUIEvents()
         {
             Tick += OnKey;
-            API.RegisterCommand("giveAmmo", new Action<int, List<object>, string>(((source, args, raw) =>
-               {
-                   // int ammoType = API.GetHashKey("AMMO_ARROW_FIRE");
-                   // Debug.WriteLine($"Me ejecuto {ammoType}");
-                   // API.SetPedAmmoByType(API.PlayerPedId(), ammoType, 200);
-                   //API.SetPedAmmo(API.PlayerPedId(),(uint)API.GetHashKey("WEAPON_RIFLE_VARMINT"),200);
-                   int playerPed = API.PlayerPedId();
-                   int ammoQuantity = 200;
-                   int ammoType = API.GetHashKey("AMMO_ARROW_DYNAMITE");
-                   API.SetPedAmmoByType(playerPed, ammoType, ammoQuantity);
 
-               })), false);
-            API.RegisterCommand("cleanAmmo", new Action<int, List<object>, string>(((source, args, raw) =>
-               {
-                   API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey("AMMO_RIFLE_VARMINT"), 0);
-               })), false);
             API.RegisterNuiCallbackType("NUIFocusOff");
             EventHandlers["__cfx_nui:NUIFocusOff"] += new Action<ExpandoObject>(NUIFocusOff);
 
@@ -57,6 +43,94 @@ namespace vorpinventory_cl
             EventHandlers["__cfx_nui:UnequipWeapon"] += new Action<ExpandoObject>(NUIUnequipWeapon);
 
             EventHandlers["vorp_inventory:ProcessingReady"] += new Action(setProcessingPayFalse);
+
+
+            EventHandlers["vorp_inventory:CloseInv"] += new Action(CloseInventory);
+
+            //HorseModule
+            EventHandlers["vorp_inventory:OpenHorseInventory"] += new Action<string>(OpenHorseInventory);
+            EventHandlers["vorp_inventory:ReloadHorseInventory"] += new Action<string>(ReloadHorseInventory);
+
+            API.RegisterNuiCallbackType("TakeFromHorse");
+            EventHandlers["__cfx_nui:TakeFromHorse"] += new Action<ExpandoObject>(NUITakeFromHorse);
+
+            API.RegisterNuiCallbackType("MoveToHorse");
+            EventHandlers["__cfx_nui:MoveToHorse"] += new Action<ExpandoObject>(NUIMoveToHorse);
+
+            //CartModule
+            EventHandlers["vorp_inventory:OpenCartInventory"] += new Action<string>(OpenCartInventory);
+            EventHandlers["vorp_inventory:ReloadCartInventory"] += new Action<string>(ReloadCartInventory);
+
+            API.RegisterNuiCallbackType("TakeFromCart");
+            EventHandlers["__cfx_nui:TakeFromCart"] += new Action<ExpandoObject>(NUITakeFromCart);
+
+            API.RegisterNuiCallbackType("MoveToCart");
+            EventHandlers["__cfx_nui:MoveToCart"] += new Action<ExpandoObject>(NUIMoveToCart);
+        }
+
+        private async void ReloadHorseInventory(string horseInventory)
+        {
+            API.SendNuiMessage(horseInventory);
+            await Delay(500);
+            LoadInv();
+        }
+
+        private void CloseInventory()
+        {
+            API.SetNuiFocus(false, false);
+            API.SendNuiMessage("{\"action\": \"hide\"}");
+            InInventory = false;
+        }
+
+        private void OpenHorseInventory(string horseName)
+        {
+            //"action", "setSecondInventoryItems"
+            API.SetNuiFocus(true, true);
+
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"horse\", \"title\": \""+ horseName + "\"}");
+            InInventory = true;
+            TriggerEvent("vorp_stables:setClosedInv", true);
+        }
+
+        private void NUIMoveToHorse(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("vorp_stables:MoveToHorse", data.ToString());
+        }
+
+        private void NUITakeFromHorse(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("vorp_stables:TakeFromHorse", data.ToString());
+        }
+
+        private async void ReloadCartInventory(string cartInventory)
+        {
+            API.SendNuiMessage(cartInventory);
+            await Delay(500);
+            LoadInv();
+        }
+
+        private void OpenCartInventory(string cartName)
+        {
+            //"action", "setSecondInventoryItems"
+            API.SetNuiFocus(true, true);
+
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"cart\", \"title\": \"" + cartName + "\"}");
+            InInventory = true;
+            TriggerEvent("vorp_stables:setClosedInv", true);
+        }
+
+        private void NUIMoveToCart(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("vorp_stables:MoveToCart", data.ToString());
+        }
+
+        private void NUITakeFromCart(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("vorp_stables:TakeFromCart", data.ToString());
         }
 
         private void setProcessingPayFalse()
@@ -277,6 +351,7 @@ namespace vorpinventory_cl
         private void NUIFocusOff(ExpandoObject obj)
         {
             CloseInv();
+            TriggerEvent("vorp_stables:setClosedInv", false);
         }
 
         [Tick]
@@ -352,11 +427,10 @@ namespace vorpinventory_cl
         {
             API.SetNuiFocus(true, true);
 
-            API.SendNuiMessage("{\"action\": \"display\"}");
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"main\"}");
             InInventory = true;
 
             LoadInv();
-
         }
 
         private async Task CloseInv()

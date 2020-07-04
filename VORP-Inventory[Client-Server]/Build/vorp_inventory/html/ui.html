@@ -24,19 +24,188 @@
 
     </div>
 
+    <div id="secondInventoryHud">
+        <div id="titleHorse"></div>
+
+        <div id="secondInventoryElement">
+        </div>
+        <p id="information2"></p>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/contextMenu.min.js"></script>
+    <script type="text/javascript" src="js/jquery.dialog.min.js"></script>
+
     <script type="text/javascript">
         var isOpen = false;
+
+        var type = "normal";
+        var disabled = false;
+        var disabledFunction = null;
 
         function OverSetTitle(title) {
             document.getElementById("information").innerHTML = title;
         }
 
+        function OverSetTitleSecond(title) {
+            document.getElementById("information2").innerHTML = title;
+        }
+
+        function HorseSetTitle(title) {
+            document.getElementById("titleHorse").innerHTML = title;
+        }
+
         $("document").ready(function() {
+
+
+
+            $("#secondInventoryHud").draggable();
+            $("#inventoryHud").draggable();
+
             $("#inventoryHud").hide();
+            $("#secondInventoryHud").hide();
 
             $("body").on("keyup", function(key) {
                 if (Config.closeKeys.includes(key.which)) {
                     closeInventory();
+                }
+            });
+
+            $('#inventoryElement').droppable({
+                drop: function(event, ui) {
+                    itemData = ui.draggable.data("item");
+                    itemInventory = ui.draggable.data("inventory");
+
+                    console.log(itemData.label)
+
+                    if (type === "horse" && itemInventory === "second") {
+                        disableInventory(500);
+                        if (itemData.type != "item_weapon") {
+                            dialog.prompt({
+                                title: "Cantidad",
+                                button: "Aceptar",
+                                required: true,
+                                item: itemData,
+                                type: itemData.type,
+                                input: {
+                                    type: "number"
+                                },
+                                validate: function(value, item, type) {
+                                    console.log("Item: " + item.label + " cantidad:" + value)
+                                    $.post("http://vorp_inventory/TakeFromHorse", JSON.stringify({
+                                        item: itemData,
+                                        type: type,
+                                        number: value
+                                    }));
+                                }
+                            });
+                        } else {
+                            $.post("http://vorp_inventory/TakeFromHorse", JSON.stringify({
+                                item: itemData,
+                                type: itemData.type,
+                                number: 1
+                            }));
+                        }
+                    } else if (type === "cart" && itemInventory === "second") {
+                        disableInventory(500);
+                        if (itemData.type != "item_weapon") {
+                            dialog.prompt({
+                                title: "Cantidad",
+                                button: "Aceptar",
+                                required: true,
+                                item: itemData,
+                                type: itemData.type,
+                                input: {
+                                    type: "number"
+                                },
+                                validate: function(value, item, type) {
+                                    console.log("Item: " + item.label + " cantidad:" + value)
+                                    $.post("http://vorp_inventory/TakeFromCart", JSON.stringify({
+                                        item: itemData,
+                                        type: type,
+                                        number: value
+                                    }));
+                                }
+                            });
+                        } else {
+                            $.post("http://vorp_inventory/TakeFromCart", JSON.stringify({
+                                item: itemData,
+                                type: itemData.type,
+                                number: 1
+                            }));
+                        }
+                    }
+                }
+            });
+
+            $('#secondInventoryElement').droppable({
+                drop: function(event, ui) {
+                    itemData = ui.draggable.data("item");
+                    itemInventory = ui.draggable.data("inventory");
+
+                    console.log(itemData.label)
+
+                    if (type === "horse" && itemInventory === "main") {
+                        disableInventory(500);
+                        if (itemData.type != "item_weapon") {
+                            dialog.prompt({
+                                title: "Cantidad",
+                                button: "Aceptar",
+                                required: true,
+                                item: itemData,
+                                type: itemData.type,
+                                input: {
+                                    type: "number"
+                                },
+                                validate: function(value, item, type) {
+                                    console.log("Item: " + item.label + " cantidad:" + value)
+                                    $.post("http://vorp_inventory/MoveToHorse", JSON.stringify({
+                                        item: itemData,
+                                        type: type,
+                                        number: value
+                                    }));
+                                }
+                            });
+                        } else {
+                            $.post("http://vorp_inventory/MoveToHorse", JSON.stringify({
+                                item: itemData,
+                                type: itemData.type,
+                                number: 1
+                            }));
+                        }
+
+                    } else if (type === "cart" && itemInventory === "main") {
+                        disableInventory(500);
+                        if (itemData.type != "item_weapon") {
+                            dialog.prompt({
+                                title: "Cantidad",
+                                button: "Aceptar",
+                                required: true,
+                                item: itemData,
+                                type: itemData.type,
+                                input: {
+                                    type: "number"
+                                },
+                                validate: function(value, item, type) {
+                                    console.log("Item: " + item.label + " cantidad:" + value)
+                                    $.post("http://vorp_inventory/MoveToCart", JSON.stringify({
+                                        item: itemData,
+                                        type: type,
+                                        number: value
+                                    }));
+                                }
+                            });
+                        } else {
+                            $.post("http://vorp_inventory/MoveToCart", JSON.stringify({
+                                item: itemData,
+                                type: itemData.type,
+                                number: 1
+                            }));
+                        }
+
+                    }
                 }
             });
 
@@ -59,6 +228,24 @@
                         });
                     });
 
+                    type = event.data.type
+
+
+                    if (event.data.type == "horse") {
+                        $("#secondInventoryHud").fadeIn();
+
+
+                        HorseSetTitle(event.data.title);
+                    }
+
+                    if (event.data.type == "cart") {
+                        $("#secondInventoryHud").fadeIn();
+
+                        HorseSetTitle(event.data.title);
+                    }
+
+                    disabled = false;
+
                     $(document).on('keydown', function(event) {
                         $("#search").focus();
                     });
@@ -70,9 +257,55 @@
                     $("#inventoryHud").fadeOut();
                     $(".controls").fadeOut();
                     $(".site-cm-box").remove();
+
+                    $("#secondInventoryHud").fadeOut();
+                    $(".controls").fadeOut();
+                    $(".site-cm-box").remove();
                     dialog.close();
                 } else if (event.data.action == "setItems") {
                     inventorySetup(event.data.itemList);
+
+                    if (type != "main") {
+
+                        $('.item').draggable({
+                            helper: 'clone',
+                            appendTo: 'body',
+                            zIndex: 99999,
+                            revert: 'invalid',
+                            start: function(event, ui) {
+                                if (disabled) {
+                                    return false;
+                                }
+
+
+                                itemData = $(this).data("item");
+                                itemInventory = $(this).data("inventory");
+
+                                if (itemInventory === "main") {
+                                    $("#inventoryHud").fadeOut();
+                                } else if (itemInventory === "second") {
+                                    $("#secondInventoryHud").fadeOut();
+                                }
+
+                            },
+                            stop: function() {
+                                itemData = $(this).data("item");
+                                itemInventory = $(this).data("inventory");
+
+                                if (itemInventory === "main") {
+                                    $("#inventoryHud").fadeIn();
+                                } else if (itemInventory === "second") {
+                                    $("#secondInventoryHud").fadeIn();
+                                }
+
+
+                            }
+                        });
+                    }
+
+                } else if (event.data.action == "setSecondInventoryItems") {
+                    secondInventorySetup(event.data.itemList);
+
                 } else if (event.data.action == "nearPlayers") {
                     if (event.data.what == "give") {
                         selectPlayerToGive(event.data);
@@ -80,6 +313,42 @@
                 }
             });
         });
+
+        function Interval(time) {
+            var timer = false;
+            this.start = function() {
+                if (this.isRunning()) {
+                    clearInterval(timer);
+                    timer = false;
+                }
+
+                timer = setInterval(function() {
+                    disabled = false;
+                }, time);
+            };
+            this.stop = function() {
+                clearInterval(timer);
+                timer = false;
+            };
+            this.isRunning = function() {
+                return timer !== false;
+            };
+        }
+
+        function disableInventory(ms) {
+            disabled = true;
+
+            if (disabledFunction === null) {
+                disabledFunction = new Interval(ms);
+                disabledFunction.start();
+            } else {
+                if (disabledFunction.isRunning()) {
+                    disabledFunction.stop();
+                }
+
+                disabledFunction.start();
+            }
+        }
 
         function selectPlayerToGive(data) {
             dialog.prompt({
@@ -193,7 +462,6 @@
             $("#inventoryElement").html("");
 
 
-
             $.each(items, function(index, item) {
                 count = item.count;
 
@@ -202,6 +470,9 @@
                 }
 
                 $("#inventoryElement").append("<div data-label='" + item.label + "' style='background-image: url(\"img/items/" + item.name.toLowerCase() + ".png\"), url(img/bgitem.png); background-size: 60px 60px, 80px 80px; background-repeat: no-repeat; background-position: center;' id='item-" + index + "' class='item'><div class='count'>" + count + "</div><div class='text'></div></div>")
+
+                $('#item-' + index).data('item', item);
+                $('#item-' + index).data('inventory', "main");
 
                 var data = [];
                 if (item.used) {
@@ -309,6 +580,30 @@
             isOpen = true;
             initDivMouseOver()
         }
+
+        function secondInventorySetup(items) {
+            $("#inventoryElement").html("");
+            $("#secondInventoryElement").html("");
+
+            $.each(items, function(index, item) {
+                count = item.count;
+
+                $("#secondInventoryElement").append("<div data-label='" + item.label + "' style='background-image: url(\"img/items/" + item.name.toLowerCase() + ".png\"), url(img/bgitem.png); background-size: 60px 60px, 80px 80px; background-repeat: no-repeat; background-position: center;' id='item-" + index + "' class='item'><div class='count'>" + count + "</div><div class='text'></div></div>")
+                $('#item-' + index).data('item', item);
+                $('#item-' + index).data('inventory', "second");
+
+                $("#item-" + index).hover(
+                    function() {
+                        OverSetTitleSecond(item.label);
+                    },
+                    function() {
+                        OverSetTitleSecond(" ");
+                    }
+                );
+
+            });
+        }
+
         window.onload = initDivMouseOver;
 
         function initDivMouseOver() {
@@ -330,55 +625,6 @@
 
                     }
                 }
-            }
-        }
-
-        //Make the DIV element draggagle:
-        dragElement(document.getElementById("inventoryHud"));
-        dragElement(document.getElementsByClassName("item"));
-
-
-        function dragElement(elmnt) {
-            var pos1 = 0,
-                pos2 = 0,
-                pos3 = 0,
-                pos4 = 0;
-            if (document.getElementById(elmnt.id + "header")) {
-                /* if present, the header is where you move the DIV from:*/
-                document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-            } else {
-                /* otherwise, move the DIV from anywhere inside the DIV:*/
-                elmnt.onmousedown = dragMouseDown;
-            }
-
-            function dragMouseDown(e) {
-                e = e || window.event;
-                e.preventDefault();
-                // get the mouse cursor position at startup:
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                // call a function whenever the cursor moves:
-                document.onmousemove = elementDrag;
-            }
-
-            function elementDrag(e) {
-                e = e || window.event;
-                e.preventDefault();
-                // calculate the new cursor position:
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                // set the element's new position:
-                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-            }
-
-            function closeDragElement() {
-                /* stop moving when mouse button is released:*/
-                document.onmouseup = null;
-                document.onmousemove = null;
             }
         }
     </script>

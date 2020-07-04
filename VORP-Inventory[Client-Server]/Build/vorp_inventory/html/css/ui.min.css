@@ -31,6 +31,19 @@ body {
     z-index: 10;
 }
 
+#titleHorse {
+    font-family: "crock", crock, serif;
+    text-align: center;
+    font-size: 60px;
+    color: white;
+    margin-top: 10%;
+    background-image: url(../img/bg.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 450px 100px;
+    z-index: 10;
+}
+
 #inventoryHud {
     min-width: 500px;
     min-height: 800px;
@@ -40,6 +53,19 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 500px 750px;
+    z-index: -100;
+}
+
+#secondInventoryHud {
+    min-width: 500px;
+    min-height: 800px;
+    overflow: hidden;
+    position: absolute;
+    background-image: url(../img/bgPanel.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 500px 750px;
+    margin-left: 1100px;
     z-index: -100;
 }
 
@@ -61,7 +87,36 @@ body {
     z-index: 1
 }
 
+#draggable {}
+
+#secondInventoryElement {
+    position: absolute;
+    margin: auto;
+    top: 30px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 410px;
+    height: 430px;
+    border-radius: 1px;
+    border-color: gray;
+    background-position: center;
+    background-size: 410px 400px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    z-index: 1
+}
+
 #information {
+    text-align: center;
+    position: absolute;
+    top: 650px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+#information2 {
     text-align: center;
     position: absolute;
     top: 650px;

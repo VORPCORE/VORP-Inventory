@@ -305,8 +305,15 @@ namespace vorpinventory_sv
 
                 if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
-                    if (ItemDatabase.usersInventory[identifier][name].getCount() + cuantity <=
-                        ItemDatabase.usersInventory[identifier][name].getLimit())
+                    if (ItemDatabase.usersInventory[identifier][name].getCount() + cuantity <= ItemDatabase.usersInventory[identifier][name].getLimit())
+                    {
+                        if (cuantity > 0)
+                        {
+                            added = true;
+                            ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                        }
+                    }
+                    else if (ItemDatabase.usersInventory[identifier][name].getLimit() == -1)
                     {
                         if (cuantity > 0)
                         {
@@ -318,6 +325,12 @@ namespace vorpinventory_sv
                 else
                 {
                     if (cuantity <= ItemDatabase.svItems[name].getLimit())
+                    {
+                        added = true;
+                        ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                            ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
+                    }
+                    else if (ItemDatabase.usersInventory[identifier][name].getLimit() == -1)
                     {
                         added = true;
                         ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
