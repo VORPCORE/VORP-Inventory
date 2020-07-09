@@ -38,3 +38,5 @@ this will return a table for simply using the inventory
 
 ## Wiki
 [Wiki VORP Inventory](http://docs.vorpcore.com:3000/vorp-inventory)
+
+Credits to @Trsak for create the base of this inventory interface
