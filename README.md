@@ -5,6 +5,7 @@ Inventory System for VORP Core
 - [VORP Core](https://github.com/VORPCORE/VORP-Core/releases)
 - [VORP Inputs](https://github.com/VORPCORE/VORP-Inputs/releases)
 - [VORP Character](https://github.com/VORPCORE/VORP-Character/releases)
+- KLS
 
 ## How to install
 * [Download the lastest version of VORP Inventory](https://github.com/VORPCORE/VORP-Inventory/releases)
