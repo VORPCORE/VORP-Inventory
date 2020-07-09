@@ -39,4 +39,6 @@ this will return a table for simply using the inventory
 ## Wiki
 [Wiki VORP Inventory](http://docs.vorpcore.com:3000/vorp-inventory)
 
+## Credits
+[Inventory Pickup System from Redemrp_Inventory](https://github.com/RedEM-RP/redemrp_inventory/blob/master/client/main.lua)
 Credits to @Trsak for create the base of this inventory interface
