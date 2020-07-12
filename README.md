@@ -19,6 +19,7 @@ Inventory System for VORP Core
 * Each weapon has its own modifications.
 * When dropping or giving a weapon you give it with all the modifications and ammo.
 * It also has usaable items.
+* KLS.
 
 ## API For Lua
 For importing the API on top of your server resource file
@@ -41,4 +42,5 @@ this will return a table for simply using the inventory
 
 ## Credits
 [Inventory Pickup System from Redemrp_Inventory](https://github.com/RedEM-RP/redemrp_inventory/blob/master/client/main.lua)
+
 Credits to @Trsak for create the base of this inventory interface
