@@ -56,6 +56,14 @@ exports('vorp_inventoryApi',function()
         return weapList
     end
 
+    self.canCarryItems = function(source, amount)
+        local can
+        TriggerEvent("vorpCore:canCarryItems",source,amount,function(data)
+            can = data
+        end)
+        return can
+    end
+
     self.getUserWeapon = function(source,weaponId)
         local weap
         TriggerEvent("vorpCore:getUserWeapon",source,function(weapon)
