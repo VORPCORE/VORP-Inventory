@@ -18,7 +18,6 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(subItem);
             EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
             EventHandlers["vorpCore:getUserInventory"] += new Action<int, CallbackDelegate>(getInventory);
-            EventHandlers["vorpCore:canCarryItems"] += new Action<int, int, CallbackDelegate>(canCarryAmountItem);
             EventHandlers["vorpCore:subBullets"] += new Action<int, int, string, int>(subBullets);
             EventHandlers["vorpCore:addBullets"] += new Action<int, int, string, int>(addBullets);
             EventHandlers["vorpCore:getWeaponComponents"] += new Action<int, CallbackDelegate, int>(getWeaponComponents);
@@ -28,25 +27,6 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
             EventHandlers["vorpCore:registerUsableItem"] += new Action<string,CallbackDelegate>(registerUsableItem);
             EventHandlers["vorp:use"] += new Action<Player,string,object[]>(useItem);
-        }
-
-        private void canCarryAmountItem(int source, int quantity, CallbackDelegate cb)
-        {
-            PlayerList pl = new PlayerList();
-            Player p = pl[source];
-            string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory.ContainsKey(identifier))
-            {
-                int totalcount = getUserTotalCount(identifier) + quantity;
-                if (totalcount <= Config.MaxItems)
-                {
-                    cb.Invoke(true);
-                }
-                else
-                {
-                    cb.Invoke(false);
-                }
-            }
         }
 
         private void getInventory(int source, CallbackDelegate cb)
@@ -317,12 +297,6 @@ namespace vorpinventory_sv
                 return;
             }
 
-            if (!ItemDatabase.svItems.ContainsKey(name))
-            {
-                Debug.WriteLine($"Item: {name} not exist on Database please add this item on Table `Items`");
-                return;
-            }
-
             Player p = pl[player];
             bool added = false;
             string identifier = "steam:" + p.Identifiers["steam"];
@@ -341,42 +315,16 @@ namespace vorpinventory_sv
                     {
                         if (cuantity > 0)
                         {
-                            if (Config.MaxItems != 0)
-                            {
-                                int totalcount = getUserTotalCount(identifier);
-                                totalcount += cuantity;
-                                if (totalcount <= Config.MaxItems)
-                                {
-                                    added = true;
-                                    ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
-                                }
-                            }
-                            else
-                            {
-                                added = true;
-                                ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
-                            }
+                            added = true;
+                            ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
                         }
                     }
                     else if (ItemDatabase.usersInventory[identifier][name].getLimit() == -1)
                     {
                         if (cuantity > 0)
                         {
-                            if (Config.MaxItems != 0)
-                            {
-                                int totalcount = getUserTotalCount(identifier);
-                                totalcount += cuantity;
-                                if (totalcount <= Config.MaxItems)
-                                {
-                                    added = true;
-                                    ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
-                                }
-                            }
-                            else
-                            {
-                                added = true;
-                                ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
-                            }
+                            added = true;
+                            ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
                         }
                     }
                 }
@@ -385,47 +333,14 @@ namespace vorpinventory_sv
                     if (cuantity <= ItemDatabase.svItems[name].getLimit())
                     {
                         added = true;
-
-                        if (Config.MaxItems != 0)
-                        {
-                            int totalcount = getUserTotalCount(identifier);
-                            totalcount += cuantity;
-                            if (totalcount <= Config.MaxItems)
-                            {
-                                added = true;
-                                ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                        ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
                             ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
-                            }
-                        }
-                        else
-                        {
-                            added = true;
-                            ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                            ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
-                        }
-
-                        
                     }
                     else if (ItemDatabase.svItems[name].getLimit() == -1)
                     {
-                        if (Config.MaxItems != 0)
-                        {
-                            int totalcount = getUserTotalCount(identifier);
-                            totalcount += cuantity;
-                            if (totalcount <= Config.MaxItems)
-                            {
-                                added = true;
-                                ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                                    ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
-                            }
-                        }
-                        else
-                        {
-                            added = true;
-                            ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                                ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
-                        }
-
+                        added = true;
+                        ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                            ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
                     }
 
                 }
@@ -447,12 +362,6 @@ namespace vorpinventory_sv
 
         private void subItem(int player, string name, int cuantity)
         {
-            if (!ItemDatabase.svItems.ContainsKey(name))
-            {
-                Debug.WriteLine($"Item: {name} not exist on Database please add this item on Table `Items`");
-                return;
-            }
-
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
@@ -586,18 +495,6 @@ namespace vorpinventory_sv
                         new[] { weapId });
             }
             p.TriggerEvent("vorpCoreClient:subWeapon", weapId);
-        }
-
-
-        public static int getUserTotalCount(string identifier)
-        {
-            int t_count = 0;
-            foreach(var item in ItemDatabase.usersInventory[identifier].Values)
-            {
-                t_count += item.getCount();
-            }
-
-            return t_count;
         }
     }
 }

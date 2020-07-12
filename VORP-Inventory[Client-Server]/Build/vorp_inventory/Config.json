@@ -3,13 +3,6 @@
 
     "OpenKey": "0xC1989F95", //0x4CC0E2FE - [B]
 
-
-    "MaxItemsInInventory": {
-        "Weapons": 3,
-        "Items": 32
-    },
-
-
     "startItems": [
         //Items
         {

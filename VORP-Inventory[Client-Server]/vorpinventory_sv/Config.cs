@@ -17,9 +17,6 @@ namespace vorpinventory_sv
         public static Dictionary<string, string> lang = new Dictionary<string, string>();
         public static string resourcePath = $"{API.GetResourcePath(API.GetCurrentResourceName())}";
 
-        public static int MaxItems = 0;
-        public static int MaxWeapons = 0;
-
         public Config()
         {
             EventHandlers["vorp:firstSpawn"] += new Action<int>(itemsConfig);
@@ -52,18 +49,6 @@ namespace vorpinventory_sv
                 {
                     Debug.WriteLine($"{API.GetCurrentResourceName()}: {config["defaultlang"]}.json Not Found");
                 }
-            }
-
-            MaxItems = config["MaxItemsInInventory"]["Items"].ToObject<int>();
-            MaxWeapons = config["MaxItemsInInventory"]["Items"].ToObject<int>();
-
-            if (MaxItems < 0)
-            {
-                MaxItems = 0;
-            }
-            if (MaxWeapons < 0)
-            {
-                MaxWeapons = 0;
             }
         }
 
