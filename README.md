@@ -43,3 +43,4 @@ this will return a table for simply using the inventory
 ## Credits
 
 Credits to @Trsak for create the base of this inventory interface
+Credits to [Redemrp_inventory](https://github.com/RedEM-RP/redemrp_inventory)
