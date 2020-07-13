@@ -31,9 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CitizenFX.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\RedMFX\server-files\citizen\clr2\lib\mono\4.5\CitizenFX.Core.dll</HintPath>
+    <Reference Include="CitizenFX.Core">
+      <HintPath>..\..\..\..\redmlosreyes\server-files\citizen\clr2\lib\mono\4.5\CitizenFX.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

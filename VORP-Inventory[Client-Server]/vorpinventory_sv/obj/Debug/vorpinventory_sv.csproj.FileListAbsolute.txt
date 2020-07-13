@@ -11,3 +11,9 @@ D:\VORP\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\
 D:\VORP\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.net.pdb
 D:\redmprueba\server-data\resources\[Core]\vorp_inventory\vorpinventory_sv.net.dll
 D:\redmprueba\server-data\resources\[Core]\vorp_inventory\vorpinventory_sv.net.pdb
+D:\[VORP]\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_sv.net.dll
+D:\[VORP]\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_sv.net.pdb
+D:\[VORP]\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.csprojAssemblyReference.cache
+D:\[VORP]\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.csproj.CoreCompileInputs.cache
+D:\[VORP]\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.net.dll
+D:\[VORP]\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.net.pdb
