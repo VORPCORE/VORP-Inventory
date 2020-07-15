@@ -19,6 +19,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
             EventHandlers["vorpCore:getUserInventory"] += new Action<int, CallbackDelegate>(getInventory);
             EventHandlers["vorpCore:canCarryItems"] += new Action<int, int, CallbackDelegate>(canCarryAmountItem);
+            EventHandlers["vorpCore:canCarryWeapons"] += new Action<int, int, CallbackDelegate>(canCarryAmountWeapons);
             EventHandlers["vorpCore:subBullets"] += new Action<int, int, string, int>(subBullets);
             EventHandlers["vorpCore:addBullets"] += new Action<int, int, string, int>(addBullets);
             EventHandlers["vorpCore:getWeaponComponents"] += new Action<int, CallbackDelegate, int>(getWeaponComponents);
@@ -29,6 +30,24 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:registerUsableItem"] += new Action<string, CallbackDelegate>(registerUsableItem);
             EventHandlers["vorp:use"] += new Action<Player, string, object[]>(useItem);
         }
+
+        private void canCarryAmountWeapons(int source, int quantity, CallbackDelegate cb)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[source];
+            string identifier = "steam:" + p.Identifiers["steam"];
+
+            int totalcount = getUserTotalCountWeapons(identifier) + quantity;
+            if (totalcount <= Config.MaxWeapons)
+            {
+                cb.Invoke(true);
+            }
+            else
+            {
+                cb.Invoke(false);
+            }
+            
+        }   
 
         private void canCarryAmountItem(int source, int quantity, CallbackDelegate cb)
         {
@@ -492,6 +511,16 @@ namespace vorpinventory_sv
             if (targetIsPlayer)
             {
                 identifier = "steam:" + p.Identifiers["steam"];
+                if (Config.MaxWeapons != 0)
+                {
+                    int totalcount = getUserTotalCountWeapons(identifier);
+                    totalcount += 1;
+                    if (totalcount > Config.MaxWeapons)
+                    {
+                        Debug.WriteLine($"{p.Name} Can't carry more weapons");
+                        return;
+                    }
+                }
             }
             else
             {
@@ -555,6 +584,17 @@ namespace vorpinventory_sv
             }
             string identifier = "steam:" + p.Identifiers["steam"];
 
+            if (Config.MaxWeapons != 0)
+            {
+                int totalcount = getUserTotalCountWeapons(identifier);
+                totalcount += 1;
+                if (totalcount > Config.MaxItems)
+                {
+                    Debug.WriteLine($"{p.Name} Can't carry more weapons");
+                    return;
+                }
+            }
+
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
@@ -595,6 +635,20 @@ namespace vorpinventory_sv
             foreach (var item in ItemDatabase.usersInventory[identifier].Values)
             {
                 t_count += item.getCount();
+            }
+
+            return t_count;
+        }
+
+        public static int getUserTotalCountWeapons(string identifier)
+        {
+            int t_count = 0;
+            foreach (var weapon in ItemDatabase.userWeapons.Values)
+            {
+                if (weapon.getPropietary().Contains(identifier))
+                {
+                    t_count += 1;
+                }
             }
 
             return t_count;

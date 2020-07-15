@@ -1,6 +1,8 @@
 ﻿using CitizenFX.Core;
+using CitizenFX.Core.Native;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace vorpinventory_sv
 {
@@ -14,6 +16,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:serverGiveWeapon"] += new Action<Player, int, int>(serverGiveWeapon);
             EventHandlers["vorpinventory:serverDropItem"] += new Action<Player, string, int>(serverDropItem);
             EventHandlers["vorpinventory:serverDropMoney"] += new Action<Player, double>(serverDropMoney);
+            EventHandlers["vorpinventory:serverDropAllMoney"] += new Action<Player>(serverDropAllMoney);
             EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player, int>(serverDropWeapon);
             EventHandlers["vorpinventory:sharePickupServer"] += new Action<string, int, int, Vector3, int>(sharePickupServer);
             EventHandlers["vorpinventory:shareMoneyPickupServer"] += new Action<int, double, Vector3>(shareMoneyPickupServer);
@@ -23,6 +26,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(setWeaponBullets);
             EventHandlers["playerDropped"] += new Action<Player, string>(SaveInventoryItems);
             EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(giveMoneyToPlayer);
+
         }
 
         private void serverDropMoney([FromSource]Player source, double amount)
@@ -47,6 +51,24 @@ namespace vorpinventory_sv
                     source.TriggerEvent("vorpInventory:createMoneyPickup", amount);
                 }
 
+
+            }));
+
+        }
+
+        private void serverDropAllMoney([FromSource]Player source)
+        {
+            int _source = int.Parse(source.Handle);
+
+            TriggerEvent("vorp:getCharacter", _source, new Action<dynamic>(async (user) =>
+            {
+                double sourceMoney = user.money;
+
+                if (sourceMoney > 0)
+                {
+                    TriggerEvent("vorp:removeMoney", _source, 0, sourceMoney);
+                    source.TriggerEvent("vorpInventory:createMoneyPickup", sourceMoney);
+                }
 
             }));
 
@@ -257,28 +279,79 @@ namespace vorpinventory_sv
                 {
                     if (ItemDatabase.usersInventory.ContainsKey(identifier))
                     {
-                        addItem(source, Pickups[obj]["name"], Pickups[obj]["amount"]);
-                        Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
-                        TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
-                            Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
-                        TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
-                        player.TriggerEvent("vorpinventory:receiveItem", Pickups[obj]["name"], Pickups[obj]["amount"]);
-                        player.TriggerEvent("vorpInventory:playerAnim", obj);
-                        Pickups.Remove(obj);
+                        
+                        if (ItemDatabase.svItems[Pickups[obj]["name"]].getLimit() != -1)
+                        {
+                            if (ItemDatabase.usersInventory[identifier].ContainsKey(Pickups[obj]["name"]))
+                            {
+                                int totalcount = Pickups[obj]["amount"] + ItemDatabase.usersInventory[identifier][Pickups[obj]["name"]].getCount();
+
+                                if (ItemDatabase.svItems[Pickups[obj]["name"]].getLimit() < totalcount)
+                                {
+                                    TriggerClientEvent(player, "vorp:Tip", Config.lang["fullInventory"], 2000);
+                                    return;
+                                }
+                            }
+                            //int totalcount = Pickups[obj]["amount"] ItemDatabase.usersInventory[identifier];
+                            //totalcount += Pickups[obj]["amount"];
+                            //ItemDatabase.svItems[Pickups[obj]["name"]].getCount();
+
+                        }
+
+                        if (Config.MaxItems != 0)
+                        {
+                            int totalcount = InventoryAPI.getUserTotalCount(identifier);
+                            totalcount += Pickups[obj]["amount"];
+                            if (totalcount <= Config.MaxItems)
+                            {
+                                addItem(source, Pickups[obj]["name"], Pickups[obj]["amount"]);
+                                Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
+                                TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
+                                    Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
+                                TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
+                                player.TriggerEvent("vorpinventory:receiveItem", Pickups[obj]["name"], Pickups[obj]["amount"]);
+                                player.TriggerEvent("vorpInventory:playerAnim", obj);
+                                Pickups.Remove(obj);
+                            }
+                            else{
+                                TriggerClientEvent(player, "vorp:Tip", Config.lang["fullInventory"], 2000);
+                            }
+                        }
+                        else
+                        {
+                            addItem(source, Pickups[obj]["name"], Pickups[obj]["amount"]);
+                            Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
+                            TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
+                                Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
+                            TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
+                            player.TriggerEvent("vorpinventory:receiveItem", Pickups[obj]["name"], Pickups[obj]["amount"]);
+                            player.TriggerEvent("vorpInventory:playerAnim", obj);
+                            Pickups.Remove(obj);
+                        }
+                      
                     }
                 }
                 else
                 {
-                    int weaponId = Pickups[obj]["weaponid"];
-                    addWeapon(source, Pickups[obj]["weaponid"]);
-                    //Debug.WriteLine($"añado {ItemDatabase.userWeapons[Pickups[obj]["weaponid"].ToString()].getPropietary()}");
-                    TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
-                        Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
-                    TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
-                    player.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.userWeapons[weaponId].getPropietary(),
-                        ItemDatabase.userWeapons[weaponId].getName(), ItemDatabase.userWeapons[weaponId].getAllAmmo(), ItemDatabase.userWeapons[weaponId].getAllComponents());
-                    player.TriggerEvent("vorpInventory:playerAnim", obj);
-                    Pickups.Remove(obj);
+                    if (Config.MaxWeapons != 0)
+                    {
+                        int totalcount = InventoryAPI.getUserTotalCountWeapons(identifier);
+                        totalcount += 1;
+                        if (totalcount <= Config.MaxWeapons)
+                        {
+                            int weaponId = Pickups[obj]["weaponid"];
+                            addWeapon(source, Pickups[obj]["weaponid"]);
+                            //Debug.WriteLine($"añado {ItemDatabase.userWeapons[Pickups[obj]["weaponid"].ToString()].getPropietary()}");
+                            TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
+                                Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
+                            TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
+                            player.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.userWeapons[weaponId].getPropietary(),
+                                ItemDatabase.userWeapons[weaponId].getName(), ItemDatabase.userWeapons[weaponId].getAllAmmo(), ItemDatabase.userWeapons[weaponId].getAllComponents());
+                            player.TriggerEvent("vorpInventory:playerAnim", obj);
+                            Pickups.Remove(obj);
+                        }
+                    }
+                   
                 }
             }
 

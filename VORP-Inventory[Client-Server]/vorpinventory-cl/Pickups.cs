@@ -2,7 +2,9 @@
 using CitizenFX.Core.Native;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using vorpinventory_sv;
 
 namespace vorpinventory_cl
 {
@@ -16,6 +18,7 @@ namespace vorpinventory_cl
             EventHandlers["vorpInventory:shareMoneyPickupClient"] += new Action<int, double, Vector3, int>(shareMoneyPickupClient);
             EventHandlers["vorpInventory:removePickupClient"] += new Action<int>(removePickupClient);
             EventHandlers["vorpInventory:playerAnim"] += new Action<int>(playerAnim);
+            EventHandlers["vorp:PlayerForceRespawn"] += new Action(DeadActions);
             SetupPickPrompt();
             Tick += principalFunctionPickups;
             Tick += principalFunctionPickupsMoney;
@@ -26,6 +29,56 @@ namespace vorpinventory_cl
         public static Dictionary<int, Dictionary<string, dynamic>> pickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
         private static bool active = false;
 
+        private async void DeadActions()
+        {
+            if (GetConfig.Config["DropOnRespawn"]["Money"].ToObject<bool>())
+            {
+                TriggerServerEvent("vorpinventory:serverDropAllMoney");
+            }
+            
+            dropallPlease();
+        }
+
+        public async Task dropallPlease()
+        {
+            await Delay(100);
+            if (GetConfig.Config["DropOnRespawn"]["Items"].ToObject<bool>())
+            {
+                Dictionary<string, ItemClass> items = vorp_inventoryClient.useritems.ToDictionary(p => p.Key, p => p.Value);
+                foreach (var item in items.Values)
+                {
+                    TriggerServerEvent("vorpinventory:serverDropItem", item.getName(), item.getCount(), 1);
+                    vorp_inventoryClient.useritems[item.getName()].quitCount(item.getCount());
+                    //Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
+                    if (vorp_inventoryClient.useritems[item.getName()].getCount() == 0)
+                    {
+                        vorp_inventoryClient.useritems.Remove(item.getName());
+                    }
+                    await Delay(200);
+                }
+            }
+
+            if (GetConfig.Config["DropOnRespawn"]["Weapons"].ToObject<bool>())
+            {
+                Dictionary<int, WeaponClass> weapons = vorp_inventoryClient.userWeapons.ToDictionary(p => p.Key, p => p.Value);
+                foreach (var weapon in weapons)
+                {
+                    TriggerServerEvent("vorpinventory:serverDropWeapon", weapon.Key);
+                    if (vorp_inventoryClient.userWeapons.ContainsKey(weapon.Key))
+                    {
+                        WeaponClass wp = vorp_inventoryClient.userWeapons[weapon.Key];
+                        if (wp.getUsed())
+                        {
+                            wp.setUsed(false);
+                            API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()),
+                                true, 0);
+                        }
+                        vorp_inventoryClient.userWeapons.Remove(weapon.Key);
+                    }
+                    await Delay(200);
+                }
+            }
+        }
 
         [Tick]
         private async Task principalFunctionPickups()
@@ -35,7 +88,6 @@ namespace vorpinventory_cl
 
             if (pickups.Count == 0)
             {
-                //Debug.WriteLine("Entro");
                 return;
             }
 
@@ -64,7 +116,7 @@ namespace vorpinventory_cl
                     }
                 }
 
-                if (distance <= 0.7F && !pick.Value["inRange"])
+                if (distance <= 0.7F)
                 {
                     Function.Call((Hash)0x69F4BE8C8CC4796C, playerPed, pick.Value["obj"], 3000, 2048, 3);
                     if (active == false)
@@ -72,14 +124,16 @@ namespace vorpinventory_cl
                         //Debug.WriteLine("Entro");
                         Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, true);
                         Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, true);
+                        active = true;
                     }
 
                     if (Function.Call<bool>((Hash)0xE0F65F0640EF0617, PickPrompt))
                     {
-                        Debug.WriteLine("He terminado");
                         TriggerServerEvent("vorpinventory:onPickup", pick.Value["obj"]);
                         pick.Value["inRange"] = true;
                         active = true;
+                        Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
+                        Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
                     }
                 }
                 else
@@ -88,6 +142,7 @@ namespace vorpinventory_cl
                     {
                         Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
                         Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
+                        pick.Value["inRange"] = false;
                         active = false;
                     }
                 }
@@ -102,7 +157,6 @@ namespace vorpinventory_cl
 
             if (pickupsMoney.Count == 0)
             {
-                //Debug.WriteLine("Entro");
                 return;
             }
 
@@ -130,10 +184,11 @@ namespace vorpinventory_cl
 
                     if (Function.Call<bool>((Hash)0xE0F65F0640EF0617, PickPrompt))
                     {
-                        Debug.WriteLine("He terminado");
                         TriggerServerEvent("vorpinventory:onPickupMoney", pick.Value["obj"]);
                         pick.Value["inRange"] = true;
                         active = true;
+                        Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
+                        Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
                     }
                 }
                 else
@@ -232,6 +287,15 @@ namespace vorpinventory_cl
             Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
             Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
             Vector3 position = (coords + forward * 1.6F);
+
+            if (API.IsPlayerDead(API.PlayerId()))
+            {
+                Random rnd = new Random();
+                float rn1 = (float)rnd.Next(-35, 35);
+                float rn2 = (float)rnd.Next(-35, 35);
+                position = new Vector3((coords.X + (rn1 / 10.0f)), (coords.Y + (rn2 / 10.0f)), coords.Z);
+            }
+
             if (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("P_COTTONBOX01X")))
             {
                 Function.Call((Hash)0xFA28FE3A6246FC30, (uint)API.GetHashKey("P_COTTONBOX01X"));
@@ -258,17 +322,25 @@ namespace vorpinventory_cl
             Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
             Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
             Vector3 position = (coords + forward * 1.6F);
-            if (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("P_COTTONBOX01X")))
+
+            if (API.IsPlayerDead(API.PlayerId()))
             {
-                Function.Call((Hash)0xFA28FE3A6246FC30, (uint)API.GetHashKey("P_COTTONBOX01X"));
+                Random rnd = new Random();
+
+                position = new Vector3((coords.X + (float)rnd.Next(-3, 3)), (coords.Y + (float)rnd.Next(-3, 3)), coords.Z);
             }
 
-            while (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("P_COTTONBOX01X")))
+            if (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("p_moneybag02x")))
+            {
+                Function.Call((Hash)0xFA28FE3A6246FC30, (uint)API.GetHashKey("p_moneybag02x"));
+            }
+
+            while (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("p_moneybag02x")))
             {
                 await Delay(1);
             }
 
-            int obj = Function.Call<int>((Hash)0x509D5878EB39E842, (uint)API.GetHashKey("P_COTTONBOX01X"), position.X
+            int obj = Function.Call<int>((Hash)0x509D5878EB39E842, (uint)API.GetHashKey("p_moneybag02x"), position.X
                 , position.Y, position.Z, true, true, true);
             Function.Call((Hash)0x58A850EAEE20FAA3, obj);
             Function.Call((Hash)0xDC19C288082E586E, obj, true, false);

@@ -3,8 +3,14 @@
 
     "OpenKey": "0xC1989F95", //0x4CC0E2FE - [B]
 
+    "DropOnRespawn": {
+        "Money": true,
+        "Weapons": true,
+        "Items": true
+    },
+
     "MaxItemsInInventory": {
-        "Weapons": 3,
+        "Weapons": 2,
         "Items": 32
     },
 
