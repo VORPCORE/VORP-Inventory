@@ -28,9 +28,14 @@ namespace vorpinventory_cl
         public static Dictionary<int, Dictionary<string, dynamic>> pickups = new Dictionary<int, Dictionary<string, dynamic>>();
         public static Dictionary<int, Dictionary<string, dynamic>> pickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
         private static bool active = false;
+        private static bool dropAll = false;
+        private static Vector3 lastCoords = new Vector3();
 
         private async void DeadActions()
         {
+            lastCoords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, API.PlayerPedId(), true, true);
+            dropAll = true;
+
             if (GetConfig.Config["DropOnRespawn"]["Money"].ToObject<bool>())
             {
                 TriggerServerEvent("vorpinventory:serverDropAllMoney");
@@ -41,7 +46,7 @@ namespace vorpinventory_cl
 
         public async Task dropallPlease()
         {
-            await Delay(100);
+            await Delay(200);
             if (GetConfig.Config["DropOnRespawn"]["Items"].ToObject<bool>())
             {
                 Dictionary<string, ItemClass> items = vorp_inventoryClient.useritems.ToDictionary(p => p.Key, p => p.Value);
@@ -78,6 +83,8 @@ namespace vorpinventory_cl
                     await Delay(200);
                 }
             }
+            await Delay(800);
+            dropAll = false;
         }
 
         [Tick]
@@ -97,7 +104,7 @@ namespace vorpinventory_cl
                     pick.Value["coords"].X,
                     pick.Value["coords"].Y, pick.Value["coords"].Z, false);
 
-                if (distance <= 5.0F)
+                if (distance <= 5.0F & !pick.Value["inRange"])
                 {
                     if (pick.Value["weaponid"] == 1)
                     {
@@ -116,7 +123,7 @@ namespace vorpinventory_cl
                     }
                 }
 
-                if (distance <= 0.7F)
+                if (distance <= 0.7F && !pick.Value["inRange"])
                 {
                     Function.Call((Hash)0x69F4BE8C8CC4796C, playerPed, pick.Value["obj"], 3000, 2048, 3);
                     if (active == false)
@@ -124,7 +131,6 @@ namespace vorpinventory_cl
                         //Debug.WriteLine("Entro");
                         Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, true);
                         Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, true);
-                        active = true;
                     }
 
                     if (Function.Call<bool>((Hash)0xE0F65F0640EF0617, PickPrompt))
@@ -142,7 +148,6 @@ namespace vorpinventory_cl
                     {
                         Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
                         Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
-                        pick.Value["inRange"] = false;
                         active = false;
                     }
                 }
@@ -288,12 +293,12 @@ namespace vorpinventory_cl
             Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
             Vector3 position = (coords + forward * 1.6F);
 
-            if (API.IsPlayerDead(API.PlayerId()))
+            if (dropAll)
             {
                 Random rnd = new Random();
                 float rn1 = (float)rnd.Next(-35, 35);
                 float rn2 = (float)rnd.Next(-35, 35);
-                position = new Vector3((coords.X + (rn1 / 10.0f)), (coords.Y + (rn2 / 10.0f)), coords.Z);
+                position = new Vector3((lastCoords.X + (rn1 / 10.0f)), (lastCoords.Y + (rn2 / 10.0f)), lastCoords.Z);
             }
 
             if (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("P_COTTONBOX01X")))
@@ -323,11 +328,11 @@ namespace vorpinventory_cl
             Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
             Vector3 position = (coords + forward * 1.6F);
 
-            if (API.IsPlayerDead(API.PlayerId()))
+            if (dropAll)
             {
                 Random rnd = new Random();
 
-                position = new Vector3((coords.X + (float)rnd.Next(-3, 3)), (coords.Y + (float)rnd.Next(-3, 3)), coords.Z);
+                position = new Vector3((lastCoords.X + (float)rnd.Next(-3, 3)), (lastCoords.Y + (float)rnd.Next(-3, 3)), lastCoords.Z);
             }
 
             if (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("p_moneybag02x")))

@@ -119,22 +119,12 @@ namespace vorpinventory_sv
 
         private void registerUsableItem(string name, CallbackDelegate cb)
         {
-            if (usableItemsFunctions.ContainsKey(name))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"{API.GetCurrentResourceName()}: Function callback of item: {name} already registered!");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-            else
-            {
-                if (ItemDatabase.svItems.ContainsKey(name) && ItemDatabase.svItems[name].getUsable())
-                {
-                    usableItemsFunctions.Add(name, cb);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"{API.GetCurrentResourceName()}: Function callback of item: {name} registered!");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-            }
+
+            usableItemsFunctions.Add(name, cb);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"{API.GetCurrentResourceName()}: Function callback of item: {name} registered!");
+            Console.ForegroundColor = ConsoleColor.White;
+
         }
 
         private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
