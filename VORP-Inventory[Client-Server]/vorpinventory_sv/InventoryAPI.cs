@@ -38,7 +38,7 @@ namespace vorpinventory_sv
             string identifier = "steam:" + p.Identifiers["steam"];
 
             int totalcount = getUserTotalCountWeapons(identifier) + quantity;
-            if (totalcount <= Config.MaxWeapons)
+            if (totalcount <= Config.MaxWeapons || Config.MaxWeapons != -1)
             {
                 cb.Invoke(true);
             }
@@ -54,10 +54,10 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[source];
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            if (ItemDatabase.usersInventory.ContainsKey(identifier) && Config.MaxItems != -1)
             {
                 int totalcount = getUserTotalCount(identifier) + quantity;
-                if (totalcount <= Config.MaxItems)
+                if ((totalcount <= Config.MaxItems))
                 {
                     cb.Invoke(true);
                 }
@@ -66,6 +66,11 @@ namespace vorpinventory_sv
                     cb.Invoke(false);
                 }
             }
+            else
+            {
+                cb.Invoke(true);
+            }
+
         }
 
         private void getInventory(int source, CallbackDelegate cb)

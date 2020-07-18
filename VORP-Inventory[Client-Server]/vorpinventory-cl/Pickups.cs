@@ -28,6 +28,7 @@ namespace vorpinventory_cl
         public static Dictionary<int, Dictionary<string, dynamic>> pickups = new Dictionary<int, Dictionary<string, dynamic>>();
         public static Dictionary<int, Dictionary<string, dynamic>> pickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
         private static bool active = false;
+        private static bool active2 = false;
         private static bool dropAll = false;
         private static Vector3 lastCoords = new Vector3();
 
@@ -131,13 +132,13 @@ namespace vorpinventory_cl
                         //Debug.WriteLine("Entro");
                         Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, true);
                         Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, true);
+                        active = true;
                     }
 
                     if (Function.Call<bool>((Hash)0xE0F65F0640EF0617, PickPrompt))
                     {
                         TriggerServerEvent("vorpinventory:onPickup", pick.Value["obj"]);
                         pick.Value["inRange"] = true;
-                        active = true;
                         Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
                         Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
                     }
@@ -180,29 +181,29 @@ namespace vorpinventory_cl
                 if (distance <= 0.7F && !pick.Value["inRange"])
                 {
                     Function.Call((Hash)0x69F4BE8C8CC4796C, playerPed, pick.Value["obj"], 3000, 2048, 3);
-                    if (active == false)
+                    if (active2 == false)
                     {
                         //Debug.WriteLine("Entro");
                         Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, true);
                         Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, true);
+                        active2 = true;
                     }
 
                     if (Function.Call<bool>((Hash)0xE0F65F0640EF0617, PickPrompt))
                     {
                         TriggerServerEvent("vorpinventory:onPickupMoney", pick.Value["obj"]);
                         pick.Value["inRange"] = true;
-                        active = true;
                         Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
                         Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
                     }
                 }
                 else
                 {
-                    if (active)
+                    if (active2)
                     {
                         Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
                         Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
-                        active = false;
+                        active2 = false;
                     }
                 }
             }
