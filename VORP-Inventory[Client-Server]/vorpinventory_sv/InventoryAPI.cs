@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using CitizenFX.Core.Native;
+using System.Threading.Tasks;
 
 namespace vorpinventory_sv
 {
@@ -29,6 +30,24 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
             EventHandlers["vorpCore:registerUsableItem"] += new Action<string, CallbackDelegate>(registerUsableItem);
             EventHandlers["vorp:use"] += new Action<Player, string, object[]>(useItem);
+        }
+
+        public async Task SaveInventoryItemsSupport(string identifier)
+        {
+            await Delay(1000);
+            Dictionary<string, int> items = new Dictionary<string, int>();
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            {
+                foreach (var item in ItemDatabase.usersInventory[identifier])
+                {
+                    items.Add(item.Key, item.Value.getCount());
+                }
+                if (items.Count > 0)
+                {
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] { identifier });
+                }
+            }
         }
 
         private void canCarryAmountWeapons(int source, int quantity, CallbackDelegate cb)
@@ -451,6 +470,7 @@ namespace vorpinventory_sv
                     bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
                     bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
                     p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
+                    SaveInventoryItemsSupport(identifier);
                 }
                 else
                 {
@@ -483,7 +503,7 @@ namespace vorpinventory_sv
                     {
                         ItemDatabase.usersInventory[identifier].Remove(name);
                     }
-
+                    SaveInventoryItemsSupport(identifier);
                 }
             }
         }

@@ -3,6 +3,7 @@ using CitizenFX.Core.Native;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace vorpinventory_sv
 {
@@ -26,7 +27,6 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(setWeaponBullets);
             EventHandlers["playerDropped"] += new Action<Player, string>(SaveInventoryItems);
             EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(giveMoneyToPlayer);
-
         }
 
         private void serverDropMoney([FromSource]Player source, double amount)
@@ -155,6 +155,7 @@ namespace vorpinventory_sv
         //                 new[] {weap.Value.getId()});
         //     }
         // }
+        
         private void SaveInventoryItems([FromSource] Player p, string something)
         {
             string identifier = "steam:" + p.Identifiers["steam"];
@@ -172,6 +173,7 @@ namespace vorpinventory_sv
                 }
             }
         }
+
         private void usedWeapon([FromSource]Player source, int id, bool used)
         {
             int Used = used ? 1 : 0;
@@ -180,6 +182,7 @@ namespace vorpinventory_sv
                     $"UPDATE loadout SET used = '{Used}' WHERE id=?",
                     new[] { id });
         }
+        
         //Sub items for other scripts
         private void subItem(int player, string name, int cuantity)
         {
