@@ -19,7 +19,6 @@ namespace vorpinventory_cl
 
         public NUIEvents()
         {
-            Tick += OnKey;
 
             API.RegisterNuiCallbackType("NUIFocusOff");
             EventHandlers["__cfx_nui:NUIFocusOff"] += new Action<ExpandoObject>(NUIFocusOff);
