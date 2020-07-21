@@ -42,7 +42,7 @@ namespace vorpinventory_sv
                 {
                     items.Add(item.Key, item.Value.getCount());
                 }
-                if (items.Count > 0)
+                if (items.Count >= 0)
                 {
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
                     Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] { identifier });
