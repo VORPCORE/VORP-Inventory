@@ -97,7 +97,7 @@ namespace vorpinventory_cl
 
         private void subItem(string name, int cuantity)
         {
-            Debug.WriteLine($"Me llaman con cantidad a poner = {cuantity}");
+            Debug.WriteLine($"{name} = {cuantity}");
             if (vorp_inventoryClient.useritems.ContainsKey(name))
             {
                 vorp_inventoryClient.useritems[name].setCount(cuantity);

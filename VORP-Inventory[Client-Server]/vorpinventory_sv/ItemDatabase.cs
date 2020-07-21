@@ -34,42 +34,7 @@ namespace vorpinventory_sv
                     {
                         svItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove, item.type, item.usable));
                     }
-                    Exports["ghmattimysql"].execute("SELECT identifier,inventory FROM characters", new Action<dynamic>((uinvento) =>
-                    {
-                        if(uinvento.Count == 0)
-                        {
-                            Debug.WriteLine("No users inventory");
-                        }
-                        else
-                        {
-                            foreach (var userInventory in uinvento)
-                            {
-                                //Carga del inventario
-                                string user = userInventory.identifier.ToString();
-                                Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
-                                List<WeaponClass> userwep = new List<WeaponClass>();
-                                if (userInventory.inventory != null)
-                                {
-                                    dynamic thing = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(userInventory.inventory);
-                                    foreach (dynamic itemname in items)
-                                    {
-                                        if (thing[itemname.item.ToString()] != null)
-                                        {
-                                            ItemClass item = new ItemClass(int.Parse(thing[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
-                                                itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
-                                            userinv.Add(itemname.item.ToString(), item);
-                                        }
-                                    }
-                                    usersInventory.Add(user, userinv);
-                                }
-                                else
-                                {
-                                    usersInventory.Add(user, userinv);
-                                }
-                            }
-                        }
-                        
-                    }));
+
                     Exports["ghmattimysql"].execute("SELECT * FROM loadout", new Action<dynamic>((weaponsinvento) =>
                     {
                         if(weaponsinvento.Count == 0)

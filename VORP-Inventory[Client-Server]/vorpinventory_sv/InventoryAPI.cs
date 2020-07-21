@@ -143,12 +143,10 @@ namespace vorpinventory_sv
 
         private void registerUsableItem(string name, CallbackDelegate cb)
         {
-
-            usableItemsFunctions.Add(name, cb);
+            usableItemsFunctions[name] = cb;
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"{API.GetCurrentResourceName()}: Function callback of item: {name} registered!");
             Console.ForegroundColor = ConsoleColor.White;
-
         }
 
         private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
@@ -497,13 +495,14 @@ namespace vorpinventory_sv
                     if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
                     {
                         ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
+                        SaveInventoryItemsSupport(identifier);
                     }
                     p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.usersInventory[identifier][name].getCount());
                     if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
                     {
                         ItemDatabase.usersInventory[identifier].Remove(name);
+                        SaveInventoryItemsSupport(identifier);
                     }
-                    SaveInventoryItemsSupport(identifier);
                 }
             }
         }

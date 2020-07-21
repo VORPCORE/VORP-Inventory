@@ -155,7 +155,25 @@ namespace vorpinventory_sv
         //                 new[] {weap.Value.getId()});
         //     }
         // }
-        
+
+        public async Task SaveInventoryItemsSupport(string identifier)
+        {
+            await Delay(1000);
+            Dictionary<string, int> items = new Dictionary<string, int>();
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            {
+                foreach (var item in ItemDatabase.usersInventory[identifier])
+                {
+                    items.Add(item.Key, item.Value.getCount());
+                }
+                if (items.Count > 0)
+                {
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] { identifier });
+                }
+            }
+        }
+
         private void SaveInventoryItems([FromSource] Player p, string something)
         {
             string identifier = "steam:" + p.Identifiers["steam"];
@@ -196,11 +214,13 @@ namespace vorpinventory_sv
                     if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
                     {
                         ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
+                        SaveInventoryItemsSupport(identifier);
                     }
 
                     if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
                     {
                         ItemDatabase.usersInventory[identifier].Remove(name);
+                        SaveInventoryItemsSupport(identifier);
                     }
                 }
             }
@@ -219,6 +239,7 @@ namespace vorpinventory_sv
                     if (cuantity > 0)
                     {
                         ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                        SaveInventoryItemsSupport(identifier);
                     }
                 }
                 else
@@ -227,6 +248,7 @@ namespace vorpinventory_sv
                     {
                         ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
                             ItemDatabase.svItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.svItems[name].getCanRemove()));
+                        SaveInventoryItemsSupport(identifier);
                     }
                 }
             }
@@ -238,6 +260,7 @@ namespace vorpinventory_sv
                 {
                     ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
                         ItemDatabase.svItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.svItems[name].getCanRemove()));
+                    SaveInventoryItemsSupport(identifier);
                 }
             }
         }
@@ -481,6 +504,43 @@ namespace vorpinventory_sv
         {
             string steamId = "steam:" + source.Identifiers["steam"];
             Debug.WriteLine(steamId);
+
+            Exports["ghmattimysql"].execute("SELECT identifier,inventory FROM characters WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((uinvento) =>
+            {
+                if (uinvento.Count == 0)
+                {
+                    Debug.WriteLine("No users inventory");
+                }
+                else
+                {
+                  
+                    //Carga del inventario
+                    Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+                    List<WeaponClass> userwep = new List<WeaponClass>();
+                    if (uinvento[0].inventory != null)
+                    {
+                        dynamic thing = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(uinvento[0].inventory);
+                        foreach (dynamic itemname in ItemDatabase.items)
+                        {
+                            if (thing[itemname.item.ToString()] != null)
+                            {
+                                ItemClass item = new ItemClass(int.Parse(thing[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
+                                    itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
+                                userinv.Add(itemname.item.ToString(), item);
+                            }
+                        }
+                        ItemDatabase.usersInventory[steamId] = userinv;
+                    }
+                    else
+                    {
+                        ItemDatabase.usersInventory[steamId] = userinv;
+                    }
+                    
+                }
+
+            }));
+
+
             Exports["ghmattimysql"].execute("SELECT inventory FROM characters WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((result) =>
               {
                   if (result.Count == 0)
@@ -491,7 +551,7 @@ namespace vorpinventory_sv
                   }
                   else
                   {
-                      //Debug.WriteLine(result[0].inventory);
+                      Debug.WriteLine(result[0].inventory);
                       source.TriggerEvent("vorpInventory:giveInventory", result[0].inventory);
                   }
               }));
