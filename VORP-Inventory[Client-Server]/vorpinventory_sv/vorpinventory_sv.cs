@@ -1,5 +1,6 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -510,6 +511,8 @@ namespace vorpinventory_sv
                 if (uinvento.Count == 0)
                 {
                     Debug.WriteLine("No users inventory");
+                    Dictionary<string, ItemClass> items = new Dictionary<string, ItemClass>();
+                    ItemDatabase.usersInventory.Add(steamId, items); // Si no existe le metemos en la caché para tenerlo preparado para recibir cosas
                 }
                 else
                 {
@@ -535,37 +538,51 @@ namespace vorpinventory_sv
                     {
                         ItemDatabase.usersInventory[steamId] = userinv;
                     }
-                    
+
+                    source.TriggerEvent("vorpInventory:giveInventory", uinvento[0].inventory);
                 }
 
             }));
 
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((weaponsinvento) =>
+            {
+                if (weaponsinvento.Count == 0)
+                {
 
-            Exports["ghmattimysql"].execute("SELECT inventory FROM characters WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((result) =>
-              {
-                  if (result.Count == 0)
-                  {
-                      Debug.WriteLine($"{steamId} doesn`t have inventory yet.");
-                      Dictionary<string, ItemClass> items = new Dictionary<string, ItemClass>();
-                      ItemDatabase.usersInventory.Add(steamId, items); // Si no existe le metemos en la caché para tenerlo preparado para recibir cosas
-                  }
-                  else
-                  {
-                      Debug.WriteLine(result[0].inventory);
-                      source.TriggerEvent("vorpInventory:giveInventory", result[0].inventory);
-                  }
-              }));
-            Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((result) =>
-               {
-                   if (result.Count == 0)
-                   {
-                       Debug.WriteLine($"{steamId} doesn`t have loadout yet.");
-                   }
-                   else
-                   {
-                       source.TriggerEvent("vorpInventory:giveLoadout", result);
-                   }
-               }));
+                }
+                else
+                {
+                    WeaponClass wp;
+                    foreach (var row in weaponsinvento)
+                    {
+
+                        JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
+                        JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
+                        Dictionary<string, int> amunition = new Dictionary<string, int>();
+                        List<string> components = new List<string>();
+                        foreach (JProperty ammos in ammo.Properties())
+                        {
+                            //Debug.WriteLine(ammos.Name);
+                            amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
+                        }
+                        foreach (JToken x in comp)
+                        {
+                            components.Add(x.ToString());
+                        }
+
+                        bool auused = false;
+                        if (row.used == 1)
+                        {
+                            auused = true;
+                        }
+                        wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused);
+                        ItemDatabase.userWeapons[wp.getId()] = wp;
+                    }
+
+                    source.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
+                }
+
+            }));
         }
     }
 }

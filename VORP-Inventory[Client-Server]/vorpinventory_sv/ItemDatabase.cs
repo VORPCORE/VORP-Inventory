@@ -35,44 +35,6 @@ namespace vorpinventory_sv
                         svItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove, item.type, item.usable));
                     }
 
-                    Exports["ghmattimysql"].execute("SELECT * FROM loadout", new Action<dynamic>((weaponsinvento) =>
-                    {
-                        if(weaponsinvento.Count == 0)
-                        {
-                            Debug.WriteLine("There is no loadout on server database");
-                        }
-                        else
-                        {
-                            WeaponClass wp;
-                            foreach (var row in weaponsinvento)
-                            {
-
-                                JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
-                                JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
-                                Dictionary<string, int> amunition = new Dictionary<string, int>();
-                                List<string> components = new List<string>();
-                                foreach (JProperty ammos in ammo.Properties())
-                                {
-                                    //Debug.WriteLine(ammos.Name);
-                                    amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
-                                }
-                                foreach (JToken x in comp)
-                                {
-                                    components.Add(x.ToString());
-                                }
-
-                                bool auused = false;
-                                if (row.used == 1)
-                                {
-                                    auused = true;
-                                }
-                                wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused);
-                                userWeapons.Add(wp.getId(), wp);
-                            }
-                        }
-                      
-                    }));
-
                 }
             }));
         }

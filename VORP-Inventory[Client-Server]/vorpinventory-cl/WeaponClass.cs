@@ -40,7 +40,14 @@ namespace vorpinventory_sv
 
         public void loadAmmo()
         {
-            API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, true, 2);
+            if (this.name.StartsWith("WEAPON_MELEE"))
+            {
+                Function.Call((Hash)0xB282DC6EBD803C75, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 500, true, 0);
+            }
+            else
+            {
+                API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, true, 0);
+            }
             API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0);
             foreach (KeyValuePair<string, int> ammos in this.ammo)
             {
