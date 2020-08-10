@@ -20,6 +20,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
             EventHandlers["vorpCore:getUserInventory"] += new Action<int, CallbackDelegate>(getInventory);
             EventHandlers["vorpCore:canCarryItems"] += new Action<int, int, CallbackDelegate>(canCarryAmountItem);
+            EventHandlers["vorpCore:canCarryItem"] += new Action<int, string, int, CallbackDelegate>(canCarryItem);
             EventHandlers["vorpCore:canCarryWeapons"] += new Action<int, int, CallbackDelegate>(canCarryAmountWeapons);
             EventHandlers["vorpCore:subBullets"] += new Action<int, int, string, int>(subBullets);
             EventHandlers["vorpCore:addBullets"] += new Action<int, int, string, int>(addBullets);
@@ -73,6 +74,131 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[source];
             string identifier = "steam:" + p.Identifiers["steam"];
+            if (ItemDatabase.usersInventory.ContainsKey(identifier) && Config.MaxItems != -1)
+            {
+                int totalcount = getUserTotalCount(identifier) + quantity;
+                if ((totalcount <= Config.MaxItems))
+                {
+                    cb.Invoke(true);
+                }
+                else
+                {
+                    cb.Invoke(false);
+                }
+            }
+            else
+            {
+                cb.Invoke(true);
+            }
+
+        }
+
+        private void canCarryItem(int source, string itemName, int quantity, CallbackDelegate cb)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[source];
+            string identifier = "steam:" + p.Identifiers["steam"];
+
+            int limit = ItemDatabase.svItems[itemName].getLimit();
+
+            if (limit != -1)
+            {
+                if (ItemDatabase.usersInventory.ContainsKey(identifier))
+                {
+                    if (ItemDatabase.usersInventory.ContainsKey(itemName))
+                    {
+                        int count = ItemDatabase.usersInventory[identifier][itemName].getCount();
+
+                        int total = count + quantity;
+
+                        if (total <= limit)
+                        {
+                            if (Config.MaxItems != -1)
+                            {
+                                int totalcount = getUserTotalCount(identifier) + quantity;
+                                if ((totalcount <= Config.MaxItems))
+                                {
+                                    cb.Invoke(true);
+                                }
+                                else
+                                {
+                                    cb.Invoke(false);
+                                }
+                            }
+                            else
+                            {
+                                cb.Invoke(true);
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        if (quantity <= limit)
+                        {
+                            if (Config.MaxItems != -1)
+                            {
+                                int totalcount = getUserTotalCount(identifier) + quantity;
+                                if ((totalcount <= Config.MaxItems))
+                                {
+                                    cb.Invoke(true);
+                                }
+                                else
+                                {
+                                    cb.Invoke(false);
+                                }
+                            }
+                            else
+                            {
+                                cb.Invoke(true);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (quantity <= limit)
+                    {
+                        if (Config.MaxItems != -1)
+                        {
+                            int totalcount = quantity;
+                            if ((totalcount <= Config.MaxItems))
+                            {
+                                cb.Invoke(true);
+                            }
+                            else
+                            {
+                                cb.Invoke(false);
+                            }
+                        }
+                        else
+                        {
+                            cb.Invoke(true);
+                        }
+                    }
+                }
+                
+            }
+            else
+            {
+                if (Config.MaxItems != -1)
+                {
+                    int totalcount = getUserTotalCount(identifier) + quantity;
+                    if ((totalcount <= Config.MaxItems))
+                    {
+                        cb.Invoke(true);
+                    }
+                    else
+                    {
+                        cb.Invoke(false);
+                    }
+                }
+                else
+                {
+                    cb.Invoke(true);
+                }
+            }
+
             if (ItemDatabase.usersInventory.ContainsKey(identifier) && Config.MaxItems != -1)
             {
                 int totalcount = getUserTotalCount(identifier) + quantity;
@@ -558,25 +684,17 @@ namespace vorpinventory_sv
                     auxcomponents.Add(component.Key);
                 }
             }
-            int weaponId = -1;
-            Exports["ghmattimysql"].execute("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'vorp' AND TABLE_NAME   = 'loadout';",
-                new Action<dynamic>((id) =>
+            
+            Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?)", new object[] { identifier, name ,Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) => {
+                int weaponId = result.insertId;
+                WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false);
+                ItemDatabase.userWeapons.Add(weaponId, auxWeapon);
+                if (targetIsPlayer)
                 {
-                    weaponId = int.Parse(id[0].AUTO_INCREMENT.ToString());
-                    Debug.WriteLine(weaponId.ToString());
-                    Exports["ghmattimysql"]
-                        .execute(
-                            "INSERT INTO loadout (`identifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?)", new object[] { identifier, name
-                            ,Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) });
-
-                    WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false);
-                    ItemDatabase.userWeapons.Add(weaponId, auxWeapon);
-                    if (targetIsPlayer)
-                    {
-                        p.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.userWeapons[weaponId].getPropietary(),
-                            ItemDatabase.userWeapons[weaponId].getName(), ItemDatabase.userWeapons[weaponId].getAllAmmo(), ItemDatabase.userWeapons[weaponId].getAllComponents());
-                    }
-                }));
+                    p.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.userWeapons[weaponId].getPropietary(),
+                        ItemDatabase.userWeapons[weaponId].getName(), ItemDatabase.userWeapons[weaponId].getAllAmmo(), ItemDatabase.userWeapons[weaponId].getAllComponents());
+                }
+            }));
         }
         private void giveWeapon(int player, int weapId, int target)
         {

@@ -65,6 +65,16 @@ namespace vorpinventory_cl
 
             API.RegisterNuiCallbackType("MoveToCart");
             EventHandlers["__cfx_nui:MoveToCart"] += new Action<ExpandoObject>(NUIMoveToCart);
+
+            //HouseModule
+            EventHandlers["vorp_inventory:OpenHouseInventory"] += new Action<string, int>(OpenHouseInventory);
+            EventHandlers["vorp_inventory:ReloadHouseInventory"] += new Action<string>(ReloadHouseInventory);
+
+            API.RegisterNuiCallbackType("TakeFromHouse");
+            EventHandlers["__cfx_nui:TakeFromHouse"] += new Action<ExpandoObject>(NUITakeFromHouse);
+
+            API.RegisterNuiCallbackType("MoveToHouse");
+            EventHandlers["__cfx_nui:MoveToHouse"] += new Action<ExpandoObject>(NUIMoveToHouse);
         }
 
         private async void ReloadHorseInventory(string horseInventory)
@@ -130,6 +140,35 @@ namespace vorpinventory_cl
         {
             JObject data = JObject.FromObject(obj);
             TriggerServerEvent("vorp_stables:TakeFromCart", data.ToString());
+        }
+
+        private async void ReloadHouseInventory(string cartInventory)
+        {
+            API.SendNuiMessage(cartInventory);
+            await Delay(500);
+            LoadInv();
+        }
+
+        private void OpenHouseInventory(string cartName, int houseId)
+        {
+            //"action", "setSecondInventoryItems"
+            API.SetNuiFocus(true, true);
+
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"house\", \"title\": \"" + cartName + "\", \"houseId\": " + houseId.ToString() + "}");
+            InInventory = true;
+            //TriggerEvent("vorp_stables:setClosedInv", true);
+        }
+
+        private void NUIMoveToHouse(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("vorp_housing:MoveToHouse", data.ToString());
+        }
+
+        private void NUITakeFromHouse(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("vorp_housing:TakeFromHouse", data.ToString());
         }
 
         private void setProcessingPayFalse()
