@@ -40,26 +40,23 @@ namespace vorpinventory_sv
         {
             int _source = int.Parse(source.Handle);
 
-            TriggerEvent("vorp:getCharacter", _source, new Action<dynamic>(async (user) =>
+            dynamic UserCharacter = vorpinventory_sv.CORE.getUser(_source).getUsedCharacter;
+
+            double sourceMoney = UserCharacter.money;
+
+            if (amount <= 0)
             {
-                double sourceMoney = user.money;
-
-                if (amount <= 0)
-                {
-                    source.TriggerEvent("vorp:Tip", Config.lang["TryExploits"], 3000);
-                }
-                else if (sourceMoney < amount)
-                {
-                    source.TriggerEvent("vorp:Tip", Config.lang["NotEnoughMoney"], 3000);
-                }
-                else
-                {
-                    TriggerEvent("vorp:removeMoney", _source, 0, amount);
-                    source.TriggerEvent("vorpInventory:createMoneyPickup", amount);
-                }
-
-
-            }));
+                source.TriggerEvent("vorp:Tip", Config.lang["TryExploits"], 3000);
+            }
+            else if (sourceMoney < amount)
+            {
+                source.TriggerEvent("vorp:Tip", Config.lang["NotEnoughMoney"], 3000);
+            }
+            else
+            {
+                UserCharacter.removeCurrency(0, amount);
+                source.TriggerEvent("vorpInventory:createMoneyPickup", amount);
+            }
 
         }
 
@@ -67,17 +64,15 @@ namespace vorpinventory_sv
         {
             int _source = int.Parse(source.Handle);
 
-            TriggerEvent("vorp:getCharacter", _source, new Action<dynamic>(async (user) =>
+            dynamic UserCharacter = vorpinventory_sv.CORE.getUser(_source).getUsedCharacter;
+           
+            double sourceMoney = UserCharacter.money;
+
+            if (sourceMoney > 0)
             {
-                double sourceMoney = user.money;
-
-                if (sourceMoney > 0)
-                {
-                    TriggerEvent("vorp:removeMoney", _source, 0, sourceMoney);
-                    source.TriggerEvent("vorpInventory:createMoneyPickup", sourceMoney);
-                }
-
-            }));
+                UserCharacter.removeCurrency(0, sourceMoney);
+                source.TriggerEvent("vorpInventory:createMoneyPickup", sourceMoney);
+            }
 
         }
 
@@ -87,36 +82,34 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player _target = pl[target];
 
-            TriggerEvent("vorp:getCharacter", _source, new Action<dynamic>(async (user) =>
+            dynamic UserCharacter = vorpinventory_sv.CORE.getUser(_source).getUsedCharacter;
+
+            double sourceMoney = UserCharacter.money;
+            Debug.WriteLine(sourceMoney.ToString());
+            Debug.WriteLine(amount.ToString());
+            if (amount <= 0)
             {
-                double sourceMoney = user.money;
-                Debug.WriteLine(sourceMoney.ToString());
-                Debug.WriteLine(amount.ToString());
-                if (amount <= 0)
-                {
-                    source.TriggerEvent("vorp:Tip", Config.lang["TryExploits"], 3000);
-                    await Delay(3000);
-                    source.TriggerEvent("vorp_inventory:ProcessingReady");
-                }
-                else if (sourceMoney < amount)
-                {
-                    source.TriggerEvent("vorp:Tip", Config.lang["NotEnoughMoney"], 3000);
-                    await Delay(3000);
-                    source.TriggerEvent("vorp_inventory:ProcessingReady");
+                source.TriggerEvent("vorp:Tip", Config.lang["TryExploits"], 3000);
+                await Delay(3000);
+                source.TriggerEvent("vorp_inventory:ProcessingReady");
+            }
+            else if (sourceMoney < amount)
+            {
+                source.TriggerEvent("vorp:Tip", Config.lang["NotEnoughMoney"], 3000);
+                await Delay(3000);
+                source.TriggerEvent("vorp_inventory:ProcessingReady");
 
-                }
-                else
-                {
-                    TriggerEvent("vorp:removeMoney", _source, 0, amount);
-                    TriggerEvent("vorp:addMoney", target, 0, amount);
-                    source.TriggerEvent("vorp:Tip", string.Format(Config.lang["YouPaid"], amount.ToString(), _target.Name), 3000);
-                    _target.TriggerEvent("vorp:Tip", string.Format(Config.lang["YouReceived"], amount.ToString(), source.Name), 3000);
-                    await Delay(3000);
-                    source.TriggerEvent("vorp_inventory:ProcessingReady");
-                }
-
-
-            }));
+            }
+            else
+            {
+                UserCharacter.removeCurrency(0, amount);
+                dynamic TargetUserCharacter = vorpinventory_sv.CORE.getUser(target).getUsedCharacter;
+                TargetUserCharacter.addCurrency(0, amount);
+                source.TriggerEvent("vorp:Tip", string.Format(Config.lang["YouPaid"], amount.ToString(), _target.Name), 3000);
+                _target.TriggerEvent("vorp:Tip", string.Format(Config.lang["YouReceived"], amount.ToString(), source.Name), 3000);
+                await Delay(3000);
+                source.TriggerEvent("vorp_inventory:ProcessingReady");
+            }
         }
 
         public static Dictionary<int, Dictionary<string, dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
