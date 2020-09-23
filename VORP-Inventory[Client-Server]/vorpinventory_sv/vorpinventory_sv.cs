@@ -10,6 +10,8 @@ namespace vorpinventory_sv
 {
     public class vorpinventory_sv : BaseScript
     {
+        public static dynamic CORE;
+
         public vorpinventory_sv()
         {
             EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
@@ -26,8 +28,12 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:onPickupMoney"] += new Action<Player, int>(onPickupMoney);
             EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool>(usedWeapon);
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(setWeaponBullets);
-            EventHandlers["playerDropped"] += new Action<Player, string>(SaveInventoryItems);
             EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(giveMoneyToPlayer);
+
+            TriggerEvent("getCore", new Action<dynamic>((dic) =>
+            {
+                CORE = dic;
+            }));
         }
 
         private void serverDropMoney([FromSource]Player source, double amount)
@@ -157,27 +163,14 @@ namespace vorpinventory_sv
         //     }
         // }
 
-        public async Task SaveInventoryItemsSupport(string identifier)
+        public async Task SaveInventoryItemsSupport(Player source)
         {
             await Delay(1000);
-            Dictionary<string, int> items = new Dictionary<string, int>();
-            if (ItemDatabase.usersInventory.ContainsKey(identifier))
-            {
-                foreach (var item in ItemDatabase.usersInventory[identifier])
-                {
-                    items.Add(item.Key, item.Value.getCount());
-                }
-                if (items.Count > 0)
-                {
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] { identifier });
-                }
-            }
-        }
+            string identifier = "steam:" + source.Identifiers["steam"];
+            dynamic CoreUser = CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
 
-        private void SaveInventoryItems([FromSource] Player p, string something)
-        {
-            string identifier = "steam:" + p.Identifiers["steam"];
+            int charIdentifier = CoreUser.charIdentifier;
+
             Dictionary<string, int> items = new Dictionary<string, int>();
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
@@ -188,7 +181,7 @@ namespace vorpinventory_sv
                 if (items.Count > 0)
                 {
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] { identifier });
+                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier });
                 }
             }
         }
@@ -215,13 +208,13 @@ namespace vorpinventory_sv
                     if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
                     {
                         ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
-                        SaveInventoryItemsSupport(identifier);
+                        SaveInventoryItemsSupport(p);
                     }
 
                     if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
                     {
                         ItemDatabase.usersInventory[identifier].Remove(name);
-                        SaveInventoryItemsSupport(identifier);
+                        SaveInventoryItemsSupport(p);
                     }
                 }
             }
@@ -240,7 +233,7 @@ namespace vorpinventory_sv
                     if (cuantity > 0)
                     {
                         ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
-                        SaveInventoryItemsSupport(identifier);
+                        SaveInventoryItemsSupport(p);
                     }
                 }
                 else
@@ -249,7 +242,7 @@ namespace vorpinventory_sv
                     {
                         ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
                             ItemDatabase.svItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.svItems[name].getCanRemove()));
-                        SaveInventoryItemsSupport(identifier);
+                        SaveInventoryItemsSupport(p);
                     }
                 }
             }
@@ -261,7 +254,7 @@ namespace vorpinventory_sv
                 {
                     ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
                         ItemDatabase.svItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.svItems[name].getCanRemove()));
-                    SaveInventoryItemsSupport(identifier);
+                    SaveInventoryItemsSupport(p);
                 }
             }
         }
@@ -274,9 +267,11 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
+                dynamic CoreUser = CORE.getUser(player).getUsedCharacter;
+                int charIdentifier = CoreUser.charIdentifier;
                 Exports["ghmattimysql"]
                     .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
                         new[] { weapId });
             }
         }
@@ -289,9 +284,11 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary("");
+                dynamic CoreUser = CORE.getUser(player).getUsedCharacter;
+                int charIdentifier = CoreUser.charIdentifier;
                 Exports["ghmattimysql"]
                     .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
                         new[] { weapId });
             }
         }
@@ -495,6 +492,7 @@ namespace vorpinventory_sv
 
         private void getItemsTable([FromSource] Player source)
         {
+            //Need rework to callback 2.0
             if (ItemDatabase.items.Count != 0)
             {
                 source.TriggerEvent("vorpInventory:giveItemsTable", ItemDatabase.items);
@@ -504,85 +502,114 @@ namespace vorpinventory_sv
         private void getInventory([FromSource]Player source)
         {
             string steamId = "steam:" + source.Identifiers["steam"];
-            Debug.WriteLine(steamId);
 
-            Exports["ghmattimysql"].execute("SELECT identifier,inventory FROM characters WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((uinvento) =>
+            dynamic CoreUser = CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
+
+            int charIdentifier = CoreUser.charIdentifier;
+            string inventory = CoreUser.inventory;
+
+            Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+            List<WeaponClass> userwep = new List<WeaponClass>();
+            if (inventory != null)
             {
-                if (uinvento.Count == 0)
+                dynamic thing = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(inventory);
+                foreach (dynamic itemname in ItemDatabase.items)
                 {
-                    Debug.WriteLine("No users inventory");
-                    Dictionary<string, ItemClass> items = new Dictionary<string, ItemClass>();
-                    ItemDatabase.usersInventory.Add(steamId, items); // Si no existe le metemos en la caché para tenerlo preparado para recibir cosas
-                }
-                else
-                {
-                  
-                    //Carga del inventario
-                    Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
-                    List<WeaponClass> userwep = new List<WeaponClass>();
-                    if (uinvento[0].inventory != null)
+                    if (thing[itemname.item.ToString()] != null)
                     {
-                        dynamic thing = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(uinvento[0].inventory);
-                        foreach (dynamic itemname in ItemDatabase.items)
-                        {
-                            if (thing[itemname.item.ToString()] != null)
-                            {
-                                ItemClass item = new ItemClass(int.Parse(thing[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
-                                    itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
-                                userinv.Add(itemname.item.ToString(), item);
-                            }
-                        }
-                        ItemDatabase.usersInventory[steamId] = userinv;
+                        ItemClass item = new ItemClass(int.Parse(thing[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
+                            itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
+                        userinv.Add(itemname.item.ToString(), item);
                     }
-                    else
-                    {
-                        ItemDatabase.usersInventory[steamId] = userinv;
-                    }
-
-                    source.TriggerEvent("vorpInventory:giveInventory", uinvento[0].inventory);
                 }
-
-            }));
-
-            Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((weaponsinvento) =>
+                ItemDatabase.usersInventory[steamId] = userinv;
+            }
+            else
             {
-                if (weaponsinvento.Count == 0)
-                {
+                ItemDatabase.usersInventory[steamId] = userinv;
+            }
 
-                }
-                else
-                {
-                    WeaponClass wp;
-                    foreach (var row in weaponsinvento)
-                    {
+            source.TriggerEvent("vorpInventory:giveInventory", inventory);
 
-                        JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
-                        JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
-                        Dictionary<string, int> amunition = new Dictionary<string, int>();
-                        List<string> components = new List<string>();
-                        foreach (JProperty ammos in ammo.Properties())
-                        {
+
+
+            //Exports["ghmattimysql"].execute("SELECT identifier,inventory FROM characters WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((uinvento) =>
+            //{
+            //    if (uinvento.Count == 0)
+            //    {
+            //        Debug.WriteLine("No users inventory");
+            //        Dictionary<string, ItemClass> items = new Dictionary<string, ItemClass>();
+            //        ItemDatabase.usersInventory.Add(steamId, items); // Si no existe le metemos en la caché para tenerlo preparado para recibir cosas
+            //    }
+            //    else
+            //    {
+
+            //        //Carga del inventario
+            //        Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+            //        List<WeaponClass> userwep = new List<WeaponClass>();
+            //        if (uinvento[0].inventory != null)
+            //        {
+            //            dynamic thing = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(uinvento[0].inventory);
+            //            foreach (dynamic itemname in ItemDatabase.items)
+            //            {
+            //                if (thing[itemname.item.ToString()] != null)
+            //                {
+            //                    ItemClass item = new ItemClass(int.Parse(thing[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
+            //                        itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
+            //                    userinv.Add(itemname.item.ToString(), item);
+            //                }
+            //            }
+            //            ItemDatabase.usersInventory[steamId] = userinv;
+            //        }
+            //        else
+            //        {
+            //            ItemDatabase.usersInventory[steamId] = userinv;
+            //        }
+
+            //        source.TriggerEvent("vorpInventory:giveInventory", uinvento[0].inventory);
+            //    }
+
+            //}));
+
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { steamId, charIdentifier }, new Action<dynamic>((weaponsinvento) =>
+           {
+               if (weaponsinvento.Count == 0)
+               {
+
+               }
+               else
+               {
+                   WeaponClass wp;
+                   foreach (var row in weaponsinvento)
+                   {
+
+                       JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
+                       JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
+                       Dictionary<string, int> amunition = new Dictionary<string, int>();
+                       List<string> components = new List<string>();
+                       foreach (JProperty ammos in ammo.Properties())
+                       {
                             //Debug.WriteLine(ammos.Name);
                             amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
-                        }
-                        foreach (JToken x in comp)
-                        {
-                            components.Add(x.ToString());
-                        }
+                       }
+                       foreach (JToken x in comp)
+                       {
+                           components.Add(x.ToString());
+                       }
 
-                        bool auused = false;
-                        if (row.used == 1)
-                        {
-                            auused = true;
-                        }
-                        wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused);
-                        ItemDatabase.userWeapons[wp.getId()] = wp;
-                    }
+                       bool auused = false;
+                       if (row.used == 1)
+                       {
+                           auused = true;
+                       }
+                       wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused);
+                       ItemDatabase.userWeapons[wp.getId()] = wp;
+                   }
 
-                    source.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
-                }
+                   source.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
+               }
 
-            }));
+           }));
         }
     }
 }

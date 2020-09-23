@@ -20,7 +20,7 @@ namespace vorpinventory_sv
 
         private async void LoadDatabase()
         {
-            await Delay(2000);
+            await Delay(5000);
             Exports["ghmattimysql"].execute("SELECT * FROM items", new Action<dynamic>((result) =>
             {
                 if (result.Count == 0)

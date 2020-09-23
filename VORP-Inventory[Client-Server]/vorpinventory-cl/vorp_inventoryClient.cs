@@ -24,7 +24,7 @@ namespace vorpinventory_cl
             EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
             EventHandlers["vorpInventory:giveInventory"] += new Action<string>(getInventory);
             EventHandlers["vorpInventory:giveLoadout"] += new Action<dynamic>(getLoadout);
-            EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
+            EventHandlers["vorp:SelectedCharacter"] += new Action<int>(OnSelectedCharacter);
             EventHandlers["vorpinventory:receiveItem"] += new Action<string, int>(receiveItem);
             EventHandlers["vorpinventory:receiveWeapon"] +=
                 new Action<int, string, string, ExpandoObject, List<dynamic>>(receiveWeapon);
@@ -99,12 +99,11 @@ namespace vorpinventory_cl
             NUIEvents.LoadInv();
         }
 
-        private async void OnClientResourceStart(string eventName)
+        private async void OnSelectedCharacter(int charId)
         {
-            if (API.GetCurrentResourceName() != eventName) return;
             API.SetNuiFocus(false, false);
             API.SendNuiMessage("{\"action\": \"hide\"}");
-            Debug.WriteLine("Cargando el inventario");
+            Debug.WriteLine("Loading Inventory");
             TriggerServerEvent("vorpinventory:getItemsTable");
             await Delay(300);
             TriggerServerEvent("vorpinventory:getInventory");

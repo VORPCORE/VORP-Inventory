@@ -33,9 +33,10 @@ namespace vorpinventory_sv
             EventHandlers["vorp:use"] += new Action<Player, string, object[]>(useItem);
         }
 
-        public async Task SaveInventoryItemsSupport(string identifier)
+        public async Task SaveInventoryItemsSupport(Player source)
         {
             await Delay(1000);
+            string identifier = "steam:" + source.Identifiers["steam"];
             Dictionary<string, int> items = new Dictionary<string, int>();
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
@@ -45,8 +46,10 @@ namespace vorpinventory_sv
                 }
                 if (items.Count >= 0)
                 {
+                    dynamic CoreUser = vorpinventory_sv.CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
+                    int charIdentifier = CoreUser.charIdentifier;
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] { identifier });
+                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier });
                 }
             }
         }
@@ -262,7 +265,7 @@ namespace vorpinventory_sv
                 }
                 else
                 {
-                    Debug.WriteLine("Error");
+                    Debug.WriteLine("Use Item Error");
                 }
             }
         }
@@ -311,6 +314,7 @@ namespace vorpinventory_sv
                 if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
                 {
                     ItemDatabase.userWeapons[weaponId].setComponent(component);
+
                     Exports["ghmattimysql"]
                         .execute(
                             $"UPDATE loadout SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllComponents())}' WHERE id=?",
@@ -337,7 +341,6 @@ namespace vorpinventory_sv
             {
                 if (weapon.Value.getId() == weapId && !found)
                 {
-                    Debug.WriteLine("Entro a ver");
                     weapons.Add("name", weapon.Value.getName());
                     weapons.Add("id", weapon.Value.getId());
                     weapons.Add("propietary", weapon.Value.getPropietary());
@@ -424,7 +427,7 @@ namespace vorpinventory_sv
             }
             else
             {
-                Debug.WriteLine("Error al meter balas en un arma identificador no valido o arma no encontrada");
+                Debug.WriteLine("Weapon not found in DBa");
             }
         }
 
@@ -444,7 +447,7 @@ namespace vorpinventory_sv
             }
             else
             {
-                Debug.WriteLine("Error al meter balas en un arma identificador no valido o arma no encontrada");
+                Debug.WriteLine("Weapon not found in DB");
             }
         }
 
@@ -467,139 +470,146 @@ namespace vorpinventory_sv
         }
         private async void addItem(int player, string name, int cuantity)
         {
-            PlayerList pl = new PlayerList();
-
-            if (pl[player] == null)
+            try
             {
-                return;
-            }
+                PlayerList pl = new PlayerList();
 
-            if (!ItemDatabase.svItems.ContainsKey(name))
-            {
-                Debug.WriteLine($"Item: {name} not exist on Database please add this item on Table `Items`");
-                return;
-            }
-
-            Player p = pl[player];
-            bool added = false;
-            string identifier = "steam:" + p.Identifiers["steam"];
-
-            if (!ItemDatabase.usersInventory.ContainsKey(identifier))
-            {
-                Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
-                ItemDatabase.usersInventory.Add(identifier, userinv);
-            }
-
-            if (ItemDatabase.usersInventory.ContainsKey(identifier))
-            {
-                if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+                if (pl[player] == null)
                 {
-                    if (ItemDatabase.usersInventory[identifier][name].getCount() + cuantity <= ItemDatabase.usersInventory[identifier][name].getLimit())
-                    {
-                        if (cuantity > 0)
-                        {
-                            if (Config.MaxItems != 0)
-                            {
-                                int totalcount = getUserTotalCount(identifier);
-                                totalcount += cuantity;
-                                if (totalcount <= Config.MaxItems)
-                                {
-                                    added = true;
-                                    ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
-                                }
-                            }
-                            else
-                            {
-                                added = true;
-                                ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
-                            }
-                        }
-                    }
-                    else if (ItemDatabase.usersInventory[identifier][name].getLimit() == -1)
-                    {
-                        if (cuantity > 0)
-                        {
-                            if (Config.MaxItems != 0)
-                            {
-                                int totalcount = getUserTotalCount(identifier);
-                                totalcount += cuantity;
-                                if (totalcount <= Config.MaxItems)
-                                {
-                                    added = true;
-                                    ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
-                                }
-                            }
-                            else
-                            {
-                                added = true;
-                                ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
-                            }
-                        }
-                    }
+                    return;
                 }
-                else
-                {
-                    if (cuantity <= ItemDatabase.svItems[name].getLimit())
-                    {
-                        added = true;
 
-                        if (Config.MaxItems != 0)
+                if (!ItemDatabase.svItems.ContainsKey(name))
+                {
+                    Debug.WriteLine($"Item: {name} not exist on Database please add this item on Table `Items`");
+                    return;
+                }
+
+                Player p = pl[player];
+                bool added = false;
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                if (!ItemDatabase.usersInventory.ContainsKey(identifier))
+                {
+                    Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+                    ItemDatabase.usersInventory.Add(identifier, userinv);
+                }
+
+                if (ItemDatabase.usersInventory.ContainsKey(identifier))
+                {
+                    if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+                    {
+                        if (ItemDatabase.usersInventory[identifier][name].getCount() + cuantity <= ItemDatabase.usersInventory[identifier][name].getLimit())
                         {
-                            int totalcount = getUserTotalCount(identifier);
-                            totalcount += cuantity;
-                            if (totalcount <= Config.MaxItems)
+                            if (cuantity > 0)
+                            {
+                                if (Config.MaxItems != 0)
+                                {
+                                    int totalcount = getUserTotalCount(identifier);
+                                    totalcount += cuantity;
+                                    if (totalcount <= Config.MaxItems)
+                                    {
+                                        added = true;
+                                        ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                                    }
+                                }
+                                else
+                                {
+                                    added = true;
+                                    ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                                }
+                            }
+                        }
+                        else if (ItemDatabase.usersInventory[identifier][name].getLimit() == -1)
+                        {
+                            if (cuantity > 0)
+                            {
+                                if (Config.MaxItems != 0)
+                                {
+                                    int totalcount = getUserTotalCount(identifier);
+                                    totalcount += cuantity;
+                                    if (totalcount <= Config.MaxItems)
+                                    {
+                                        added = true;
+                                        ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                                    }
+                                }
+                                else
+                                {
+                                    added = true;
+                                    ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (cuantity <= ItemDatabase.svItems[name].getLimit())
+                        {
+                            added = true;
+
+                            if (Config.MaxItems != 0)
+                            {
+                                int totalcount = getUserTotalCount(identifier);
+                                totalcount += cuantity;
+                                if (totalcount <= Config.MaxItems)
+                                {
+                                    added = true;
+                                    ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                                ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
+                                }
+                            }
+                            else
                             {
                                 added = true;
                                 ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                            ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
+                                ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
                             }
-                        }
-                        else
-                        {
-                            added = true;
-                            ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                            ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
-                        }
 
 
-                    }
-                    else if (ItemDatabase.svItems[name].getLimit() == -1)
-                    {
-                        if (Config.MaxItems != 0)
+                        }
+                        else if (ItemDatabase.svItems[name].getLimit() == -1)
                         {
-                            int totalcount = getUserTotalCount(identifier);
-                            totalcount += cuantity;
-                            if (totalcount <= Config.MaxItems)
+                            if (Config.MaxItems != 0)
+                            {
+                                int totalcount = getUserTotalCount(identifier);
+                                totalcount += cuantity;
+                                if (totalcount <= Config.MaxItems)
+                                {
+                                    added = true;
+                                    ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                                        ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
+                                }
+                            }
+                            else
                             {
                                 added = true;
                                 ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
                                     ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
                             }
-                        }
-                        else
-                        {
-                            added = true;
-                            ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                                ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
+
                         }
 
                     }
-
+                    if (ItemDatabase.usersInventory[identifier].ContainsKey(name) && added)
+                    {
+                        int limit = ItemDatabase.usersInventory[identifier][name].getLimit();
+                        string label = ItemDatabase.usersInventory[identifier][name].getLabel();
+                        string type = ItemDatabase.usersInventory[identifier][name].getType();
+                        bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
+                        bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
+                        p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
+                        SaveInventoryItemsSupport(p);
+                    }
+                    else
+                    {
+                        TriggerClientEvent(p, "vorp:Tip", Config.lang["fullInventory"], 2000);
+                    }
                 }
-                if (ItemDatabase.usersInventory[identifier].ContainsKey(name) && added)
-                {
-                    int limit = ItemDatabase.usersInventory[identifier][name].getLimit();
-                    string label = ItemDatabase.usersInventory[identifier][name].getLabel();
-                    string type = ItemDatabase.usersInventory[identifier][name].getType();
-                    bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
-                    bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
-                    p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
-                    SaveInventoryItemsSupport(identifier);
-                }
-                else
-                {
-                    TriggerClientEvent(p, "vorp:Tip", Config.lang["fullInventory"], 2000);
-                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
             }
         }
 
@@ -621,13 +631,13 @@ namespace vorpinventory_sv
                     if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
                     {
                         ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
-                        SaveInventoryItemsSupport(identifier);
+                        SaveInventoryItemsSupport(p);
                     }
                     p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.usersInventory[identifier][name].getCount());
                     if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
                     {
                         ItemDatabase.usersInventory[identifier].Remove(name);
-                        SaveInventoryItemsSupport(identifier);
+                        SaveInventoryItemsSupport(p);
                     }
                 }
             }
@@ -684,8 +694,11 @@ namespace vorpinventory_sv
                     auxcomponents.Add(component.Key);
                 }
             }
-            
-            Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?)", new object[] { identifier, name ,Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) => {
+
+            dynamic CoreUser = vorpinventory_sv.CORE.getUser(target).getUsedCharacter;
+            int charIdentifier = CoreUser.charIdentifier;
+
+            Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, name, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) => {
                 int weaponId = result.insertId;
                 WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false);
                 ItemDatabase.userWeapons.Add(weaponId, auxWeapon);
@@ -730,9 +743,13 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
+
+                dynamic CoreUser = vorpinventory_sv.CORE.getUser(target).getUsedCharacter;
+                int charIdentifier = CoreUser.charIdentifier;
+
                 Exports["ghmattimysql"]
                     .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
                         new[] { weapId });
                 p.TriggerEvent("vorpinventory:receiveWeapon", weapId, ItemDatabase.userWeapons[weapId].getPropietary(),
                     ItemDatabase.userWeapons[weapId].getName(), ItemDatabase.userWeapons[weapId].getAllAmmo(), ItemDatabase.userWeapons[weapId].getAllComponents());
@@ -747,6 +764,10 @@ namespace vorpinventory_sv
         {
             PlayerList pl = new PlayerList();
             Player p = pl[player];
+
+            dynamic CoreUser = vorpinventory_sv.CORE.getUser(player).getUsedCharacter;
+            int charIdentifier = CoreUser.charIdentifier;
+
             string identifier = "steam:" + p.Identifiers["steam"];
             Debug.WriteLine($"Me han llamado desde lua {player} {p}");
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
@@ -754,7 +775,7 @@ namespace vorpinventory_sv
                 ItemDatabase.userWeapons[weapId].setPropietary("");
                 Exports["ghmattimysql"]
                     .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' , charidentifier = '{charIdentifier}' WHERE id=?",
                         new[] { weapId });
             }
             p.TriggerEvent("vorpCoreClient:subWeapon", weapId);
