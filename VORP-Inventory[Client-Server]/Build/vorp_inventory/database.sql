@@ -1,6 +1,7 @@
 CREATE TABLE `loadout` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT,
 	`identifier` VARCHAR(50) NOT NULL,
+	`charidentifier` INT(11) NULL,
 	`name` VARCHAR(50) NULL DEFAULT NULL,
 	`ammo` VARCHAR(255) NOT NULL DEFAULT '{}',
 	`components` VARCHAR(255) NOT NULL DEFAULT '[]',
