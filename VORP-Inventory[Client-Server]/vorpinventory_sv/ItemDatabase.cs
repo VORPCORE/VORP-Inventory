@@ -25,7 +25,7 @@ namespace vorpinventory_sv
             {
                 if (result.Count == 0)
                 {
-                    Debug.WriteLine("There`re no items in database");
+                    Debug.WriteLine("No items in database");
                 }
                 else
                 {
@@ -37,6 +37,42 @@ namespace vorpinventory_sv
 
                 }
             }));
+
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] {  }, new Action<dynamic>((loadout) =>
+            {
+                if (loadout.Count != 0)
+                {
+                    WeaponClass wp;
+                    foreach (var row in loadout)
+                    {
+
+                        JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
+                        JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
+                        int charId = row.charidentifier;
+                        Dictionary<string, int> amunition = new Dictionary<string, int>();
+                        List<string> components = new List<string>();
+                        foreach (JProperty ammos in ammo.Properties())
+                        {
+                            amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
+                        }
+                        foreach (JToken x in comp)
+                        {
+                            components.Add(x.ToString());
+                        }
+
+                        bool auused = false;
+                        if (row.used == 1)
+                        {
+                            auused = true;
+                        }
+                        wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, charId);
+                        ItemDatabase.userWeapons[wp.getId()] = wp;
+                    }
+                    
+                }
+
+            }));
+
         }
     }
 }

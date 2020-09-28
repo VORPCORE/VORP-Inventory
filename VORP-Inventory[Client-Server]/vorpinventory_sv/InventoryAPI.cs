@@ -62,13 +62,20 @@ namespace vorpinventory_sv
             dynamic CoreUser = vorpinventory_sv.CORE.getUser(source).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
             int totalcount = getUserTotalCountWeapons(identifier, charIdentifier) + quantity;
-            if (totalcount <= Config.MaxWeapons || Config.MaxWeapons != -1)
+            if (Config.MaxWeapons != -1)
             {
-                cb.Invoke(true);
+                if (totalcount <= Config.MaxWeapons)
+                {
+                    cb.Invoke(true);
+                }
+                else
+                {
+                    cb.Invoke(false);
+                }
             }
             else
             {
-                cb.Invoke(false);
+                cb.Invoke(true);
             }
             
         }   
@@ -746,6 +753,7 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
+                ItemDatabase.userWeapons[weapId].setCharId(charIdentifier);
                 Exports["ghmattimysql"]
                     .execute(
                         $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
