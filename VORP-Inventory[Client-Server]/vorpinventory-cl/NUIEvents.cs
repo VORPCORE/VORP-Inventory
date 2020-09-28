@@ -149,12 +149,12 @@ namespace vorpinventory_cl
             LoadInv();
         }
 
-        private void OpenHouseInventory(string cartName, int houseId)
+        private void OpenHouseInventory(string houseName, int houseId)
         {
             //"action", "setSecondInventoryItems"
             API.SetNuiFocus(true, true);
 
-            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"house\", \"title\": \"" + cartName + "\", \"houseId\": " + houseId.ToString() + "}");
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"house\", \"title\": \"" + houseName + "\", \"houseId\": " + houseId.ToString() + "}");
             InInventory = true;
             //TriggerEvent("vorp_stables:setClosedInv", true);
         }

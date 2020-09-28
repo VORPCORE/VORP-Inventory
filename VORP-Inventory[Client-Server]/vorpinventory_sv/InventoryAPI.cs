@@ -59,8 +59,9 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[source];
             string identifier = "steam:" + p.Identifiers["steam"];
-
-            int totalcount = getUserTotalCountWeapons(identifier) + quantity;
+            dynamic CoreUser = vorpinventory_sv.CORE.getUser(source).getUsedCharacter;
+            int charIdentifier = CoreUser.charIdentifier;
+            int totalcount = getUserTotalCountWeapons(identifier, charIdentifier) + quantity;
             if (totalcount <= Config.MaxWeapons || Config.MaxWeapons != -1)
             {
                 cb.Invoke(true);
@@ -658,12 +659,15 @@ namespace vorpinventory_sv
             }
 
             string identifier;
+            dynamic CoreUser = vorpinventory_sv.CORE.getUser(target).getUsedCharacter;
+            int charIdentifier = CoreUser.charIdentifier;
+
             if (targetIsPlayer)
             {
                 identifier = "steam:" + p.Identifiers["steam"];
                 if (Config.MaxWeapons != 0)
                 {
-                    int totalcount = getUserTotalCountWeapons(identifier);
+                    int totalcount = getUserTotalCountWeapons(identifier, charIdentifier);
                     totalcount += 1;
                     if (totalcount > Config.MaxWeapons)
                     {
@@ -695,12 +699,9 @@ namespace vorpinventory_sv
                 }
             }
 
-            dynamic CoreUser = vorpinventory_sv.CORE.getUser(target).getUsedCharacter;
-            int charIdentifier = CoreUser.charIdentifier;
-
             Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, name, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) => {
                 int weaponId = result.insertId;
-                WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false);
+                WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false, charIdentifier);
                 ItemDatabase.userWeapons.Add(weaponId, auxWeapon);
                 if (targetIsPlayer)
                 {
@@ -728,12 +729,14 @@ namespace vorpinventory_sv
                 ptarget = pl[target];
             }
             string identifier = "steam:" + p.Identifiers["steam"];
+            dynamic CoreUser = vorpinventory_sv.CORE.getUser(player).getUsedCharacter;
+            int charIdentifier = CoreUser.charIdentifier;
 
             if (Config.MaxWeapons != 0)
             {
-                int totalcount = getUserTotalCountWeapons(identifier);
+                int totalcount = getUserTotalCountWeapons(identifier, charIdentifier);
                 totalcount += 1;
-                if (totalcount > Config.MaxItems)
+                if (totalcount > Config.MaxWeapons)
                 {
                     Debug.WriteLine($"{p.Name} Can't carry more weapons");
                     return;
@@ -743,14 +746,10 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
-
-                dynamic CoreUser = vorpinventory_sv.CORE.getUser(target).getUsedCharacter;
-                int charIdentifier = CoreUser.charIdentifier;
-
                 Exports["ghmattimysql"]
                     .execute(
                         $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
-                        new[] { weapId });
+                        new object[] { weapId });
                 p.TriggerEvent("vorpinventory:receiveWeapon", weapId, ItemDatabase.userWeapons[weapId].getPropietary(),
                     ItemDatabase.userWeapons[weapId].getName(), ItemDatabase.userWeapons[weapId].getAllAmmo(), ItemDatabase.userWeapons[weapId].getAllComponents());
                 if (targetIsPlayer && ptarget != null)
@@ -769,7 +768,6 @@ namespace vorpinventory_sv
             int charIdentifier = CoreUser.charIdentifier;
 
             string identifier = "steam:" + p.Identifiers["steam"];
-            Debug.WriteLine($"Me han llamado desde lua {player} {p}");
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary("");
@@ -793,12 +791,12 @@ namespace vorpinventory_sv
             return t_count;
         }
 
-        public static int getUserTotalCountWeapons(string identifier)
+        public static int getUserTotalCountWeapons(string identifier, int charId)
         {
             int t_count = 0;
             foreach (var weapon in ItemDatabase.userWeapons.Values)
             {
-                if (weapon.getPropietary().Contains(identifier))
+                if (weapon.getPropietary().Contains(identifier) && weapon.getCharId() == charId)
                 {
                     t_count += 1;
                 }

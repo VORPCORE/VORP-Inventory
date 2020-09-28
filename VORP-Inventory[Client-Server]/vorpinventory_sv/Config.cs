@@ -55,7 +55,7 @@ namespace vorpinventory_sv
             }
 
             MaxItems = config["MaxItemsInInventory"]["Items"].ToObject<int>();
-            MaxWeapons = config["MaxItemsInInventory"]["Items"].ToObject<int>();
+            MaxWeapons = config["MaxItemsInInventory"]["Weapons"].ToObject<int>();
 
             if (MaxItems < 0)
             {

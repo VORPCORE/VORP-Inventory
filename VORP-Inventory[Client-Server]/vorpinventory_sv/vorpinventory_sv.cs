@@ -290,6 +290,8 @@ namespace vorpinventory_sv
         {
             string identifier = "steam:" + player.Identifiers["steam"];
             int source = int.Parse(player.Handle);
+            dynamic CoreUser = CORE.getUser(source).getUsedCharacter;
+            int charIdentifier = CoreUser.charIdentifier;
             if (Pickups.ContainsKey(obj))
             {
                 if (Pickups[obj]["weaponid"] == 1)
@@ -352,7 +354,7 @@ namespace vorpinventory_sv
                 {
                     if (Config.MaxWeapons != 0)
                     {
-                        int totalcount = InventoryAPI.getUserTotalCountWeapons(identifier);
+                        int totalcount = InventoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
                         totalcount += 1;
                         if (totalcount <= Config.MaxWeapons)
                         {
@@ -595,7 +597,7 @@ namespace vorpinventory_sv
                        {
                            auused = true;
                        }
-                       wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused);
+                       wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, charIdentifier);
                        ItemDatabase.userWeapons[wp.getId()] = wp;
                    }
 
