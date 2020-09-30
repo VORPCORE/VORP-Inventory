@@ -411,7 +411,7 @@
             "Price": 100.0,
             "AmmoHash": [ //Máximo de balas
                 {
-                    "AMMO_RIFLE_VARMINT": 0.25
+                    "AMMO_22": 0.25
                 }
             ],
             "CompsHash": [ //Precio Componente
