@@ -545,7 +545,6 @@ namespace vorpinventory_sv
                    WeaponClass wp;
                    foreach (var row in weaponsinvento)
                    {
-
                        JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
                        JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
                        Dictionary<string, int> amunition = new Dictionary<string, int>();
