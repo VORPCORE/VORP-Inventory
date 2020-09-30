@@ -17,8 +17,8 @@
     "startItems": [
         //Items
         {
-            "water": 3,
-            "bread": 2
+            "consumable_coffee": 3,
+            "consumable_bread": 2
         },
         //Weapons
         {

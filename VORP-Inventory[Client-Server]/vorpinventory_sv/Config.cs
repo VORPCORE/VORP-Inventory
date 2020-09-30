@@ -22,7 +22,7 @@ namespace vorpinventory_sv
 
         public Config()
         {
-            EventHandlers["vorp:firstSpawn"] += new Action<int>(itemsConfig);
+            EventHandlers["vorp_NewCharacter"] += new Action<int>(itemsConfig);
             EventHandlers[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(getConfig);
 
             if (File.Exists($"{resourcePath}/Config.json"))
@@ -75,34 +75,38 @@ namespace vorpinventory_sv
 
         private async void itemsConfig(int player)
         {
-            await Delay(3000);
+            await Delay(1000);
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
-            Debug.WriteLine($"El usuario es nuevo añadiendo items {identifier}");
-            foreach (KeyValuePair<string,JToken> item in (JObject)config["startItems"][0])
-            {
-                Debug.WriteLine($"Añadiendo: {item.Key}: {item.Value} ");
-                TriggerEvent("vorpCore:addItem", player, item.Key, int.Parse(item.Value.ToString()));
-            }
-                
-            foreach (KeyValuePair<string,JToken> weapon in (JObject)config["startItems"][1])
-            {
-                JToken wpc = config["Weapons"].FirstOrDefault(x => x["HashName"].ToString().Contains(weapon.Key));
-                List<string> auxbullets = new List<string>();
-                Dictionary<string,int> givedBullets = new Dictionary<string, int>();
-                foreach (KeyValuePair<string,JToken> bullets in (JObject)wpc["AmmoHash"][0])
+            try{
+                foreach (KeyValuePair<string, JToken> item in (JObject)config["startItems"][0])
                 {
-                    auxbullets.Add(bullets.Key);
+                    TriggerEvent("vorpCore:addItem", player, item.Key, int.Parse(item.Value.ToString()));
                 }
-                foreach (KeyValuePair<string,JToken> bullet in (JObject)weapon.Value[0])
+
+                foreach (KeyValuePair<string, JToken> weapon in (JObject)config["startItems"][1])
                 {
-                    if (auxbullets.Contains(bullet.Key))
+                    JToken wpc = config["Weapons"].FirstOrDefault(x => x["HashName"].ToString().Contains(weapon.Key));
+                    List<string> auxbullets = new List<string>();
+                    Dictionary<string, int> givedBullets = new Dictionary<string, int>();
+                    foreach (KeyValuePair<string, JToken> bullets in (JObject)wpc["AmmoHash"][0])
                     {
-                        givedBullets.Add(bullet.Key,int.Parse(bullet.Value.ToString()));
+                        auxbullets.Add(bullets.Key);
                     }
+                    foreach (KeyValuePair<string, JToken> bullet in (JObject)weapon.Value[0])
+                    {
+                        if (auxbullets.Contains(bullet.Key))
+                        {
+                            givedBullets.Add(bullet.Key, int.Parse(bullet.Value.ToString()));
+                        }
+                    }
+                    TriggerEvent("vorpCore:registerWeapon", player, weapon.Key, givedBullets);
                 }
-                TriggerEvent("vorpCore:registerWeapon", player, weapon.Key,givedBullets);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
             }
         }
     }

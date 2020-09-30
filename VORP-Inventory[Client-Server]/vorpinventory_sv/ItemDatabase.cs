@@ -45,28 +45,38 @@ namespace vorpinventory_sv
                     WeaponClass wp;
                     foreach (var row in loadout)
                     {
+                        try
+                        {
+                            JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
+                            JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
+                            int charId = -1;
+                            if (row.charidentifier != null)
+                            {
+                                charId = row.charidentifier;
+                            }
+                            Dictionary<string, int> amunition = new Dictionary<string, int>();
+                            List<string> components = new List<string>();
+                            foreach (JProperty ammos in ammo.Properties())
+                            {
+                                amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
+                            }
+                            foreach (JToken x in comp)
+                            {
+                                components.Add(x.ToString());
+                            }
 
-                        JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
-                        JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
-                        int charId = row.charidentifier;
-                        Dictionary<string, int> amunition = new Dictionary<string, int>();
-                        List<string> components = new List<string>();
-                        foreach (JProperty ammos in ammo.Properties())
-                        {
-                            amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
+                            bool auused = false;
+                            if (row.used == 1)
+                            {
+                                auused = true;
+                            }
+                            wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, charId);
+                            ItemDatabase.userWeapons[wp.getId()] = wp;
                         }
-                        foreach (JToken x in comp)
+                        catch (Exception ex)
                         {
-                            components.Add(x.ToString());
+                            Debug.WriteLine(ex.Message);
                         }
-
-                        bool auused = false;
-                        if (row.used == 1)
-                        {
-                            auused = true;
-                        }
-                        wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, charId);
-                        ItemDatabase.userWeapons[wp.getId()] = wp;
                     }
                     
                 }
