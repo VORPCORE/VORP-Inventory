@@ -160,9 +160,9 @@ namespace vorpinventory_cl
 
         private void getInventory(string inventory)
         {
+            useritems.Clear();
             if (inventory != null)
             {
-                useritems.Clear();
                 dynamic items = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(inventory);
                 Debug.WriteLine(items.ToString());
                 foreach (KeyValuePair<string, Dictionary<string, dynamic>> fitems in citems)
