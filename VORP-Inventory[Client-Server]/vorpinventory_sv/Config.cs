@@ -37,16 +37,7 @@ namespace vorpinventory_sv
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"{API.GetCurrentResourceName()}: Language {config["defaultlang"]}.json loaded!");
                     Console.ForegroundColor = ConsoleColor.White;
-                    // Debug.WriteLine($"{config["startItems"][0]}");
-                    // foreach (KeyValuePair<string,JToken> item in (JObject)config["startItems"][1])
-                    // {
-                    //    Debug.WriteLine(item.Key);
-                    //    foreach (KeyValuePair<string,JToken> bullet in (JObject)item.Value[0])
-                    //    {
-                    //        Debug.WriteLine(bullet.Key);
-                    //        Debug.WriteLine(bullet.Value.ToString());
-                    //    }
-                    // }
+
                 }
                 else
                 {
@@ -75,7 +66,7 @@ namespace vorpinventory_sv
 
         private async void itemsConfig(int player)
         {
-            await Delay(1000);
+            await Delay(5000);
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
