@@ -19,12 +19,11 @@ namespace vorpinventory_cl
             EventHandlers["vorpInventory:removePickupClient"] += new Action<int>(removePickupClient);
             EventHandlers["vorpInventory:playerAnim"] += new Action<int>(playerAnim);
             EventHandlers["vorp:PlayerForceRespawn"] += new Action(DeadActions);
-            SetupPickPrompt();
             Tick += principalFunctionPickups;
             Tick += principalFunctionPickupsMoney;
         }
 
-        private int PickPrompt;
+        private static int PickPrompt;
         public static Dictionary<int, Dictionary<string, dynamic>> pickups = new Dictionary<int, Dictionary<string, dynamic>>();
         public static Dictionary<int, Dictionary<string, dynamic>> pickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
         private static bool active = false;
@@ -356,11 +355,11 @@ namespace vorpinventory_cl
             Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
         }
 
-        public void SetupPickPrompt()
+        public static void SetupPickPrompt()
         {
             Debug.WriteLine("Prompt creado");
             PickPrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
-            long str = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", "Coger");
+            long str = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", GetConfig.Langs["TakeFromFloor"]);
             Function.Call((Hash)0x5DD02A8318420DD7, PickPrompt, str);
             Function.Call((Hash)0xB5352B7494A08258, PickPrompt, 0xF84FA74F);
             Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);

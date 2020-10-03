@@ -36,6 +36,8 @@ namespace vorpinventory_cl
 
             openKey = FromHex(Config["OpenKey"].ToString());
 
+            Pickups.SetupPickPrompt();
+
             loaded = true;
         }
 

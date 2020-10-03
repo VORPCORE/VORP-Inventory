@@ -1,4 +1,5 @@
 {
+    "TakeFromFloor": "Take",
     "fullInventory": "You are carrying to much weight, you cant receive anything else",
     "fullInventoryGive": "That person is carrying to much weight, you can`t give that person more things",
     "TryExploits": "Don`t try to outsmart the system",
