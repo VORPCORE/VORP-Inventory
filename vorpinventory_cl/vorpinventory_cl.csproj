@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CitizenFX.Core">
-      <HintPath>C:\Referencias\client\CitizenFX.Core.dll</HintPath>
+      <HintPath>C:\Users\osman\AppData\Local\RedM\RedM.app\citizen\clr2\lib\mono\4.5\CitizenFX.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="GetConfig.cs" />
     <Compile Include="NUIManager.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="vorpinventory_cl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
