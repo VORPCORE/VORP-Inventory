@@ -33,7 +33,7 @@ namespace vorpinventory_cl
                 return;
             }
 
-            if (API.IsControlJustReleased(1, GetConfig.InvKey) && API.IsInputDisabled(0))
+            if (API.IsControlJustReleased(1, GetConfig.openKey) && API.IsInputDisabled(0))
             {
                 if (isOpenInv)
                 {

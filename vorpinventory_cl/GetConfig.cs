@@ -17,8 +17,6 @@ namespace vorpinventory_cl
         public static Dictionary<string, string> Langs = new Dictionary<string, string>();
         public static bool isLoaded = false;
 
-        public static uint InvKey = 0;
-
         public GetConfig()
         {
             EventHandlers[$"{API.GetCurrentResourceName()}:SendConfig"] += new Action<string, ExpandoObject>(LoadDefaultConfig);
@@ -34,7 +32,6 @@ namespace vorpinventory_cl
                 Langs[l.Key] = l.Value.ToString();
             }
 
-            InvKey = Utils.FromHex(Config["InvKey"].ToString());
 
             isLoaded = true;
         }
