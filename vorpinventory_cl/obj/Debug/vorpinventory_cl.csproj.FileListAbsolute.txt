@@ -1,9 +1,0 @@
-D:\VORP-Repos\VORP-Inventory\vorpinventory_cl\bin\Debug\vorpinventory_cl.dll
-D:\VORP-Repos\VORP-Inventory\vorpinventory_cl\bin\Debug\vorpinventory_cl.pdb
-D:\VORP-Repos\VORP-Inventory\vorpinventory_cl\bin\Debug\CitizenFX.Core.dll
-D:\VORP-Repos\VORP-Inventory\vorpinventory_cl\bin\Debug\Newtonsoft.Json.dll
-D:\VORP-Repos\VORP-Inventory\vorpinventory_cl\obj\Debug\vorpinventory_cl.csprojAssemblyReference.cache
-D:\VORP-Repos\VORP-Inventory\vorpinventory_cl\obj\Debug\vorpinventory_cl.csproj.CoreCompileInputs.cache
-D:\VORP-Repos\VORP-Inventory\vorpinventory_cl\obj\Debug\vorpinventory_cl.csproj.CopyComplete
-D:\VORP-Repos\VORP-Inventory\vorpinventory_cl\obj\Debug\vorpinventory_cl.dll
-D:\VORP-Repos\VORP-Inventory\build\vorp_inventory\vorpinventory_cl.dll

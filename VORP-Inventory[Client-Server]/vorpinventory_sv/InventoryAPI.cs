@@ -116,7 +116,7 @@ namespace vorpinventory_sv
             {
                 if (ItemDatabase.usersInventory.ContainsKey(identifier))
                 {
-                    if (ItemDatabase.usersInventory[identifier].ContainsKey(itemName))
+                    if (ItemDatabase.usersInventory.ContainsKey(itemName))
                     {
                         int count = ItemDatabase.usersInventory[identifier][itemName].getCount();
 
