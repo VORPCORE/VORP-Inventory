@@ -10,33 +10,29 @@ namespace vorpinventory_sv
         //Lista de items con sus labels para que el cliente conozca el label de cada item
         public static dynamic items;
         //Lista de itemclass con el nombre de su dueño para poder hacer todo el tema de añadir y quitar cuando se robe y demas
-        public static Dictionary<string, Dictionary<string, ItemClass>> usersInventory = new Dictionary<string, Dictionary<string, ItemClass>>();
+        public static Dictionary<string, Dictionary<string, Item>> usersInventory = new Dictionary<string, Dictionary<string, Item>>();
         public static Dictionary<int, WeaponClass> userWeapons = new Dictionary<int, WeaponClass>();
-        public static Dictionary<string, Items> svItems = new Dictionary<string, Items>();
+        public static Dictionary<string, Item> svItems = new Dictionary<string, Item>();
         public ItemDatabase()
         {
             LoadDatabase();
         }
 
+        //TO-DO:
+        //Revisar la clase ItemClass para refactorizarla
+        // Agrear las nuevos metodos
+        // revisar que no explote ;)
+        public static void LoadItemTemplate()
+        {
+            foreach (var item in Config.config["Items"])
+            {
+                svItems.Add(item["Name"].ToString(), new Item(item["Name"].ToString(), item["Label"].ToString(), item["Type"].ToString(), item["Model"].ToString(), 0, item["Limit"].ToObject<int>(), item["Weight"].ToObject<double>(), item["CanUse"].ToObject<bool>(), item["CanRemove"].ToObject<bool>(), item["DropOnDeath"].ToObject<bool>()));
+            }
+        }
+
         private async void LoadDatabase()
         {
             await Delay(5000);
-            Exports["ghmattimysql"].execute("SELECT * FROM items", new Action<dynamic>((result) =>
-            {
-                if (result.Count == 0)
-                {
-                    Debug.WriteLine("No items in database");
-                }
-                else
-                {
-                    items = result;
-                    foreach (dynamic item in items)
-                    {
-                        svItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove, item.type, item.usable));
-                    }
-
-                }
-            }));
 
             Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] {  }, new Action<dynamic>((loadout) =>
             {

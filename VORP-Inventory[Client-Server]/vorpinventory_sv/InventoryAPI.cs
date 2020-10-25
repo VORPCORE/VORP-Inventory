@@ -42,7 +42,7 @@ namespace vorpinventory_sv
             {
                 foreach (var item in ItemDatabase.usersInventory[identifier])
                 {
-                    items.Add(item.Key, item.Value.getCount());
+                    items.Add(item.Key, item.Value.Count);
                 }
                 if (items.Count >= 0)
                 {
@@ -110,7 +110,7 @@ namespace vorpinventory_sv
             Player p = pl[source];
             string identifier = "steam:" + p.Identifiers["steam"];
 
-            int limit = ItemDatabase.svItems[itemName].getLimit();
+            int limit = ItemDatabase.svItems[itemName].Limit;
 
             if (limit != -1)
             {
@@ -118,7 +118,7 @@ namespace vorpinventory_sv
                 {
                     if (ItemDatabase.usersInventory.ContainsKey(itemName))
                     {
-                        int count = ItemDatabase.usersInventory[identifier][itemName].getCount();
+                        int count = ItemDatabase.usersInventory[identifier][itemName].Count;
 
                         int total = count + quantity;
 
@@ -242,12 +242,13 @@ namespace vorpinventory_sv
                 {
                     Dictionary<string, object> item = new Dictionary<string, object>()
                     {
-                        {"label", items.Value.getLabel()},
-                        {"name", items.Value.getName()},
-                        {"type", items.Value.getType()},
-                        {"count", items.Value.getCount()},
-                        {"limit", items.Value.getLimit()},
-                        {"usable", items.Value.getUsable()}
+                        {"label", items.Value.Label},
+                        {"name", items.Value.Name},
+                        {"type", items.Value.Type},
+                        {"count", items.Value.Count},
+                        {"limit", items.Value.Limit},
+                        {"usable", items.Value.CanUse},
+                        {"weight", items.Value.Weight}
                     };
                     useritems.Add(item);
                 }
@@ -468,7 +469,7 @@ namespace vorpinventory_sv
             {
                 if (ItemDatabase.usersInventory[identifier].ContainsKey(item))
                 {
-                    funcion.Invoke(ItemDatabase.usersInventory[identifier][item].getCount());
+                    funcion.Invoke(ItemDatabase.usersInventory[identifier][item].Count);
                 }
                 else
                 {
@@ -499,7 +500,7 @@ namespace vorpinventory_sv
 
                 if (!ItemDatabase.usersInventory.ContainsKey(identifier))
                 {
-                    Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+                    Dictionary<string, Item> userinv = new Dictionary<string, Item>();
                     ItemDatabase.usersInventory.Add(identifier, userinv);
                 }
 
@@ -507,7 +508,7 @@ namespace vorpinventory_sv
                 {
                     if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                     {
-                        if (ItemDatabase.usersInventory[identifier][name].getCount() + cuantity <= ItemDatabase.usersInventory[identifier][name].getLimit())
+                        if (ItemDatabase.usersInventory[identifier][name].Count + cuantity <= ItemDatabase.usersInventory[identifier][name].Limit)
                         {
                             if (cuantity > 0)
                             {
@@ -528,7 +529,7 @@ namespace vorpinventory_sv
                                 }
                             }
                         }
-                        else if (ItemDatabase.usersInventory[identifier][name].getLimit() == -1)
+                        else if (ItemDatabase.usersInventory[identifier][name].Limit == -1)
                         {
                             if (cuantity > 0)
                             {
@@ -552,7 +553,7 @@ namespace vorpinventory_sv
                     }
                     else
                     {
-                        if (cuantity <= ItemDatabase.svItems[name].getLimit())
+                        if (cuantity <= ItemDatabase.svItems[name].Limit)
                         {
                             added = true;
 
@@ -563,20 +564,18 @@ namespace vorpinventory_sv
                                 if (totalcount <= Config.MaxItems)
                                 {
                                     added = true;
-                                    ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                                ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
+                                    ItemDatabase.usersInventory[identifier].Add(name, new Item(name, ItemDatabase.svItems[name].Label, ItemDatabase.svItems[name].Type, ItemDatabase.svItems[name].Model, cuantity, ItemDatabase.svItems[name].Limit, ItemDatabase.svItems[name].Weight, ItemDatabase.svItems[name].CanUse, ItemDatabase.svItems[name].CanRemove, ItemDatabase.svItems[name].DropOnDeath));
                                 }
                             }
                             else
                             {
                                 added = true;
-                                ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                                ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
+                                ItemDatabase.usersInventory[identifier].Add(name, new Item(name, ItemDatabase.svItems[name].Label, ItemDatabase.svItems[name].Type, ItemDatabase.svItems[name].Model, cuantity, ItemDatabase.svItems[name].Limit, ItemDatabase.svItems[name].Weight, ItemDatabase.svItems[name].CanUse, ItemDatabase.svItems[name].CanRemove, ItemDatabase.svItems[name].DropOnDeath));
                             }
 
 
                         }
-                        else if (ItemDatabase.svItems[name].getLimit() == -1)
+                        else if (ItemDatabase.svItems[name].Limit == -1)
                         {
                             if (Config.MaxItems != 0)
                             {
@@ -585,15 +584,13 @@ namespace vorpinventory_sv
                                 if (totalcount <= Config.MaxItems)
                                 {
                                     added = true;
-                                    ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                                        ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
+                                    ItemDatabase.usersInventory[identifier].Add(name, new Item(name, ItemDatabase.svItems[name].Label, ItemDatabase.svItems[name].Type, ItemDatabase.svItems[name].Model, cuantity, ItemDatabase.svItems[name].Limit, ItemDatabase.svItems[name].Weight, ItemDatabase.svItems[name].CanUse, ItemDatabase.svItems[name].CanRemove, ItemDatabase.svItems[name].DropOnDeath));
                                 }
                             }
                             else
                             {
                                 added = true;
-                                ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                                    ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
+                                ItemDatabase.usersInventory[identifier].Add(name, new Item(name, ItemDatabase.svItems[name].Label, ItemDatabase.svItems[name].Type, ItemDatabase.svItems[name].Model, cuantity, ItemDatabase.svItems[name].Limit, ItemDatabase.svItems[name].Weight, ItemDatabase.svItems[name].CanUse, ItemDatabase.svItems[name].CanRemove, ItemDatabase.svItems[name].DropOnDeath));
                             }
 
                         }
@@ -601,12 +598,12 @@ namespace vorpinventory_sv
                     }
                     if (ItemDatabase.usersInventory[identifier].ContainsKey(name) && added)
                     {
-                        int limit = ItemDatabase.usersInventory[identifier][name].getLimit();
-                        string label = ItemDatabase.usersInventory[identifier][name].getLabel();
-                        string type = ItemDatabase.usersInventory[identifier][name].getType();
-                        bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
-                        bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
-                        p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
+                        int limit = ItemDatabase.usersInventory[identifier][name].Limit;
+                        string label = ItemDatabase.usersInventory[identifier][name].Label;
+                        string type = ItemDatabase.usersInventory[identifier][name].Type;
+                        bool usable = ItemDatabase.usersInventory[identifier][name].CanUse;
+                        bool canRemove = ItemDatabase.usersInventory[identifier][name].CanRemove;
+                        p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client (DEPRECATED)
                         SaveInventoryItemsSupport(p);
                     }
                     else
@@ -636,13 +633,13 @@ namespace vorpinventory_sv
             {
                 if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
-                    if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
+                    if (cuantity <= ItemDatabase.usersInventory[identifier][name].Count)
                     {
-                        ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
+                        ItemDatabase.usersInventory[identifier][name].delCount(cuantity);
                         SaveInventoryItemsSupport(p);
                     }
-                    p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.usersInventory[identifier][name].getCount());
-                    if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
+                    p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.usersInventory[identifier][name].Count);
+                    if (ItemDatabase.usersInventory[identifier][name].Count == 0)
                     {
                         ItemDatabase.usersInventory[identifier].Remove(name);
                         SaveInventoryItemsSupport(p);
@@ -793,7 +790,7 @@ namespace vorpinventory_sv
             int t_count = 0;
             foreach (var item in ItemDatabase.usersInventory[identifier].Values)
             {
-                t_count += item.getCount();
+                t_count += item.Count;
             }
 
             return t_count;
