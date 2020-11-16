@@ -23,3 +23,9 @@ D:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\
 D:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.csproj.CoreCompileInputs.cache
 D:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.net.dll
 D:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.net.pdb
+D:\Vorp SC\VORP-Inventory-JohnMarston\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_sv.net.dll
+D:\Vorp SC\VORP-Inventory-JohnMarston\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_sv.net.pdb
+D:\Vorp SC\VORP-Inventory-JohnMarston\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.csprojAssemblyReference.cache
+D:\Vorp SC\VORP-Inventory-JohnMarston\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.csproj.CoreCompileInputs.cache
+D:\Vorp SC\VORP-Inventory-JohnMarston\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.net.dll
+D:\Vorp SC\VORP-Inventory-JohnMarston\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.net.pdb

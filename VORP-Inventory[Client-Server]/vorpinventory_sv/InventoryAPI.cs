@@ -10,6 +10,8 @@ namespace vorpinventory_sv
     public class InventoryAPI : BaseScript
     {
         public static Dictionary<string, CallbackDelegate> usableItemsFunctions = new Dictionary<string, CallbackDelegate>();
+        public static dynamic CORE;
+
         public InventoryAPI()
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
@@ -31,6 +33,10 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
             EventHandlers["vorpCore:registerUsableItem"] += new Action<string, CallbackDelegate>(registerUsableItem);
             EventHandlers["vorp:use"] += new Action<Player, string, object[]>(useItem);
+            TriggerEvent("getCore", new Action<dynamic>((dic) =>
+            {
+                CORE = dic;
+            }));
         }
 
         public async Task SaveInventoryItemsSupport(Player source)
@@ -42,7 +48,7 @@ namespace vorpinventory_sv
             {
                 foreach (var item in ItemDatabase.usersInventory[identifier])
                 {
-                    items.Add(item.Key, item.Value.Count);
+                    items.Add(item.Key, item.Value.getCount());
                 }
                 if (items.Count >= 0)
                 {
@@ -77,8 +83,8 @@ namespace vorpinventory_sv
             {
                 cb.Invoke(true);
             }
-            
-        }   
+
+        }
 
         private void canCarryAmountItem(int source, int quantity, CallbackDelegate cb)
         {
@@ -110,7 +116,7 @@ namespace vorpinventory_sv
             Player p = pl[source];
             string identifier = "steam:" + p.Identifiers["steam"];
 
-            int limit = ItemDatabase.svItems[itemName].Limit;
+            int limit = ItemDatabase.svItems[itemName].getLimit();
 
             if (limit != -1)
             {
@@ -118,7 +124,7 @@ namespace vorpinventory_sv
                 {
                     if (ItemDatabase.usersInventory.ContainsKey(itemName))
                     {
-                        int count = ItemDatabase.usersInventory[identifier][itemName].Count;
+                        int count = ItemDatabase.usersInventory[identifier][itemName].getCount();
 
                         int total = count + quantity;
 
@@ -188,7 +194,7 @@ namespace vorpinventory_sv
                         }
                     }
                 }
-                
+
             }
             else
             {
@@ -242,13 +248,12 @@ namespace vorpinventory_sv
                 {
                     Dictionary<string, object> item = new Dictionary<string, object>()
                     {
-                        {"label", items.Value.Label},
-                        {"name", items.Value.Name},
-                        {"type", items.Value.Type},
-                        {"count", items.Value.Count},
-                        {"limit", items.Value.Limit},
-                        {"usable", items.Value.CanUse},
-                        {"weight", items.Value.Weight}
+                        {"label", items.Value.getLabel()},
+                        {"name", items.Value.getName()},
+                        {"type", items.Value.getType()},
+                        {"count", items.Value.getCount()},
+                        {"limit", items.Value.getLimit()},
+                        {"usable", items.Value.getUsable()}
                     };
                     useritems.Add(item);
                 }
@@ -367,6 +372,16 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
+            int charIdentifier;
+            try
+            {
+                dynamic CoreUser = CORE.getUser(player).getUsedCharacter;
+                charIdentifier = CoreUser.charIdentifier;
+            }
+            catch
+            {
+                charIdentifier = -1;
+            }
 
             Dictionary<string, dynamic> weapons;
             List<Dictionary<string, dynamic>> userWeapons = new List<Dictionary<string, dynamic>>();
@@ -375,16 +390,20 @@ namespace vorpinventory_sv
             {
                 if (weapon.Value.getPropietary() == identifier)
                 {
-                    weapons = new Dictionary<string, dynamic>
+
+                    if (weapon.Value.getCharId() == charIdentifier)
                     {
-                        ["name"] = weapon.Value.getName(),
-                        ["id"] = weapon.Value.getId(),
-                        ["propietary"] = weapon.Value.getPropietary(),
-                        ["used"] = weapon.Value.getUsed(),
-                        ["ammo"] = weapon.Value.getAllAmmo(),
-                        ["components"] = weapon.Value.getAllComponents()
-                    };
-                    userWeapons.Add(weapons);
+                        weapons = new Dictionary<string, dynamic>
+                        {
+                            ["name"] = weapon.Value.getName(),
+                            ["id"] = weapon.Value.getId(),
+                            ["propietary"] = weapon.Value.getPropietary(),
+                            ["used"] = weapon.Value.getUsed(),
+                            ["ammo"] = weapon.Value.getAllAmmo(),
+                            ["components"] = weapon.Value.getAllComponents()
+                        };
+                        userWeapons.Add(weapons);
+                    }
                 }
             }
             function.Invoke(userWeapons);
@@ -469,7 +488,7 @@ namespace vorpinventory_sv
             {
                 if (ItemDatabase.usersInventory[identifier].ContainsKey(item))
                 {
-                    funcion.Invoke(ItemDatabase.usersInventory[identifier][item].Count);
+                    funcion.Invoke(ItemDatabase.usersInventory[identifier][item].getCount());
                 }
                 else
                 {
@@ -500,7 +519,7 @@ namespace vorpinventory_sv
 
                 if (!ItemDatabase.usersInventory.ContainsKey(identifier))
                 {
-                    Dictionary<string, Item> userinv = new Dictionary<string, Item>();
+                    Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
                     ItemDatabase.usersInventory.Add(identifier, userinv);
                 }
 
@@ -508,7 +527,7 @@ namespace vorpinventory_sv
                 {
                     if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                     {
-                        if (ItemDatabase.usersInventory[identifier][name].Count + cuantity <= ItemDatabase.usersInventory[identifier][name].Limit)
+                        if (ItemDatabase.usersInventory[identifier][name].getCount() + cuantity <= ItemDatabase.usersInventory[identifier][name].getLimit())
                         {
                             if (cuantity > 0)
                             {
@@ -529,7 +548,7 @@ namespace vorpinventory_sv
                                 }
                             }
                         }
-                        else if (ItemDatabase.usersInventory[identifier][name].Limit == -1)
+                        else if (ItemDatabase.usersInventory[identifier][name].getLimit() == -1)
                         {
                             if (cuantity > 0)
                             {
@@ -553,7 +572,7 @@ namespace vorpinventory_sv
                     }
                     else
                     {
-                        if (cuantity <= ItemDatabase.svItems[name].Limit)
+                        if (cuantity <= ItemDatabase.svItems[name].getLimit())
                         {
                             added = true;
 
@@ -564,18 +583,20 @@ namespace vorpinventory_sv
                                 if (totalcount <= Config.MaxItems)
                                 {
                                     added = true;
-                                    ItemDatabase.usersInventory[identifier].Add(name, new Item(name, ItemDatabase.svItems[name].Label, ItemDatabase.svItems[name].Type, ItemDatabase.svItems[name].Model, cuantity, ItemDatabase.svItems[name].Limit, ItemDatabase.svItems[name].Weight, ItemDatabase.svItems[name].CanUse, ItemDatabase.svItems[name].CanRemove, ItemDatabase.svItems[name].DropOnDeath));
+                                    ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                                ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
                                 }
                             }
                             else
                             {
                                 added = true;
-                                ItemDatabase.usersInventory[identifier].Add(name, new Item(name, ItemDatabase.svItems[name].Label, ItemDatabase.svItems[name].Type, ItemDatabase.svItems[name].Model, cuantity, ItemDatabase.svItems[name].Limit, ItemDatabase.svItems[name].Weight, ItemDatabase.svItems[name].CanUse, ItemDatabase.svItems[name].CanRemove, ItemDatabase.svItems[name].DropOnDeath));
+                                ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                                ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
                             }
 
 
                         }
-                        else if (ItemDatabase.svItems[name].Limit == -1)
+                        else if (ItemDatabase.svItems[name].getLimit() == -1)
                         {
                             if (Config.MaxItems != 0)
                             {
@@ -584,13 +605,15 @@ namespace vorpinventory_sv
                                 if (totalcount <= Config.MaxItems)
                                 {
                                     added = true;
-                                    ItemDatabase.usersInventory[identifier].Add(name, new Item(name, ItemDatabase.svItems[name].Label, ItemDatabase.svItems[name].Type, ItemDatabase.svItems[name].Model, cuantity, ItemDatabase.svItems[name].Limit, ItemDatabase.svItems[name].Weight, ItemDatabase.svItems[name].CanUse, ItemDatabase.svItems[name].CanRemove, ItemDatabase.svItems[name].DropOnDeath));
+                                    ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                                        ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
                                 }
                             }
                             else
                             {
                                 added = true;
-                                ItemDatabase.usersInventory[identifier].Add(name, new Item(name, ItemDatabase.svItems[name].Label, ItemDatabase.svItems[name].Type, ItemDatabase.svItems[name].Model, cuantity, ItemDatabase.svItems[name].Limit, ItemDatabase.svItems[name].Weight, ItemDatabase.svItems[name].CanUse, ItemDatabase.svItems[name].CanRemove, ItemDatabase.svItems[name].DropOnDeath));
+                                ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                                    ItemDatabase.svItems[name].getLabel(), name, ItemDatabase.svItems[name].getType(), true, ItemDatabase.svItems[name].getCanRemove()));
                             }
 
                         }
@@ -598,12 +621,12 @@ namespace vorpinventory_sv
                     }
                     if (ItemDatabase.usersInventory[identifier].ContainsKey(name) && added)
                     {
-                        int limit = ItemDatabase.usersInventory[identifier][name].Limit;
-                        string label = ItemDatabase.usersInventory[identifier][name].Label;
-                        string type = ItemDatabase.usersInventory[identifier][name].Type;
-                        bool usable = ItemDatabase.usersInventory[identifier][name].CanUse;
-                        bool canRemove = ItemDatabase.usersInventory[identifier][name].CanRemove;
-                        p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client (DEPRECATED)
+                        int limit = ItemDatabase.usersInventory[identifier][name].getLimit();
+                        string label = ItemDatabase.usersInventory[identifier][name].getLabel();
+                        string type = ItemDatabase.usersInventory[identifier][name].getType();
+                        bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
+                        bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
+                        p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
                         SaveInventoryItemsSupport(p);
                     }
                     else
@@ -633,13 +656,13 @@ namespace vorpinventory_sv
             {
                 if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
-                    if (cuantity <= ItemDatabase.usersInventory[identifier][name].Count)
+                    if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
                     {
-                        ItemDatabase.usersInventory[identifier][name].delCount(cuantity);
+                        ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
                         SaveInventoryItemsSupport(p);
                     }
-                    p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.usersInventory[identifier][name].Count);
-                    if (ItemDatabase.usersInventory[identifier][name].Count == 0)
+                    p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.usersInventory[identifier][name].getCount());
+                    if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
                     {
                         ItemDatabase.usersInventory[identifier].Remove(name);
                         SaveInventoryItemsSupport(p);
@@ -703,7 +726,8 @@ namespace vorpinventory_sv
                 }
             }
 
-            Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, name, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) => {
+            Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, name, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) =>
+            {
                 int weaponId = result.insertId;
                 WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false, charIdentifier);
                 ItemDatabase.userWeapons.Add(weaponId, auxWeapon);
@@ -790,7 +814,7 @@ namespace vorpinventory_sv
             int t_count = 0;
             foreach (var item in ItemDatabase.usersInventory[identifier].Values)
             {
-                t_count += item.Count;
+                t_count += item.getCount();
             }
 
             return t_count;
