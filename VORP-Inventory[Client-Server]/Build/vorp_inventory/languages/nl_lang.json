@@ -1,0 +1,10 @@
+{
+    "TakeFromFloor": "Neem",
+    "fullInventory": "Je hebt teveel bij je, je kan niets meer dragen",
+    "fullInventoryGive": "Die persoon draagt teveel, je kan deze persoon niets meer geven",
+    "TryExploits": "Systeem proberen breken ?",
+
+    "NotEnoughMoney": "Je hebt niet genoeg geld",
+    "YouPaid": "Je hebt {0}$ aan {1} betaald",
+    "YouReceived": "Je hebt {0}$ van {1} gekregen"
+}
