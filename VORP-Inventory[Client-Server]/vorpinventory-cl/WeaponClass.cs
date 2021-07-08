@@ -8,26 +8,31 @@ namespace vorpinventory_sv
     public class WeaponClass : BaseScript
     {
         private string name;
+        private string label;
         private int id;
         private string propietary;
         private Dictionary<string, int> ammo;
         private List<string> components;
         private bool used;
-        public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used)
+        private bool used2;
+        public WeaponClass(int id, string propietary, string name, string label, Dictionary<string, int> ammo, List<string> components, bool used,bool used2)
         {
             this.id = id;
             this.name = name;
+            this.label = label;
             this.ammo = ammo;
             this.components = components;
             this.propietary = propietary;
             this.used = used;
+            this.used2 = used2;
         }
 
 
         public void UnequipWeapon()
         {
             setUsed(false);
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, getUsed());
+            setUsed2(false);
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, getUsed(),getUsed2());
             int hash = API.GetHashKey(name);
             RemoveWeaponFromPed();
             Utils.cleanAmmo(id);
@@ -46,14 +51,30 @@ namespace vorpinventory_sv
             }
             else
             {
-                API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, true, 0);
+                if (used2)
+                {
+                    // GETTING THE EQUIPED WEAPON
+                    uint weaponHash = 0;
+                    API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
+                                                                                           
+                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), weaponHash, 1, 1,1, 2, false, 0.5,1.0, 752097756, 0,true,0.0);
+                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 1,1, 1, 3, false, 0.5, 1.0, 752097756, 0, true, 0.0);
+                    Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), weaponHash, 0, 1, 0, 0);
+                    Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, 0, 0, 0);
+                   
+                }
+                else
+                {
+                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, true, 0);
+                    
+                }
+                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0);
+                foreach (KeyValuePair<string, int> ammos in this.ammo)
+                {
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
+                }
             }
-            API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0);
-            foreach (KeyValuePair<string, int> ammos in this.ammo)
-            {
-                API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
-                Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
-            }
+            
         }
 
         public void loadComponents()
@@ -70,10 +91,21 @@ namespace vorpinventory_sv
             return this.used;
         }
 
+        public bool getUsed2()
+        {
+            return this.used2;
+        }
+
         public void setUsed(bool used)
         {
             this.used = used;
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, used);
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, used, this.used2);
+        }
+
+        public void setUsed2(bool used2)
+        {
+            this.used2 = used2;
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, this.used,used2); ;
         }
         public string getPropietary()
         {
@@ -97,6 +129,11 @@ namespace vorpinventory_sv
         public string getName()
         {
             return this.name;
+        }
+
+        public string getLabel()
+        {
+            return this.label;
         }
 
         public Dictionary<string, int> getAllAmmo()

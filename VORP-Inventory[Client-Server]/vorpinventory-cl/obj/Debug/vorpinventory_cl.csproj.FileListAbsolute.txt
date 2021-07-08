@@ -23,3 +23,50 @@ D:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\
 D:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CoreCompileInputs.cache
 D:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.dll
 D:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.pdb
+C:\Users\Administrator\Desktop\Blues inventory fork\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.dll
+C:\Users\Administrator\Desktop\Blues inventory fork\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.pdb
+C:\Users\Administrator\Desktop\Blues inventory fork\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csprojAssemblyReference.cache
+C:\Users\Administrator\Desktop\Blues inventory fork\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\Desktop\Blues inventory fork\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.dll
+C:\Users\Administrator\Desktop\Blues inventory fork\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.pdb
+C:\Users\Adrien\Downloads\Blues inventory fork2\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.dll
+C:\Users\Adrien\Downloads\Blues inventory fork2\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.pdb
+C:\Users\Adrien\Downloads\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CoreCompileInputs.cache
+C:\Users\Adrien\Downloads\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CopyComplete
+C:\Users\Adrien\Downloads\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.dll
+C:\Users\Adrien\Downloads\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.pdb
+G:\RedM\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CoreCompileInputs.cache
+G:\RedM\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.dll
+G:\RedM\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.pdb
+G:\RedM\Blues inventory fork2\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.dll
+G:\RedM\Blues inventory fork2\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.pdb
+G:\RedM\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CopyComplete
+G:\RedM\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csprojAssemblyReference.cache
+C:\Users\Administrator\Desktop\Blues inventory fork2\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.dll
+C:\Users\Administrator\Desktop\Blues inventory fork2\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.pdb
+C:\Users\Administrator\Desktop\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csprojAssemblyReference.cache
+C:\Users\Administrator\Desktop\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\Desktop\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CopyComplete
+C:\Users\Administrator\Desktop\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.dll
+C:\Users\Administrator\Desktop\Blues inventory fork2\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.pdb
+C:\Users\Administrator\Desktop\Blues inventory fork Dual\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.dll
+C:\Users\Administrator\Desktop\Blues inventory fork Dual\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.pdb
+C:\Users\Administrator\Desktop\Blues inventory fork Dual\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csprojAssemblyReference.cache
+C:\Users\Administrator\Desktop\Blues inventory fork Dual\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\Desktop\Blues inventory fork Dual\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CopyComplete
+C:\Users\Administrator\Desktop\Blues inventory fork Dual\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.dll
+C:\Users\Administrator\Desktop\Blues inventory fork Dual\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.pdb
+F:\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.dll
+F:\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.pdb
+F:\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csprojAssemblyReference.cache
+F:\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CoreCompileInputs.cache
+F:\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CopyComplete
+F:\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.dll
+F:\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.pdb
+C:\Users\Administrator\Desktop\inventory fork dual\Build\vorp_inventory\vorpinventory_cl.net.dll
+C:\Users\Administrator\Desktop\inventory fork dual\Build\vorp_inventory\vorpinventory_cl.net.pdb
+C:\Users\Administrator\Desktop\inventory fork dual\vorpinventory-cl\obj\Debug\vorpinventory_cl.csprojAssemblyReference.cache
+C:\Users\Administrator\Desktop\inventory fork dual\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\Desktop\inventory fork dual\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CopyComplete
+C:\Users\Administrator\Desktop\inventory fork dual\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.dll
+C:\Users\Administrator\Desktop\inventory fork dual\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.pdb

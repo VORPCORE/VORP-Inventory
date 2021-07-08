@@ -59,7 +59,7 @@ namespace vorpinventory_sv
 
         }
 
-        private void getConfig([FromSource]Player source)
+        private void getConfig([FromSource] Player source)
         {
             source.TriggerEvent($"{API.GetCurrentResourceName()}:SendConfig", ConfigString, lang);
         }
@@ -70,7 +70,8 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
-            try{
+            try
+            {
                 foreach (KeyValuePair<string, JToken> item in (JObject)config["startItems"][0])
                 {
                     TriggerEvent("vorpCore:addItem", player, item.Key, int.Parse(item.Value.ToString()));
@@ -95,7 +96,7 @@ namespace vorpinventory_sv
                     TriggerEvent("vorpCore:registerWeapon", player, weapon.Key, givedBullets);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }

@@ -3,23 +3,27 @@ using CitizenFX.Core;
 
 namespace vorpinventory_sv
 {
-    public class WeaponClass:BaseScript
+    public class WeaponClass : BaseScript
     {
         private string name;
+        private string label;
         private int id;
         private string propietary;
         private int charId;
         private bool used;
+        private bool used2;
         private Dictionary<string, int> ammo;
         private List<string> components;
-        public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used, int charid)
+        public WeaponClass(int id, string propietary, string name, string label, Dictionary<string, int> ammo, List<string> components, bool used, bool used2, int charid)
         {
             this.id = id;
             this.name = name;
+            this.label = label;
             this.ammo = ammo;
             this.components = components;
             this.propietary = propietary;
             this.used = used;
+            this.used2 = used2;
             this.charId = charid;
         }
 
@@ -31,6 +35,16 @@ namespace vorpinventory_sv
         public bool getUsed()
         {
             return this.used;
+        }
+
+        public void setUsed2(bool used2)
+        {
+            this.used2 = used2;
+        }
+
+        public bool getUsed2()
+        {
+            return this.used2;
         }
         public string getPropietary()
         {
@@ -64,6 +78,11 @@ namespace vorpinventory_sv
         public string getName()
         {
             return this.name;
+        }
+
+        public string getLabel()
+        {
+            return this.label;
         }
 
         public Dictionary<string, int> getAllAmmo()

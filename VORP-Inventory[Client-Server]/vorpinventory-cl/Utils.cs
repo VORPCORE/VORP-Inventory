@@ -2,6 +2,9 @@
 using CitizenFX.Core.Native;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using vorpinventory_sv;
+
 
 namespace vorpinventory_cl
 {
@@ -26,16 +29,34 @@ namespace vorpinventory_cl
 
         public static void useWeapon(int id)
         {
-            API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, 2);
+            //API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
+            
+            if (vorp_inventoryClient.userWeapons[id].getUsed2() ) {
+                API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true,true, 3, false, 0.5f, 1.0f, 752097756, false,0, false);
+                Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, 0, 0, 0);
+                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0);
+                foreach (KeyValuePair<string, int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
+                {
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
+                }
+            } else {
+                oldUseWeapon(id);
+            }
+        }
+
+        public static void oldUseWeapon(int id )
+        {
+            //API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, 2);
+            API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, true, 2, false, 0.5f, 1.0f, 752097756, false, 0, false);
+            Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, 1, 0, 0);
             API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0);
             foreach (KeyValuePair<string, int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
             {
                 API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
-                Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
             }
 
             vorp_inventoryClient.userWeapons[id].setUsed(true);
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, vorp_inventoryClient.userWeapons[id].getUsed());
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, vorp_inventoryClient.userWeapons[id].getUsed(), vorp_inventoryClient.userWeapons[id].getUsed2());
         }
 
         public static void addItems(string name, int cuantity)
@@ -56,7 +77,6 @@ namespace vorpinventory_cl
         {
             float _x = 0.0F;
             float _y = 0.0F;
-            //Debug.WriteLine(position.X.ToString());
             API.GetScreenCoordFromWorldCoord(position.X, position.Y, position.Z, ref _x, ref _y);
             API.SetTextScale(0.35F, 0.35F);
             API.SetTextFontForCurrentCommand(1);
