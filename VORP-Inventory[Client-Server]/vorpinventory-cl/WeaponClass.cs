@@ -8,18 +8,16 @@ namespace vorpinventory_sv
     public class WeaponClass : BaseScript
     {
         private string name;
-        private string label;
         private int id;
         private string propietary;
         private Dictionary<string, int> ammo;
         private List<string> components;
         private bool used;
         private bool used2;
-        public WeaponClass(int id, string propietary, string name, string label, Dictionary<string, int> ammo, List<string> components, bool used,bool used2)
+        public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used,bool used2)
         {
             this.id = id;
             this.name = name;
-            this.label = label;
             this.ammo = ammo;
             this.components = components;
             this.propietary = propietary;
@@ -56,6 +54,8 @@ namespace vorpinventory_sv
                     // GETTING THE EQUIPED WEAPON
                     uint weaponHash = 0;
                     API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
+                    Debug.WriteLine($"equiped one : {weaponHash}");
+                    Debug.WriteLine($"{(uint)API.GetHashKey(this.name)}");
                                                                                            
                     Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), weaponHash, 1, 1,1, 2, false, 0.5,1.0, 752097756, 0,true,0.0);
                     Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 1,1, 1, 3, false, 0.5, 1.0, 752097756, 0, true, 0.0);
@@ -72,6 +72,7 @@ namespace vorpinventory_sv
                 foreach (KeyValuePair<string, int> ammos in this.ammo)
                 {
                     API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
+                    Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
                 }
             }
             
@@ -129,11 +130,6 @@ namespace vorpinventory_sv
         public string getName()
         {
             return this.name;
-        }
-
-        public string getLabel()
-        {
-            return this.label;
         }
 
         public Dictionary<string, int> getAllAmmo()

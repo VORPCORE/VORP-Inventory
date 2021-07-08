@@ -16,7 +16,7 @@ namespace vorpinventory_sv
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
             EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(giveWeapon);
-            EventHandlers["vorpCore:registerWeapon"] += new Action<int, string, string, ExpandoObject, ExpandoObject>(registerWeapon);
+            EventHandlers["vorpCore:registerWeapon"] += new Action<int, string, ExpandoObject, ExpandoObject>(registerWeapon);
             EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(addItem);
             EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(subItem);
             EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
@@ -147,7 +147,7 @@ namespace vorpinventory_sv
                                 cb.Invoke(true);
                             }
                         }
-                         else
+                        else
                         {
                             cb.Invoke(false);
                         }
@@ -174,7 +174,7 @@ namespace vorpinventory_sv
                                 cb.Invoke(true);
                             }
                         }
-                         else
+                        else
                         {
                             cb.Invoke(false);
                         }
@@ -201,6 +201,10 @@ namespace vorpinventory_sv
                             cb.Invoke(true);
                         }
                     }
+                    else
+                        {
+                            cb.Invoke(false);
+                        }
                 }
 
             }
@@ -223,6 +227,8 @@ namespace vorpinventory_sv
                     cb.Invoke(true);
                 }
             }
+
+            
 
         }
 
@@ -253,7 +259,7 @@ namespace vorpinventory_sv
             }
         }
 
-        private void useItem([FromSource] Player source, string itemname, params object[] args)
+        private void useItem([FromSource]Player source, string itemname, params object[] args)
         {
             string identifier = "steam:" + source.Identifiers["steam"];
             if (usableItemsFunctions.ContainsKey(itemname))
@@ -622,7 +628,7 @@ namespace vorpinventory_sv
                     }
                     else
                     {
-                        TriggerClientEvent(p, "vorp:TipRight", Config.lang["fullInventory"], 2000);
+                        TriggerClientEvent(p, "vorp:Tip", Config.lang["fullInventory"], 2000);
                     }
                 }
             }
@@ -662,7 +668,7 @@ namespace vorpinventory_sv
             }
         }
 
-        private void registerWeapon(int target, string name, string label, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
+        private void registerWeapon(int target, string name, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
         {
             PlayerList pl = new PlayerList();
             Player p = null;
@@ -717,16 +723,16 @@ namespace vorpinventory_sv
                 }
             }
 
-            Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`label`,`ammo`,`components`) VALUES (?,?,?,?,?,?)", new object[] { identifier, charIdentifier, name, label, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) =>
+            Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, name, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) =>
             {
                 int weaponId = result.insertId;
-                WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, label, ammoaux, auxcomponents, false, false, charIdentifier);
+                WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false,false, charIdentifier);
                 ItemDatabase.userWeapons.Add(weaponId, auxWeapon);
                 if (targetIsPlayer)
                 {
                     TriggerEvent("syn_weapons:registerWeapon", weaponId);
                     p.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.userWeapons[weaponId].getPropietary(),
-                        ItemDatabase.userWeapons[weaponId].getName(), ItemDatabase.userWeapons[weaponId].getLabel(), ItemDatabase.userWeapons[weaponId].getAllAmmo(), ItemDatabase.userWeapons[weaponId].getAllComponents());
+                        ItemDatabase.userWeapons[weaponId].getName(), ItemDatabase.userWeapons[weaponId].getAllAmmo(), ItemDatabase.userWeapons[weaponId].getAllComponents());
                 }
             }));
         }
@@ -772,7 +778,7 @@ namespace vorpinventory_sv
                         $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
                         new object[] { weapId });
                 p.TriggerEvent("vorpinventory:receiveWeapon", weapId, ItemDatabase.userWeapons[weapId].getPropietary(),
-                    ItemDatabase.userWeapons[weapId].getName(), ItemDatabase.userWeapons[weapId].getLabel(), ItemDatabase.userWeapons[weapId].getAllAmmo(), ItemDatabase.userWeapons[weapId].getAllComponents());
+                    ItemDatabase.userWeapons[weapId].getName(), ItemDatabase.userWeapons[weapId].getAllAmmo(), ItemDatabase.userWeapons[weapId].getAllComponents());
                 if (targetIsPlayer && ptarget != null)
                 {
                     ptarget.TriggerEvent("vorpCoreClient:subWeapon", weapId);

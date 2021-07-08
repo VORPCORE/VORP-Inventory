@@ -37,7 +37,7 @@ namespace vorpinventory_sv
                 }
             }));
 
-            Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>((loadout) =>
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] {  }, new Action<dynamic>((loadout) =>
             {
                 if (loadout.Count != 0)
                 {
@@ -74,7 +74,7 @@ namespace vorpinventory_sv
                             {
                                 auused2 = true;
                             }
-                            wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), row.label.ToString(), amunition, components, auused, auused2, charId);
+                            wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charId);
                             ItemDatabase.userWeapons[wp.getId()] = wp;
                         }
                         catch (Exception ex)
@@ -82,7 +82,7 @@ namespace vorpinventory_sv
                             Debug.WriteLine(ex.Message);
                         }
                     }
-
+                    
                 }
 
             }));

@@ -28,7 +28,7 @@ namespace vorpinventory_cl
             EventHandlers["vorp:SelectedCharacter"] += new Action<int>(OnSelectedCharacter);
             EventHandlers["vorpinventory:receiveItem"] += new Action<string, int>(receiveItem);
             EventHandlers["vorpinventory:receiveWeapon"] +=
-                new Action<int, string, string, string, ExpandoObject, List<dynamic>>(receiveWeapon);
+                new Action<int, string, string, ExpandoObject, List<dynamic>>(receiveWeapon);
             Tick += updateAmmoInWeapon;
         }
 
@@ -39,6 +39,7 @@ namespace vorpinventory_cl
             if (API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false))
             {
                 string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
+                //Debug.WriteLine(weaponName);
                 if (weaponName.Contains("UNARMED")) { return; }
 
                 Dictionary<string, int> ammoDict = new Dictionary<string, int>();
@@ -79,7 +80,7 @@ namespace vorpinventory_cl
             NUIEvents.LoadInv();
         }
 
-        private void receiveWeapon(int id, string propietary, string name, string label, ExpandoObject ammo, List<dynamic> components)
+        private void receiveWeapon(int id, string propietary, string name, ExpandoObject ammo, List<dynamic> components)
         {
             Dictionary<string, int> ammoaux = new Dictionary<string, int>();
             foreach (KeyValuePair<string, object> amo in ammo)
@@ -91,7 +92,7 @@ namespace vorpinventory_cl
             {
                 auxcomponents.Add(comp.ToString());
             }
-            WeaponClass weapon = new WeaponClass(id, propietary, name, label, ammoaux, auxcomponents, false, false);
+            WeaponClass weapon = new WeaponClass(id, propietary, name, ammoaux, auxcomponents, false,false);
             if (!userWeapons.ContainsKey(weapon.getId()))
             {
                 userWeapons.Add(weapon.getId(), weapon);
@@ -103,6 +104,7 @@ namespace vorpinventory_cl
         {
             API.SetNuiFocus(false, false);
             API.SendNuiMessage("{\"action\": \"hide\"}");
+            Debug.WriteLine("Loading Inventory");
             TriggerServerEvent("vorpinventory:getItemsTable");
             await Delay(300);
             TriggerServerEvent("vorpinventory:getInventory");
@@ -126,6 +128,7 @@ namespace vorpinventory_cl
 
         private void getLoadout(dynamic loadout)
         {
+            Debug.WriteLine(API.PlayerPedId().ToString());
             foreach (var row in loadout)
             {
                 JArray componentes = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
@@ -141,6 +144,7 @@ namespace vorpinventory_cl
                 {
                     ammos.Add(amunition.Name, int.Parse(amunition.Value.ToString()));
                 }
+                Debug.WriteLine(row.used.ToString());
                 bool auused = false;
                 if (row.used == 1)
                 {
@@ -152,7 +156,7 @@ namespace vorpinventory_cl
                 {
                     auused2 = true;
                 }
-                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), row.label.ToString(), ammos, components, auused, auused2);
+                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), ammos, components, auused, auused2);
                 userWeapons.Add(auxweapon.getId(), auxweapon);
                 if (auxweapon.getUsed())
                 {
@@ -167,10 +171,12 @@ namespace vorpinventory_cl
             if (inventory != null)
             {
                 dynamic items = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(inventory);
+                Debug.WriteLine(items.ToString());
                 foreach (KeyValuePair<string, Dictionary<string, dynamic>> fitems in citems)
                 {
                     if (items[fitems.Key] != null)
                     {
+                        Debug.WriteLine(fitems.Key);
                         int cuantity = int.Parse(items[fitems.Key].ToString());
                         int limit = int.Parse(fitems.Value["limit"].ToString());
                         string label = fitems.Value["label"].ToString();

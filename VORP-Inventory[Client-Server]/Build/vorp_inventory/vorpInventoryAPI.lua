@@ -64,6 +64,19 @@ exports('vorp_inventoryApi',function()
         return can
     end
 
+    self.canCarryItem = function(source, item, amount) 
+        local can
+        exports.ghmattimysql:execute( "SELECT limit FROM items WHERE item=@id;", {['@id'] = item}, 
+        function(result) 
+            if self.getItemCount(_source, item) + amount <= tonumber(result) then
+                can = true
+            else
+                can = false
+            end
+        end)
+        return can
+    end
+
     self.getUserWeapon = function(source,weaponId)
         local weap
         TriggerEvent("vorpCore:getUserWeapon",source,function(weapon)

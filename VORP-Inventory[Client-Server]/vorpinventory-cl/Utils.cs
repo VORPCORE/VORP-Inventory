@@ -38,6 +38,7 @@ namespace vorpinventory_cl
                 foreach (KeyValuePair<string, int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
                 {
                     API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
+                    Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
                 }
             } else {
                 oldUseWeapon(id);
@@ -53,6 +54,7 @@ namespace vorpinventory_cl
             foreach (KeyValuePair<string, int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
             {
                 API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
+                Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
             }
 
             vorp_inventoryClient.userWeapons[id].setUsed(true);
@@ -77,6 +79,7 @@ namespace vorpinventory_cl
         {
             float _x = 0.0F;
             float _y = 0.0F;
+            //Debug.WriteLine(position.X.ToString());
             API.GetScreenCoordFromWorldCoord(position.X, position.Y, position.Z, ref _x, ref _y);
             API.SetTextScale(0.35F, 0.35F);
             API.SetTextFontForCurrentCommand(1);

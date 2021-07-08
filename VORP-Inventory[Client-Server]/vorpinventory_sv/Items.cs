@@ -11,7 +11,7 @@ namespace vorpinventory_sv
         private string type;
         private bool usable;
 
-        public Items(string item, string label, int limit, bool can_remove, string type, bool usable)
+        public Items(string item, string label, int limit, bool can_remove,string type,bool usable)
         {
             this.item = item;
             this.limit = limit;
@@ -30,7 +30,7 @@ namespace vorpinventory_sv
         {
             this.usable = usable;
         }
-
+        
         public string getType()
         {
             return this.type;
