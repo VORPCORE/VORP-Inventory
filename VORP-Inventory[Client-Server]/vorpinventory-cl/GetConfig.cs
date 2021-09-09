@@ -16,6 +16,7 @@ namespace vorpinventory_cl
         public static JObject Config = new JObject();
         public static Dictionary<string, string> Langs = new Dictionary<string, string>();
         public static uint openKey = 0;
+        public static uint pickupKey = 0;
         public static bool loaded = false;
 
         public GetConfig()
@@ -35,6 +36,8 @@ namespace vorpinventory_cl
             }
 
             openKey = FromHex(Config["OpenKey"].ToString());
+
+            pickupKey = FromHex(Config["PickupKey"].ToString());
 
             Pickups.SetupPickPrompt();
 
