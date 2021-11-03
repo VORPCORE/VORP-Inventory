@@ -517,8 +517,8 @@
                 if (event.data.action == "changecheck") {
                     checkxy = event.data.check
                     infoxy = event.data.info
-                    $('#inventoryHud').html('')
-                    $("#inventoryHud").append(`<div class='controls'><div class='controls-center'><input type='text' id='search' placeholder='search'/><button id='check'>${checkxy} / ${infoxy}</button></div><button id='close'>Close</button></div></div>`);
+                    $('#check').html('')
+                    $("#check").append(`<button id='check'>${checkxy} / ${infoxy}</button>`);
                 }
                 if (event.data.action == "display") {
                     $("#inventoryHud").fadeIn();
