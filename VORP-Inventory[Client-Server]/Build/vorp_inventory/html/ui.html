@@ -45,8 +45,10 @@
         var disabled = false;
         var disabledFunction = null;
         var ready4Action = true;
-
+        let checkxy ;
+        let infoxy ;
         var houseId = 0
+        var hideoutid = 0
         var clanid = 0 
         var Containerid = 0 
 
@@ -139,6 +141,8 @@
                                     }));
                                     setTimeout(function(){ ready4Action = true; }, 3000);	//500
                                     }
+
+
                                 }
                             });
                         } else {
@@ -172,6 +176,7 @@
                                     }));
                                     setTimeout(function(){ ready4Action = true; }, 3000);	
                                     }
+
                                 }
                             });
                         } else {
@@ -180,6 +185,41 @@
                                 type: itemData.type,
                                 number: 1,
                                 house: houseId
+                            }));
+                        }
+                    } else if (type === "hideout" && itemInventory === "second") {
+                        disableInventory(500);
+                        if (itemData.type != "item_weapon") {
+                            dialog.prompt({
+                                title: "Quantity",
+                                button: "Accept",
+                                required: true,
+                                item: itemData,
+                                type: itemData.type,
+                                input: {
+                                    type: "number"
+                                },
+                                validate: function(value, item, type) {
+                                    if(ready4Action === true){	
+                                        ready4Action = false;
+                                    console.log("Item: " + item.label + " Quantity:" + value)
+                                    $.post("http://vorp_inventory/TakeFromHideout", JSON.stringify({
+                                        item: itemData,
+                                        type: type,
+                                        number: value,
+                                        hideout: hideoutId
+                                    }));
+                                    setTimeout(function(){ ready4Action = true; }, 3000);	
+                                    }
+
+                                }
+                            });
+                        } else {
+                            $.post("http://vorp_inventory/TakeFromHideout", JSON.stringify({
+                                item: itemData,
+                                type: itemData.type,
+                                number: 1,
+                                hideout: hideoutId
                             }));
                         }
                     } else if (type === "clan" && itemInventory === "second") {
@@ -206,6 +246,7 @@
                                     }));
                                     setTimeout(function(){ ready4Action = true; }, 3000);	
                                     }
+
                                 }
                             });
                         } else {
@@ -240,6 +281,7 @@
                                     }));
                                     setTimeout(function(){ ready4Action = true; }, 3000);	
                                     }
+
                                 }
                             });
                         } else {
@@ -284,6 +326,7 @@
                                     }));
                                     setTimeout(function(){ ready4Action = true; }, 3000);
                                     }  
+
                                 }
                             });
                         } else {
@@ -359,6 +402,40 @@
                                 type: itemData.type,
                                 number: 1,
                                 house: houseId
+                            }));
+                        }
+                    } else if (type === "hideout" && itemInventory === "main") {
+                        disableInventory(500);
+                        if (itemData.type != "item_weapon") {
+                            dialog.prompt({
+                                title: "Quantity",
+                                button: "Accept",
+                                required: true,
+                                item: itemData,
+                                type: itemData.type,
+                                input: {
+                                    type: "number"
+                                },
+                                validate: function(value, item, type) {
+                                    if(ready4Action === true){	
+                                        ready4Action = false;
+                                    console.log("Item: " + item.label + " Quantity:" + value)
+                                    $.post("http://vorp_inventory/MoveToHideout", JSON.stringify({
+                                        item: itemData,
+                                        type: type,
+                                        number: value,
+                                        hideout: hideoutId
+                                    }));
+                                    setTimeout(function(){ ready4Action = true; }, 3000);
+                                    }
+                                }
+                            });
+                        } else {
+                            $.post("http://vorp_inventory/MoveToHideout", JSON.stringify({
+                                item: itemData,
+                                type: itemData.type,
+                                number: 1,
+                                hideout: hideoutId
                             }));
                         }
 
@@ -437,11 +514,17 @@
             });
 
             window.addEventListener("message", function(event) {
+                if (event.data.action == "changecheck") {
+                    checkxy = event.data.check
+                    infoxy = event.data.info
+                    $('#inventoryHud').html('')
+                    $("#inventoryHud").append(`<div class='controls'><div class='controls-center'><input type='text' id='search' placeholder='search'/><button id='check'>${checkxy} / ${infoxy}</button></div><button id='close'>Close</button></div></div>`);
+                }
                 if (event.data.action == "display") {
                     $("#inventoryHud").fadeIn();
                     $(".controls").remove();
 
-                    $("#inventoryHud").append("<div class='controls'><div class='controls-center'><input type='text' id='search' placeholder='search'/><button id='close'>Close</button></div></div>");
+                    $("#inventoryHud").append(`<div class='controls'><div class='controls-center'><input type='text' id='search' placeholder='search'/><button id='check'>${checkxy} / ${infoxy}</button></div><button id='close'>Close</button></div></div>`);
 
                     $("#search").bind('input', function() {
                         searchFor = $("#search").val().toLowerCase();
@@ -477,6 +560,13 @@
                         HorseSetTitle(event.data.title);
 
                         houseId = event.data.houseId;
+                    }
+                    if (event.data.type == "hideout") {
+                        $("#secondInventoryHud").fadeIn();
+
+                        HorseSetTitle(event.data.title);
+
+                        hideoutId = event.data.hideoutId;
                     }
                     if (event.data.type == "clan") {
                         $("#secondInventoryHud").fadeIn();

@@ -76,6 +76,16 @@ namespace vorpinventory_cl
             API.RegisterNuiCallbackType("MoveToHouse");
             EventHandlers["__cfx_nui:MoveToHouse"] += new Action<ExpandoObject>(NUIMoveToHouse);
 
+            //HideoutModule
+            EventHandlers["vorp_inventory:OpenHideoutInventory"] += new Action<string, int>(OpenHideoutInventory);
+            EventHandlers["vorp_inventory:ReloadHideoutInventory"] += new Action<string>(ReloadHideoutInventory);
+
+            API.RegisterNuiCallbackType("TakeFromHideout");
+            EventHandlers["__cfx_nui:TakeFromHideout"] += new Action<ExpandoObject>(NUITakeFromHideout);
+
+            API.RegisterNuiCallbackType("MoveToHideout");
+            EventHandlers["__cfx_nui:MoveToHideout"] += new Action<ExpandoObject>(NUIMoveToHideout);
+
             //clan
             EventHandlers["vorp_inventory:OpenClanInventory"] += new Action<string, int>(OpenClanInventory);
             EventHandlers["vorp_inventory:ReloadClanInventory"] += new Action<string>(ReloadClanInventory);
@@ -246,6 +256,35 @@ namespace vorpinventory_cl
         {
             JObject data = JObject.FromObject(obj);
             TriggerServerEvent("vorp_housing:TakeFromHouse", data.ToString());
+        }
+
+        private async void ReloadHideoutInventory(string cartInventory)
+        {
+            API.SendNuiMessage(cartInventory);
+            await Delay(500);
+            LoadInv();
+        }
+
+        private void OpenHideoutInventory(string hideoutName, int hideoutId)
+        {
+            //"action", "setSecondInventoryItems"
+            API.SetNuiFocus(true, true);
+
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"hideout\", \"title\": \"" + hideoutName + "\", \"houseId\": " + hideoutId.ToString() + "}");
+            InInventory = true;
+            //TriggerEvent("vorp_stables:setClosedInv", true);
+        }
+
+        private void NUIMoveToHideout(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("vorp_housing:MoveToHideout", data.ToString());
+        }
+
+        private void NUITakeFromHideout(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("vorp_housing:TakeFromHideout", data.ToString());
         }
 
         private void setProcessingPayFalse()
@@ -484,6 +523,7 @@ namespace vorpinventory_cl
         {
             CloseInv();
             TriggerEvent("vorp_stables:setClosedInv", false);
+            TriggerEvent("syn:closeinv");
         }
 
         [Tick]
@@ -516,6 +556,7 @@ namespace vorpinventory_cl
             Dictionary<string, dynamic> weapon;
             items.Clear();
             gg.Clear();
+            TriggerServerEvent("vorpinventory:check_slots");
             foreach (KeyValuePair<string, ItemClass> userit in vorp_inventoryClient.useritems)
             {
                 item = new Dictionary<string, dynamic>();

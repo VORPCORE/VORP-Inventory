@@ -168,6 +168,11 @@ body {
     width: 15%
 }
 
+.controls #check {
+    float: center;
+    width: 15%
+}
+
 button#close {
     float: left;
     background-image: url(../img/bg.png);
@@ -175,6 +180,8 @@ button#close {
     background-position: center;
     background-size: 90px 90px;
 }
+
+
 
 button {
     background: transparent;
