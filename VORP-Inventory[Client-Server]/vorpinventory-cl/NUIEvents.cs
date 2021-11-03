@@ -278,13 +278,13 @@ namespace vorpinventory_cl
         private void NUIMoveToHideout(ExpandoObject obj)
         {
             JObject data = JObject.FromObject(obj);
-            TriggerServerEvent("vorp_housing:MoveToHideout", data.ToString());
+            TriggerServerEvent("syn_underground:MoveToHideout", data.ToString());
         }
 
         private void NUITakeFromHideout(ExpandoObject obj)
         {
             JObject data = JObject.FromObject(obj);
-            TriggerServerEvent("vorp_housing:TakeFromHideout", data.ToString());
+            TriggerServerEvent("syn_underground:TakeFromHideout", data.ToString());
         }
 
         private void setProcessingPayFalse()
