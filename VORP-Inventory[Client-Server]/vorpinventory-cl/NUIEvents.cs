@@ -270,7 +270,7 @@ namespace vorpinventory_cl
             //"action", "setSecondInventoryItems"
             API.SetNuiFocus(true, true);
 
-            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"hideout\", \"title\": \"" + hideoutName + "\", \"houseId\": " + hideoutId.ToString() + "}");
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"hideout\", \"title\": \"" + hideoutName + "\", \"hideoutId\": " + hideoutId.ToString() + "}");
             InInventory = true;
             //TriggerEvent("vorp_stables:setClosedInv", true);
         }
