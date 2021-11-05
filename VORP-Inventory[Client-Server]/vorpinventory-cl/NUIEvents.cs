@@ -485,14 +485,19 @@ namespace vorpinventory_cl
             }
             else if (type == "item_standard")
             {
-                if (int.Parse(aux["number"].ToString()) > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
-                {
-                    TriggerServerEvent("vorpinventory:serverDropItem", itemname, int.Parse(aux["number"].ToString()), 1);
-                    vorp_inventoryClient.useritems[itemname].quitCount(int.Parse(aux["number"].ToString()));
-                    //Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
-                    if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
+                Debug.Write(aux["number"].ToString());
+                if (aux["number"].ToString() != null && aux["number"].ToString() != "") {
+
+
+                    if (int.Parse(aux["number"].ToString()) > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
                     {
-                        vorp_inventoryClient.useritems.Remove(itemname);
+                        TriggerServerEvent("vorpinventory:serverDropItem", itemname, int.Parse(aux["number"].ToString()), 1);
+                        vorp_inventoryClient.useritems[itemname].quitCount(int.Parse(aux["number"].ToString()));
+                        //Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
+                        if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
+                        {
+                            vorp_inventoryClient.useritems.Remove(itemname);
+                        }
                     }
                 }
             }
