@@ -46,11 +46,11 @@ namespace vorpinventory_sv
 
             if (amount <= 0)
             {
-                source.TriggerEvent("vorp:Tip", Config.lang["TryExploits"], 3000);
+                source.TriggerEvent("vorp:TipRight", Config.lang["TryExploits"], 3000);
             }
             else if (sourceMoney < amount)
             {
-                source.TriggerEvent("vorp:Tip", Config.lang["NotEnoughMoney"], 3000);
+                source.TriggerEvent("vorp:TipRight", Config.lang["NotEnoughMoney"], 3000);
             }
             else
             {
@@ -89,13 +89,13 @@ namespace vorpinventory_sv
             Debug.WriteLine(amount.ToString());
             if (amount <= 0)
             {
-                source.TriggerEvent("vorp:Tip", Config.lang["TryExploits"], 3000);
+                source.TriggerEvent("vorp:TipRight", Config.lang["TryExploits"], 3000);
                 await Delay(3000);
                 source.TriggerEvent("vorp_inventory:ProcessingReady");
             }
             else if (sourceMoney < amount)
             {
-                source.TriggerEvent("vorp:Tip", Config.lang["NotEnoughMoney"], 3000);
+                source.TriggerEvent("vorp:TipRight", Config.lang["NotEnoughMoney"], 3000);
                 await Delay(3000);
                 source.TriggerEvent("vorp_inventory:ProcessingReady");
 
@@ -105,8 +105,8 @@ namespace vorpinventory_sv
                 UserCharacter.removeCurrency(0, amount);
                 dynamic TargetUserCharacter = vorpinventory_sv.CORE.getUser(target).getUsedCharacter;
                 TargetUserCharacter.addCurrency(0, amount);
-                source.TriggerEvent("vorp:Tip", string.Format(Config.lang["YouPaid"], amount.ToString(), _target.Name), 3000);
-                _target.TriggerEvent("vorp:Tip", string.Format(Config.lang["YouReceived"], amount.ToString(), source.Name), 3000);
+                source.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouPaid"], amount.ToString(), _target.Name), 3000);
+                _target.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouReceived"], amount.ToString(), source.Name), 3000);
                 await Delay(3000);
                 source.TriggerEvent("vorp_inventory:ProcessingReady");
             }
@@ -276,7 +276,7 @@ namespace vorpinventory_sv
 
                                 if (ItemDatabase.svItems[Pickups[obj]["name"]].getLimit() < totalcount)
                                 {
-                                    TriggerClientEvent(player, "vorp:Tip", Config.lang["fullInventory"], 2000);
+                                    TriggerClientEvent(player, "vorp:TipRight", Config.lang["fullInventory"], 2000);
                                     return;
                                 }
                             }
@@ -302,7 +302,7 @@ namespace vorpinventory_sv
                                 Pickups.Remove(obj);
                             }
                             else{
-                                TriggerClientEvent(player, "vorp:Tip", Config.lang["fullInventory"], 2000);
+                                TriggerClientEvent(player, "vorp:TipRight", Config.lang["fullInventory"], 2000);
                             }
                         }
                         else
@@ -437,7 +437,15 @@ namespace vorpinventory_sv
                         >= ItemDatabase.usersInventory[targetIdentifier][itemname].getLimit())
                     {
                         give = false;
-                    }
+                    } 
+                    
+                }
+                int totalcount = InventoryAPI.getUserTotalCount(targetIdentifier);
+                totalcount += amount;
+                if (totalcount > Config.MaxItems)
+
+                {
+                    give = false;
                 }
 
                 if (give)
@@ -445,11 +453,13 @@ namespace vorpinventory_sv
                     addItem(int.Parse(p.Handle), itemname, amount);
                     subItem(int.Parse(source.Handle), itemname, amount);
                     p.TriggerEvent("vorpinventory:receiveItem", itemname, amount);
+                    source.TriggerEvent("vorpinventory:receiveItem2", itemname, amount);
                 }
                 else
                 {
-                    TriggerClientEvent(source, "vorp:Tip", Config.lang["fullInventoryGive"], 2000);
-                    TriggerClientEvent(p, "vorp:Tip", Config.lang["fullInventory"], 2000);
+                    
+                    TriggerClientEvent(source, "vorp:TipRight", Config.lang["fullInventoryGive"], 2000);
+                    TriggerClientEvent(p, "vorp:TipRight", Config.lang["fullInventory"], 2000);
                 }
 
             }

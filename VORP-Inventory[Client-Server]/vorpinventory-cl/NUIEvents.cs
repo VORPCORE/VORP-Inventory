@@ -388,11 +388,11 @@ namespace vorpinventory_cl
                             if (amount > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= amount)
                             {
                                 TriggerServerEvent("vorpinventory:serverGiveItem", itemname, amount, target, 1);
-                                vorp_inventoryClient.useritems[itemname].quitCount(amount);
+                                /*vorp_inventoryClient.useritems[itemname].quitCount(amount);
                                 if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
                                 {
                                     vorp_inventoryClient.useritems.Remove(itemname);
-                                }
+                                }*/
                             }
                         }
                         else
@@ -408,9 +408,9 @@ namespace vorpinventory_cl
                                 }
                                 vorp_inventoryClient.userWeapons.Remove(int.Parse(data2["id"].ToString()));
                             } */
-                        }
+                            }
 
-                        LoadInv();
+                            LoadInv();
                     }
                 }
             }
@@ -478,6 +478,7 @@ namespace vorpinventory_cl
             Dictionary<string, dynamic> aux = Utils.expandoProcessing(obj);
             string itemname = aux["item"];
             string type = aux["type"].ToString();
+
             if (type == "item_money")
             {
                 TriggerServerEvent("vorpinventory:serverDropMoney", double.Parse(aux["number"].ToString()));

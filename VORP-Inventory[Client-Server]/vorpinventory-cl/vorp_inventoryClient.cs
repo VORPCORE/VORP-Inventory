@@ -27,6 +27,7 @@ namespace vorpinventory_cl
             EventHandlers["vorpInventory:giveLoadout"] += new Action<dynamic>(getLoadout);
             EventHandlers["vorp:SelectedCharacter"] += new Action<int>(OnSelectedCharacter);
             EventHandlers["vorpinventory:receiveItem"] += new Action<string, int>(receiveItem);
+            EventHandlers["vorpinventory:receiveItem2"] += new Action<string, int>(receiveItem2);
             EventHandlers["vorpinventory:receiveWeapon"] +=
                 new Action<int, string, string, ExpandoObject, List<dynamic>>(receiveWeapon);
             Tick += updateAmmoInWeapon;
@@ -77,6 +78,16 @@ namespace vorpinventory_cl
                     "item_standard", true, citems[name]["can_remove"]));
             }
 
+            NUIEvents.LoadInv();
+        }
+
+        private void receiveItem2(string name, int count)
+        {
+            vorp_inventoryClient.useritems[name].quitCount(count);
+            if (vorp_inventoryClient.useritems[name].getCount() == 0)
+            {
+                vorp_inventoryClient.useritems.Remove(name);
+            }
             NUIEvents.LoadInv();
         }
 
