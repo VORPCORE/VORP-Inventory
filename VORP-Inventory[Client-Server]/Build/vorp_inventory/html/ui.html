@@ -99,7 +99,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/TakeFromHorse", JSON.stringify({
@@ -131,7 +131,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/TakeFromCart", JSON.stringify({
@@ -165,7 +165,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/TakeFromHouse", JSON.stringify({
@@ -200,7 +200,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/TakeFromHideout", JSON.stringify({
@@ -235,7 +235,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/TakeFromClan", JSON.stringify({
@@ -270,7 +270,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/TakeFromContainer", JSON.stringify({
@@ -302,7 +302,6 @@
                     itemInventory = ui.draggable.data("inventory");
 
                     console.log(itemData.label)
-
                     if (type === "horse" && itemInventory === "main") {
                         disableInventory(500);
                         if (itemData.type != "item_weapon") {
@@ -316,7 +315,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/MoveToHorse", JSON.stringify({
@@ -350,7 +349,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/MoveToCart", JSON.stringify({
@@ -383,7 +382,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/MoveToHouse", JSON.stringify({
@@ -417,7 +416,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/MoveToHideout", JSON.stringify({
@@ -452,7 +451,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/MoveToClan", JSON.stringify({
@@ -487,7 +486,7 @@
                                     type: "number"
                                 },
                                 validate: function(value, item, type) {
-                                    if(ready4Action === true){	
+                                    if(ready4Action === true && value > 0){	
                                         ready4Action = false;
                                     console.log("Item: " + item.label + " Quantity:" + value)
                                     $.post("http://vorp_inventory/MoveToContainer", JSON.stringify({
