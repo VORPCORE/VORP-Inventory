@@ -50,6 +50,7 @@
         var houseId = 0
         var hideoutid = 0
         var clanid = 0 
+        var stealid = 0 
         var Containerid = 0 
 
 
@@ -257,7 +258,42 @@
                                 clan: clanid
                             }));
                         }
-                    } else if (type === "Container" && itemInventory === "second") {
+                    }else if (type === "steal" && itemInventory === "second") {
+                        disableInventory(500);
+                        if (itemData.type != "item_weapon") {
+                            dialog.prompt({
+                                title: "Quantity",
+                                button: "Accept",
+                                required: true,
+                                item: itemData,
+                                type: itemData.type,
+                                input: {
+                                    type: "number"
+                                },
+                                validate: function(value, item, type) {
+                                    if(ready4Action === true && value > 0){	
+                                        ready4Action = false;
+                                    console.log("Item: " + item.label + " Quantity:" + value)
+                                    $.post("http://vorp_inventory/TakeFromsteal", JSON.stringify({
+                                        item: itemData,
+                                        type: type,
+                                        number: value,
+                                        steal: stealid
+                                    }));
+                                    setTimeout(function(){ ready4Action = true; }, 3000);	
+                                    }
+
+                                }
+                            });
+                        } else {
+                            $.post("http://vorp_inventory/TakeFromsteal", JSON.stringify({
+                                item: itemData,
+                                type: itemData.type,
+                                number: 1,
+                                steal: stealid
+                            }));
+                        }
+                    }else if (type === "Container" && itemInventory === "second") {
                         disableInventory(500);
                         if (itemData.type != "item_weapon") {
                             dialog.prompt({
@@ -473,6 +509,41 @@
                             }));
                         }
 
+                    }else if (type === "steal" && itemInventory === "main") {
+                        disableInventory(500);
+                        if (itemData.type != "item_weapon") {
+                            dialog.prompt({
+                                title: "Quantity",
+                                button: "Accept",
+                                required: true,
+                                item: itemData,
+                                type: itemData.type,
+                                input: {
+                                    type: "number"
+                                },
+                                validate: function(value, item, type) {
+                                    if(ready4Action === true && value > 0){	
+                                        ready4Action = false;
+                                    console.log("Item: " + item.label + " Quantity:" + value)
+                                    $.post("http://vorp_inventory/MoveTosteal", JSON.stringify({
+                                        item: itemData,
+                                        type: type,
+                                        number: value,
+                                        steal: stealid
+                                    }));
+                                    setTimeout(function(){ ready4Action = true; }, 3000);
+                                    }
+                                }
+                            });
+                        } else {
+                            $.post("http://vorp_inventory/MoveTosteal", JSON.stringify({
+                                item: itemData,
+                                type: itemData.type,
+                                number: 1,
+                                steal: stealid
+                            }));
+                        }
+
                     } else if (type === "Container" && itemInventory === "main") {
                         disableInventory(500);
                         if (itemData.type != "item_weapon") {
@@ -573,6 +644,13 @@
                         HorseSetTitle(event.data.title);
 
                         clanid = event.data.clanid;
+                    }
+                    if (event.data.type == "steal") {
+                        $("#secondInventoryHud").fadeIn();
+
+                        HorseSetTitle(event.data.title);
+
+                        stealid = event.data.stealId;
                     }
                     if (event.data.type == "Container") {
                         $("#secondInventoryHud").fadeIn();

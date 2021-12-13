@@ -54,7 +54,17 @@ namespace vorpinventory_cl
             EventHandlers["__cfx_nui:TakeFromHorse"] += new Action<ExpandoObject>(NUITakeFromHorse);
 
             API.RegisterNuiCallbackType("MoveToHorse");
-            EventHandlers["__cfx_nui:MoveToHorse"] += new Action<ExpandoObject>(NUIMoveToHorse);
+            EventHandlers["__cfx_nui:MoveToHorse"] += new Action<ExpandoObject>(NUIMoveTosteal);
+
+            //Steal
+            EventHandlers["vorp_inventory:OpenstealInventory"] += new Action<string, int>(OpenstealInventory);
+            EventHandlers["vorp_inventory:ReloadstealInventory"] += new Action<string>(ReloadstealInventory);
+
+            API.RegisterNuiCallbackType("TakeFromsteal");
+            EventHandlers["__cfx_nui:TakeFromsteal"] += new Action<ExpandoObject>(NUITakeFromsteal);
+
+            API.RegisterNuiCallbackType("MoveTosteal");
+            EventHandlers["__cfx_nui:MoveTosteal"] += new Action<ExpandoObject>(NUIMoveTosteal);
 
             //CartModule
             EventHandlers["vorp_inventory:OpenCartInventory"] += new Action<string>(OpenCartInventory);
@@ -113,7 +123,12 @@ namespace vorpinventory_cl
             await Delay(500);
             LoadInv();
         }
-
+        private async void ReloadstealInventory(string stealInventory)
+        {
+            API.SendNuiMessage(stealInventory);
+            await Delay(500);
+            LoadInv();
+        }
         private async void ReloadClanInventory(string cartInventory)
         {
             API.SendNuiMessage(cartInventory);
@@ -198,6 +213,32 @@ namespace vorpinventory_cl
         {
             JObject data = JObject.FromObject(obj);
             TriggerServerEvent("vorp_stables:TakeFromHorse", data.ToString());
+        }
+
+
+
+
+        private void OpenstealInventory(string stealName, int stealid)
+        {
+            //"action", "setSecondInventoryItems"
+            API.SetNuiFocus(true, true);
+
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"steal\", \"title\": \"" + stealName + "\", \"stealId\": " + stealid.ToString() + "}");
+
+            InInventory = true;
+            TriggerEvent("vorp_stables:setClosedInv", true);
+        }
+
+        private void NUIMoveTosteal(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("syn_search:MoveTosteal", data.ToString());
+        }
+
+        private void NUITakeFromsteal(ExpandoObject obj)
+        {
+            JObject data = JObject.FromObject(obj);
+            TriggerServerEvent("syn_search:TakeFromsteal", data.ToString());
         }
 
         private async void ReloadCartInventory(string cartInventory)
