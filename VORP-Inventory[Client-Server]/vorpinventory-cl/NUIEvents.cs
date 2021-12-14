@@ -54,7 +54,7 @@ namespace vorpinventory_cl
             EventHandlers["__cfx_nui:TakeFromHorse"] += new Action<ExpandoObject>(NUITakeFromHorse);
 
             API.RegisterNuiCallbackType("MoveToHorse");
-            EventHandlers["__cfx_nui:MoveToHorse"] += new Action<ExpandoObject>(NUIMoveTosteal);
+            EventHandlers["__cfx_nui:MoveToHorse"] += new Action<ExpandoObject>(NUIMoveToHorse);
 
             //Steal
             EventHandlers["vorp_inventory:OpenstealInventory"] += new Action<string, int>(OpenstealInventory);
