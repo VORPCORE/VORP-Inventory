@@ -116,9 +116,13 @@ namespace vorpinventory_sv
             Player p = pl[source];
             string identifier = "steam:" + p.Identifiers["steam"];
 
-            int limit = ItemDatabase.svItems[itemName].getLimit();
 
-            if (limit != -1)
+            if (ItemDatabase.svItems.ContainsKey(itemName))
+            {
+               int limit = ItemDatabase.svItems[itemName].getLimit();
+            
+
+                if (limit != -1)
             {
                 if (ItemDatabase.usersInventory.ContainsKey(identifier))
                 {
@@ -227,8 +231,12 @@ namespace vorpinventory_sv
                     cb.Invoke(true);
                 }
             }
+            }
+            else
+            {
+                Debug.WriteLine($"Use Item Error{itemName}");
+            }
 
-            
 
         }
 
@@ -276,7 +284,7 @@ namespace vorpinventory_sv
                 }
                 else
                 {
-                    Debug.WriteLine("Use Item Error");
+                    Debug.WriteLine($"Use Item Error{itemname}");
                 }
             }
         }
