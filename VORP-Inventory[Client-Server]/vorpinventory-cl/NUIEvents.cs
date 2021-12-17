@@ -47,7 +47,7 @@ namespace vorpinventory_cl
             EventHandlers["vorp_inventory:CloseInv"] += new Action(CloseInventory);
 
             //HorseModule
-            EventHandlers["vorp_inventory:OpenHorseInventory"] += new Action<string>(OpenHorseInventory);
+            EventHandlers["vorp_inventory:OpenHorseInventory"] += new Action<string,int>(OpenHorseInventory);
             EventHandlers["vorp_inventory:ReloadHorseInventory"] += new Action<string>(ReloadHorseInventory);
 
             API.RegisterNuiCallbackType("TakeFromHorse");
@@ -67,7 +67,7 @@ namespace vorpinventory_cl
             EventHandlers["__cfx_nui:MoveTosteal"] += new Action<ExpandoObject>(NUIMoveTosteal);
 
             //CartModule
-            EventHandlers["vorp_inventory:OpenCartInventory"] += new Action<string>(OpenCartInventory);
+            EventHandlers["vorp_inventory:OpenCartInventory"] += new Action<string,int>(OpenCartInventory);
             EventHandlers["vorp_inventory:ReloadCartInventory"] += new Action<string>(ReloadCartInventory);
 
             API.RegisterNuiCallbackType("TakeFromCart");
@@ -193,12 +193,12 @@ namespace vorpinventory_cl
             InInventory = false;
         }
 
-        private void OpenHorseInventory(string horseName)
+        private void OpenHorseInventory(string horseName, int horseid)
         {
             //"action", "setSecondInventoryItems"
             API.SetNuiFocus(true, true);
 
-            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"horse\", \"title\": \""+ horseName + "\"}");
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"horse\", \"title\": \""+ horseName + "\", \"horseid\": " + horseid.ToString() + "}");
             InInventory = true;
             TriggerEvent("vorp_stables:setClosedInv", true);
         }
@@ -248,12 +248,12 @@ namespace vorpinventory_cl
             LoadInv();
         }
 
-        private void OpenCartInventory(string cartName)
+        private void OpenCartInventory(string cartName, int wagonid)
         {
             //"action", "setSecondInventoryItems"
             API.SetNuiFocus(true, true);
 
-            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"cart\", \"title\": \"" + cartName + "\"}");
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"cart\", \"title\": \"" + cartName + "\", \"wagonid\": " + wagonid.ToString() + "}");
             InInventory = true;
             TriggerEvent("vorp_stables:setClosedInv", true);
         }

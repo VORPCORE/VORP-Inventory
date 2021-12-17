@@ -52,6 +52,8 @@
         var clanid = 0 
         var stealid = 0 
         var Containerid = 0 
+        var horseid = 0 
+        var wagonid = 0 
 
 
         function OverSetTitle(title) {
@@ -106,7 +108,8 @@
                                     $.post("http://vorp_inventory/TakeFromHorse", JSON.stringify({
                                         item: itemData,
                                         type: type,
-                                        number: value
+                                        number: value,
+                                        horse : horseid
                                     }));
                                     setTimeout(function(){ ready4Action = true; }, 3000);
                                     }
@@ -116,7 +119,8 @@
                             $.post("http://vorp_inventory/TakeFromHorse", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
-                                number: 1
+                                number: 1,
+                                horse : horseid
                             }));
                         }
                     } else if (type === "cart" && itemInventory === "second") {
@@ -138,6 +142,7 @@
                                     $.post("http://vorp_inventory/TakeFromCart", JSON.stringify({
                                         item: itemData,
                                         type: type,
+                                        wagon : wagonid,
                                         number: value
                                     }));
                                     setTimeout(function(){ ready4Action = true; }, 3000);	//500
@@ -150,6 +155,7 @@
                             $.post("http://vorp_inventory/TakeFromCart", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
+                                wagon : wagonid,
                                 number: 1
                             }));
                         }
@@ -357,7 +363,8 @@
                                     $.post("http://vorp_inventory/MoveToHorse", JSON.stringify({
                                         item: itemData,
                                         type: type,
-                                        number: value
+                                        number: value,
+                                        horse : horseid
                                     }));
                                     setTimeout(function(){ ready4Action = true; }, 3000);
                                     }  
@@ -368,7 +375,8 @@
                             $.post("http://vorp_inventory/MoveToHorse", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
-                                number: 1
+                                number: 1,
+                                horse : horseid
                             }));
                         }
 
@@ -391,6 +399,7 @@
                                     $.post("http://vorp_inventory/MoveToCart", JSON.stringify({
                                         item: itemData,
                                         type: type,
+                                        wagon : wagonid,
                                         number: value
                                     }));
                                     setTimeout(function(){ ready4Action = true; }, 3000);
@@ -401,6 +410,7 @@
                             $.post("http://vorp_inventory/MoveToCart", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
+                                wagon : wagonid,
                                 number: 1
                             }));
                         }
@@ -614,13 +624,13 @@
                     if (event.data.type == "horse") {
                         $("#secondInventoryHud").fadeIn();
 
-
+                        horseid = event.data.horseid;
                         HorseSetTitle(event.data.title);
                     }
 
                     if (event.data.type == "cart") {
                         $("#secondInventoryHud").fadeIn();
-
+                        wagonid = event.data.wagonid;
                         HorseSetTitle(event.data.title);
                     }
 

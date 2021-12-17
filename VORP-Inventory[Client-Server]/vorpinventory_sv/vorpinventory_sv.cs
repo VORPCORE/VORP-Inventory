@@ -428,8 +428,8 @@ namespace vorpinventory_sv
             Player p = pl[target];
             string identifier = "steam:" + source.Identifiers["steam"];
             string targetIdentifier = "steam:" + p.Identifiers["steam"];
-
-            if (ItemDatabase.usersInventory[identifier][itemname].getCount() >= amount)
+            Debug.WriteLine("giving an item");
+                if (ItemDatabase.usersInventory[identifier][itemname].getCount() >= amount)
             {
                 if (ItemDatabase.usersInventory[targetIdentifier].ContainsKey(itemname))
                 {
@@ -454,6 +454,8 @@ namespace vorpinventory_sv
                     subItem(int.Parse(source.Handle), itemname, amount);
                     p.TriggerEvent("vorpinventory:receiveItem", itemname, amount);
                     source.TriggerEvent("vorpinventory:receiveItem2", itemname, amount);
+                    TriggerClientEvent(source, "vorp:TipRight", Config.lang["yougaveitem"], 2000);
+                    TriggerClientEvent(p, "vorp:TipRight", Config.lang["YouReceiveditem"], 2000);
                 }
                 else
                 {
@@ -462,6 +464,11 @@ namespace vorpinventory_sv
                     TriggerClientEvent(p, "vorp:TipRight", Config.lang["fullInventory"], 2000);
                 }
 
+            }
+                else
+            {
+                TriggerClientEvent(source, "vorp:TipRight", Config.lang["itemerror"], 2000);
+                TriggerClientEvent(p, "vorp:TipRight", Config.lang["itemerror"], 2000);
             }
         }
 
