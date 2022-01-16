@@ -1,9 +1,10 @@
 ﻿using CitizenFX.Core;
+using CitizenFX.Core.Native;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using CitizenFX.Core.Native;
 using System.Threading.Tasks;
+using vorpinventory_sv.Diagnostics;
 
 namespace vorpinventory_sv
 {
@@ -12,8 +13,12 @@ namespace vorpinventory_sv
         public static Dictionary<string, CallbackDelegate> usableItemsFunctions = new Dictionary<string, CallbackDelegate>();
         public static dynamic CORE;
 
+        PlayerList PlayerList;
+
         public InventoryAPI()
         {
+            PlayerList = Players;
+
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
             EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(giveWeapon);
             EventHandlers["vorpCore:registerWeapon"] += new Action<int, string, ExpandoObject, ExpandoObject>(registerWeapon);
@@ -62,8 +67,14 @@ namespace vorpinventory_sv
 
         private void canCarryAmountWeapons(int source, int quantity, CallbackDelegate cb)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[source];
+            Player p = PlayerList[source];
+
+            if (p == null)
+            {
+                Logger.Error($"canCarryAmountWeapons: Player '{source}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             dynamic CoreUser = vorpinventory_sv.CORE.getUser(source).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
@@ -88,8 +99,14 @@ namespace vorpinventory_sv
 
         private void canCarryAmountItem(int source, int quantity, CallbackDelegate cb)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[source];
+            Player p = PlayerList[source];
+
+            if (p == null)
+            {
+                Logger.Error($"canCarryAmountItem: Player '{source}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.usersInventory.ContainsKey(identifier) && Config.MaxItems != -1)
             {
@@ -112,50 +129,83 @@ namespace vorpinventory_sv
 
         private void canCarryItem(int source, string itemName, int quantity, CallbackDelegate cb)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[source];
+            Player p = PlayerList[source];
+
+            if (p == null)
+            {
+                Logger.Error($"canCarryItem: Player '{source}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
 
 
             if (ItemDatabase.svItems.ContainsKey(itemName))
             {
-               int limit = ItemDatabase.svItems[itemName].getLimit();
-            
+                int limit = ItemDatabase.svItems[itemName].getLimit();
+
 
                 if (limit != -1)
-            {
-                if (ItemDatabase.usersInventory.ContainsKey(identifier))
                 {
-                    if (ItemDatabase.usersInventory[identifier].ContainsKey(itemName))
+                    if (ItemDatabase.usersInventory.ContainsKey(identifier))
                     {
-                        int count = ItemDatabase.usersInventory[identifier][itemName].getCount();
-
-                        int total = count + quantity;
-
-                        if (total <= limit)
+                        if (ItemDatabase.usersInventory[identifier].ContainsKey(itemName))
                         {
-                            if (Config.MaxItems != -1)
+                            int count = ItemDatabase.usersInventory[identifier][itemName].getCount();
+
+                            int total = count + quantity;
+
+                            if (total <= limit)
                             {
-                                int totalcount = getUserTotalCount(identifier) + quantity;
-                                if ((totalcount <= Config.MaxItems))
+                                if (Config.MaxItems != -1)
                                 {
-                                    cb.Invoke(true);
+                                    int totalcount = getUserTotalCount(identifier) + quantity;
+                                    if ((totalcount <= Config.MaxItems))
+                                    {
+                                        cb.Invoke(true);
+                                    }
+                                    else
+                                    {
+                                        cb.Invoke(false);
+                                    }
                                 }
                                 else
                                 {
-                                    cb.Invoke(false);
+                                    cb.Invoke(true);
                                 }
                             }
                             else
                             {
-                                cb.Invoke(true);
+                                cb.Invoke(false);
                             }
+
                         }
                         else
                         {
-                            cb.Invoke(false);
+                            if (quantity <= limit)
+                            {
+                                if (Config.MaxItems != -1)
+                                {
+                                    int totalcount = getUserTotalCount(identifier) + quantity;
+                                    if ((totalcount <= Config.MaxItems))
+                                    {
+                                        cb.Invoke(true);
+                                    }
+                                    else
+                                    {
+                                        cb.Invoke(false);
+                                    }
+                                }
+                                else
+                                {
+                                    cb.Invoke(true);
+                                }
+                            }
+                            else
+                            {
+                                cb.Invoke(false);
+                            }
                         }
-
                     }
                     else
                     {
@@ -163,7 +213,7 @@ namespace vorpinventory_sv
                         {
                             if (Config.MaxItems != -1)
                             {
-                                int totalcount = getUserTotalCount(identifier) + quantity;
+                                int totalcount = quantity;
                                 if ((totalcount <= Config.MaxItems))
                                 {
                                     cb.Invoke(true);
@@ -183,54 +233,27 @@ namespace vorpinventory_sv
                             cb.Invoke(false);
                         }
                     }
+
                 }
                 else
                 {
-                    if (quantity <= limit)
+                    if (Config.MaxItems != -1)
                     {
-                        if (Config.MaxItems != -1)
-                        {
-                            int totalcount = quantity;
-                            if ((totalcount <= Config.MaxItems))
-                            {
-                                cb.Invoke(true);
-                            }
-                            else
-                            {
-                                cb.Invoke(false);
-                            }
-                        }
-                        else
+                        int totalcount = getUserTotalCount(identifier) + quantity;
+                        if ((totalcount <= Config.MaxItems))
                         {
                             cb.Invoke(true);
                         }
-                    }
-                    else
+                        else
                         {
                             cb.Invoke(false);
                         }
-                }
-
-            }
-            else
-            {
-                if (Config.MaxItems != -1)
-                {
-                    int totalcount = getUserTotalCount(identifier) + quantity;
-                    if ((totalcount <= Config.MaxItems))
-                    {
-                        cb.Invoke(true);
                     }
                     else
                     {
-                        cb.Invoke(false);
+                        cb.Invoke(true);
                     }
                 }
-                else
-                {
-                    cb.Invoke(true);
-                }
-            }
             }
             else
             {
@@ -242,32 +265,53 @@ namespace vorpinventory_sv
 
         private void getInventory(int source, CallbackDelegate cb)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[source];
-            string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            try
             {
-                List<object> useritems = new List<object>();
+                Player player = PlayerList[source];
 
-                foreach (var items in ItemDatabase.usersInventory[identifier])
+                if (player == null)
                 {
-                    Dictionary<string, object> item = new Dictionary<string, object>()
-                    {
-                        {"label", items.Value.getLabel()},
-                        {"name", items.Value.getName()},
-                        {"type", items.Value.getType()},
-                        {"count", items.Value.getCount()},
-                        {"limit", items.Value.getLimit()},
-                        {"usable", items.Value.getUsable()}
-                    };
-                    useritems.Add(item);
+                    Logger.Error($"getInventory: Player doesn't exist, but why?!.");
+                    return;
                 }
 
-                cb.Invoke(useritems);
+                string identifier = "steam:" + player.Identifiers["steam"];
+                if (ItemDatabase.usersInventory.ContainsKey(identifier))
+                {
+                    List<object> useritems = new List<object>();
+                    var itemsDBO = ItemDatabase.usersInventory[identifier];
+
+                    if (itemsDBO == null)
+                    {
+                        Logger.Error($"getInventory: Player '{player.Name}' has no items.");
+                        cb.Invoke(useritems);
+                    }
+
+                    foreach (var items in itemsDBO)
+                    {
+                        Dictionary<string, object> item = new Dictionary<string, object>()
+                        {
+                            {"label", items.Value.getLabel()},
+                            {"name", items.Value.getName()},
+                            {"type", items.Value.getType()},
+                            {"count", items.Value.getCount()},
+                            {"limit", items.Value.getLimit()},
+                            {"usable", items.Value.getUsable()}
+                        };
+
+                        useritems.Add(item);
+                    }
+
+                    cb.Invoke(useritems);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "getInventory");
             }
         }
 
-        private void useItem([FromSource]Player source, string itemname, params object[] args)
+        private void useItem([FromSource] Player source, string itemname, params object[] args)
         {
             string identifier = "steam:" + source.Identifiers["steam"];
             if (usableItemsFunctions.ContainsKey(itemname))
@@ -299,8 +343,14 @@ namespace vorpinventory_sv
 
         private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"subComponent: Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
 
             if (ItemDatabase.userWeapons.ContainsKey(weaponId))
@@ -324,8 +374,14 @@ namespace vorpinventory_sv
 
         private void addComponent(int player, int weaponId, string component, CallbackDelegate function)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"addComponent: Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
 
             if (ItemDatabase.userWeapons.ContainsKey(weaponId))
@@ -350,8 +406,14 @@ namespace vorpinventory_sv
 
         private void getUserWeapon(int player, CallbackDelegate function, int weapId)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"getUserWeapon: Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
 
             Dictionary<string, dynamic> weapons = new Dictionary<string, dynamic>();
@@ -374,8 +436,14 @@ namespace vorpinventory_sv
 
         private void getUserWeapons(int player, CallbackDelegate function)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"getUserWeapons: Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             int charIdentifier;
             try
@@ -416,8 +484,14 @@ namespace vorpinventory_sv
 
         private void getWeaponBullets(int player, CallbackDelegate function, int weaponId)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"getWeaponBullets: Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
 
             if (ItemDatabase.userWeapons.ContainsKey(weaponId))
@@ -431,8 +505,14 @@ namespace vorpinventory_sv
 
         private void getWeaponComponents(int player, CallbackDelegate function, int weaponId)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"getWeaponComponents: Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
 
             if (ItemDatabase.userWeapons.ContainsKey(weaponId))
@@ -446,8 +526,14 @@ namespace vorpinventory_sv
 
         private void addBullets(int player, int weaponId, string bulletType, int cuantity)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"addBullets: Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
 
             if (ItemDatabase.userWeapons.ContainsKey(weaponId))
@@ -466,8 +552,14 @@ namespace vorpinventory_sv
 
         private void subBullets(int player, int weaponId, string bulletType, int cuantity)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"subBullets: Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
 
             if (ItemDatabase.userWeapons.ContainsKey(weaponId))
@@ -486,8 +578,14 @@ namespace vorpinventory_sv
 
         private void getItems(int source, CallbackDelegate funcion, string item)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[source];
+            Player p = PlayerList[source];
+
+            if (p == null)
+            {
+                Logger.Error($"getItems: Player '{source}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
@@ -505,20 +603,20 @@ namespace vorpinventory_sv
         {
             try
             {
-                PlayerList pl = new PlayerList();
-
-                if (pl[player] == null)
-                {
-                    return;
-                }
-
                 if (!ItemDatabase.svItems.ContainsKey(name))
                 {
-                    Debug.WriteLine($"Item: {name} not exist on Database please add this item on Table `Items`");
+                    Debug.WriteLine($"addItem: Item: {name} not exist on Database please add this item on Table `Items`");
                     return;
                 }
 
-                Player p = pl[player];
+                Player p = PlayerList[player];
+
+                if (p == null)
+                {
+                    Logger.Error($"addItem: Player '{player}' does not exist.");
+                    return;
+                }
+
                 bool added = false;
                 string identifier = "steam:" + p.Identifiers["steam"];
 
@@ -654,8 +752,14 @@ namespace vorpinventory_sv
                 return;
             }
 
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"subItem: Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
@@ -678,16 +782,21 @@ namespace vorpinventory_sv
 
         private void registerWeapon(int target, string name, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
         {
-            PlayerList pl = new PlayerList();
             Player p = null;
             bool targetIsPlayer = false;
-            foreach (Player pla in pl)
+            foreach (Player pla in PlayerList)
             {
                 if (int.Parse(pla.Handle) == target)
                 {
-                    p = pl[target];
+                    p = PlayerList[target];
                     targetIsPlayer = true;
                 }
+            }
+
+            if (p == null)
+            {
+                Logger.Error($"registerWeapon: Target Player '{target}' does not exist.");
+                return;
             }
 
             string identifier;
@@ -734,7 +843,7 @@ namespace vorpinventory_sv
             Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, name, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) =>
             {
                 int weaponId = result.insertId;
-                WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false,false, charIdentifier);
+                WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false, false, charIdentifier);
                 ItemDatabase.userWeapons.Add(weaponId, auxWeapon);
                 if (targetIsPlayer)
                 {
@@ -744,13 +853,20 @@ namespace vorpinventory_sv
                 }
             }));
         }
+
         private void giveWeapon(int player, int weapId, int target)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"giveWeapon: Player '{player}' does not exist.");
+                return;
+            }
+
             Player ptarget = null;
             bool targetIsPlayer = false;
-            foreach (Player pla in pl)
+            foreach (Player pla in PlayerList)
             {
                 if (int.Parse(pla.Handle) == target)
                 {
@@ -760,8 +876,15 @@ namespace vorpinventory_sv
 
             if (targetIsPlayer)
             {
-                ptarget = pl[target];
+                ptarget = PlayerList[target];
+
+                if (ptarget == null)
+                {
+                    Logger.Error($"giveWeapon: Target Player '{target}' does not exist.");
+                    return;
+                }
             }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             dynamic CoreUser = vorpinventory_sv.CORE.getUser(player).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
@@ -796,8 +919,13 @@ namespace vorpinventory_sv
 
         private void subWeapon(int player, int weapId)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"subWeapon: Player '{player}' does not exist.");
+                return;
+            }
 
             dynamic CoreUser = vorpinventory_sv.CORE.getUser(player).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;

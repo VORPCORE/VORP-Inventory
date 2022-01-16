@@ -1,4 +1,5 @@
 ﻿using CitizenFX.Core;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -37,55 +38,55 @@ namespace vorpinventory_sv
                 }
             }));
 
-            Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] {  }, new Action<dynamic>((loadout) =>
-            {
-                if (loadout.Count != 0)
-                {
-                    WeaponClass wp;
-                    foreach (var row in loadout)
-                    {
-                        try
-                        {
-                            JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
-                            JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
-                            int charId = -1;
-                            if (row.charidentifier != null)
-                            {
-                                charId = row.charidentifier;
-                            }
-                            Dictionary<string, int> amunition = new Dictionary<string, int>();
-                            List<string> components = new List<string>();
-                            foreach (JProperty ammos in ammo.Properties())
-                            {
-                                amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
-                            }
-                            foreach (JToken x in comp)
-                            {
-                                components.Add(x.ToString());
-                            }
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>((loadout) =>
+           {
+               if (loadout.Count != 0)
+               {
+                   WeaponClass wp;
+                   foreach (var row in loadout)
+                   {
+                       try
+                       {
+                           JObject ammo = JsonConvert.DeserializeObject(row.ammo.ToString());
+                           JArray comp = JsonConvert.DeserializeObject(row.components.ToString());
+                           int charId = -1;
+                           if (row.charidentifier != null)
+                           {
+                               charId = row.charidentifier;
+                           }
+                           Dictionary<string, int> amunition = new Dictionary<string, int>();
+                           List<string> components = new List<string>();
+                           foreach (JProperty ammos in ammo.Properties())
+                           {
+                               amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
+                           }
+                           foreach (JToken x in comp)
+                           {
+                               components.Add(x.ToString());
+                           }
 
-                            bool auused = false;
-                            if (row.used == 1)
-                            {
-                                auused = true;
-                            }
-                            bool auused2 = false;
-                            if (row.used2 == 1)
-                            {
-                                auused2 = true;
-                            }
-                            wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charId);
-                            ItemDatabase.userWeapons[wp.getId()] = wp;
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine(ex.Message);
-                        }
-                    }
-                    
-                }
+                           bool auused = false;
+                           if (row.used == 1)
+                           {
+                               auused = true;
+                           }
+                           bool auused2 = false;
+                           if (row.used2 == 1)
+                           {
+                               auused2 = true;
+                           }
+                           wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charId);
+                           userWeapons[wp.getId()] = wp;
+                       }
+                       catch (Exception ex)
+                       {
+                           Debug.WriteLine(ex.Message);
+                       }
+                   }
 
-            }));
+               }
+
+           }));
 
         }
     }
