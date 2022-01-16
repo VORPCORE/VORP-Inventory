@@ -1,10 +1,9 @@
 ﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using vorpinventory_sv.Diagnostics;
 
 namespace vorpinventory_sv
 {
@@ -12,8 +11,12 @@ namespace vorpinventory_sv
     {
         public static dynamic CORE;
 
+        PlayerList PlayerList;
+
         public vorpinventory_sv()
         {
+            PlayerList = Players;
+
             EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
             EventHandlers["vorpinventory:getInventory"] += new Action<Player>(getInventory);
             EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(serverGiveItem);
@@ -26,7 +29,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:shareMoneyPickupServer"] += new Action<int, double, Vector3>(shareMoneyPickupServer);
             EventHandlers["vorpinventory:onPickup"] += new Action<Player, int>(onPickup);
             EventHandlers["vorpinventory:onPickupMoney"] += new Action<Player, int>(onPickupMoney);
-            EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool,bool>(usedWeapon);
+            EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool, bool>(usedWeapon);
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(setWeaponBullets);
             EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(giveMoneyToPlayer);
 
@@ -36,7 +39,7 @@ namespace vorpinventory_sv
             }));
         }
 
-        private void serverDropMoney([FromSource]Player source, double amount)
+        private void serverDropMoney([FromSource] Player source, double amount)
         {
             int _source = int.Parse(source.Handle);
 
@@ -60,12 +63,12 @@ namespace vorpinventory_sv
 
         }
 
-        private void serverDropAllMoney([FromSource]Player source)
+        private void serverDropAllMoney([FromSource] Player source)
         {
             int _source = int.Parse(source.Handle);
 
             dynamic UserCharacter = vorpinventory_sv.CORE.getUser(_source).getUsedCharacter;
-           
+
             double sourceMoney = UserCharacter.money;
 
             if (sourceMoney > 0)
@@ -76,11 +79,16 @@ namespace vorpinventory_sv
 
         }
 
-        private async void giveMoneyToPlayer([FromSource]Player source, int target, double amount)
+        private async void giveMoneyToPlayer([FromSource] Player source, int target, double amount)
         {
             int _source = int.Parse(source.Handle);
-            PlayerList pl = new PlayerList();
-            Player _target = pl[target];
+            Player _target = PlayerList[target];
+
+            if (_target == null)
+            {
+                Logger.Error($"Target Player '{_target} does not exist.");
+                return;
+            }
 
             dynamic UserCharacter = vorpinventory_sv.CORE.getUser(_source).getUsedCharacter;
 
@@ -147,7 +155,7 @@ namespace vorpinventory_sv
             }
         }
 
-        private void usedWeapon([FromSource]Player source, int id, bool used,bool used2)
+        private void usedWeapon([FromSource] Player source, int id, bool used, bool used2)
         {
             int Used = used ? 1 : 0;
             int Used2 = used2 ? 1 : 0;
@@ -156,12 +164,18 @@ namespace vorpinventory_sv
                     $"UPDATE loadout SET used = '{Used}' , used2 = {Used2} WHERE id=?",
                     new[] { id });
         }
-        
+
         //Sub items for other scripts
         private void subItem(int player, string name, int cuantity)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
@@ -185,8 +199,14 @@ namespace vorpinventory_sv
         //For other scripts add items
         private void addItem(int player, string name, int cuantity)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
@@ -223,8 +243,14 @@ namespace vorpinventory_sv
 
         private void addWeapon(int player, int weapId)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
@@ -240,8 +266,15 @@ namespace vorpinventory_sv
 
         private void subWeapon(int player, int weapId)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+
+            Player p = PlayerList[player];
+
+            if (p == null)
+            {
+                Logger.Error($"Player '{player}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
@@ -255,7 +288,7 @@ namespace vorpinventory_sv
             }
         }
 
-        private void onPickup([FromSource]Player player, int obj)
+        private void onPickup([FromSource] Player player, int obj)
         {
             string identifier = "steam:" + player.Identifiers["steam"];
             int source = int.Parse(player.Handle);
@@ -267,7 +300,7 @@ namespace vorpinventory_sv
                 {
                     if (ItemDatabase.usersInventory.ContainsKey(identifier))
                     {
-                        
+
                         if (ItemDatabase.svItems[Pickups[obj]["name"]].getLimit() != -1)
                         {
                             if (ItemDatabase.usersInventory[identifier].ContainsKey(Pickups[obj]["name"]))
@@ -301,7 +334,8 @@ namespace vorpinventory_sv
                                 player.TriggerEvent("vorpInventory:playerAnim", obj);
                                 Pickups.Remove(obj);
                             }
-                            else{
+                            else
+                            {
                                 TriggerClientEvent(player, "vorp:TipRight", Config.lang["fullInventory"], 2000);
                             }
                         }
@@ -316,7 +350,7 @@ namespace vorpinventory_sv
                             player.TriggerEvent("vorpInventory:playerAnim", obj);
                             Pickups.Remove(obj);
                         }
-                      
+
                     }
                 }
                 else
@@ -340,19 +374,19 @@ namespace vorpinventory_sv
                             Pickups.Remove(obj);
                         }
                     }
-                   
+
                 }
             }
 
         }
 
-        private void onPickupMoney([FromSource]Player player, int obj)
+        private void onPickupMoney([FromSource] Player player, int obj)
         {
             string identifier = "steam:" + player.Identifiers["steam"];
             int source = int.Parse(player.Handle);
             if (PickupsMoney.ContainsKey(obj))
             {
-                
+
                 TriggerClientEvent("vorpInventory:shareMoneyPickupClient", PickupsMoney[obj]["obj"],
                 PickupsMoney[obj]["amount"], PickupsMoney[obj]["coords"], 2);
                 TriggerClientEvent("vorpInventory:removePickupClient", PickupsMoney[obj]["obj"]);
@@ -404,13 +438,19 @@ namespace vorpinventory_sv
 
             subItem(int.Parse(source.Handle), itemname, cuantity);
             source.TriggerEvent("vorpInventory:createPickup", itemname, cuantity, 1);
-            
+
         }
 
         private void serverGiveWeapon([FromSource] Player source, int weaponId, int target)
         {
-            PlayerList pl = new PlayerList();
-            Player p = pl[target];
+            Player p = PlayerList[target];
+
+            if (p == null)
+            {
+                Logger.Error($"Target Player '{target}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + source.Identifiers["steam"];
 
             if (ItemDatabase.userWeapons.ContainsKey(weaponId))
@@ -424,8 +464,15 @@ namespace vorpinventory_sv
         private void serverGiveItem([FromSource] Player source, string itemname, int amount, int target)
         {
             bool give = true;
-            PlayerList pl = new PlayerList();
-            Player p = pl[target];
+            
+            Player p = PlayerList[target];
+
+            if (p == null)
+            {
+                Logger.Error($"Target Player '{target}' does not exist.");
+                return;
+            }
+
             string identifier = "steam:" + source.Identifiers["steam"];
             string targetIdentifier = "steam:" + p.Identifiers["steam"];
             Debug.WriteLine("giving an item");
@@ -489,7 +536,7 @@ namespace vorpinventory_sv
             }
         }
 
-        private void getInventory([FromSource]Player source)
+        private void getInventory([FromSource] Player source)
         {
             string steamId = "steam:" + source.Identifiers["steam"];
 
@@ -578,8 +625,8 @@ namespace vorpinventory_sv
                        List<string> components = new List<string>();
                        foreach (JProperty ammos in ammo.Properties())
                        {
-                            //Debug.WriteLine(ammos.Name);
-                            amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
+                           //Debug.WriteLine(ammos.Name);
+                           amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
                        }
                        foreach (JToken x in comp)
                        {
