@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using CitizenFX.Core;
+﻿using CitizenFX.Core;
+using System.Collections.Generic;
 
 namespace vorpinventory_sv
 {
-    public class WeaponClass:BaseScript
+    public class WeaponClass : BaseScript
     {
         private string name;
         private int id;
