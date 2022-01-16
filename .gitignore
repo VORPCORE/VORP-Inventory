@@ -2,6 +2,7 @@
 VORP-Inventory[Client-Server]/Build/vorp_inventory.zip
 /VORP-Inventory\[Client-Server\]/vorpinventory-cl/obj
 /VORP-Inventory\[Client-Server\]/vorpinventory_sv/obj
+/VORP-Inventory\[Client-Server\]/vorpinventory_sv/obj/**
 /VORP-Inventory\[Client-Server\]/packages
 /VORP-Inventory\[Client-Server\]/vorpinventory_sv/bin
 /VORP-Inventory\[Client-Server\]/vorpinventory_cl/bin
