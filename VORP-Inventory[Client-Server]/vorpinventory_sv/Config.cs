@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using vorpinventory_sv.Diagnostics;
 
 namespace vorpinventory_sv
 {
@@ -20,8 +21,12 @@ namespace vorpinventory_sv
         public static int MaxItems = 0;
         public static int MaxWeapons = 0;
 
+        PlayerList PlayerList;
+
         public Config()
         {
+            PlayerList = Players;
+
             EventHandlers["vorp_NewCharacter"] += new Action<int>(itemsConfig);
             EventHandlers[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(getConfig);
 
@@ -59,7 +64,7 @@ namespace vorpinventory_sv
 
         }
 
-        private void getConfig([FromSource]Player source)
+        private void getConfig([FromSource] Player source)
         {
             source.TriggerEvent($"{API.GetCurrentResourceName()}:SendConfig", ConfigString, lang);
         }
@@ -67,10 +72,16 @@ namespace vorpinventory_sv
         private async void itemsConfig(int player)
         {
             await Delay(5000);
-            PlayerList pl = new PlayerList();
-            Player p = pl[player];
+            Player p = PlayerList[player];
+            if (p == null)
+            {
+                Logger.Error($"Player '{player}' was not found.");
+                return;
+            }
+
             string identifier = "steam:" + p.Identifiers["steam"];
-            try{
+            try
+            {
                 foreach (KeyValuePair<string, JToken> item in (JObject)config["startItems"][0])
                 {
                     TriggerEvent("vorpCore:addItem", player, item.Key, int.Parse(item.Value.ToString()));
@@ -95,7 +106,7 @@ namespace vorpinventory_sv
                     TriggerEvent("vorpCore:registerWeapon", player, weapon.Key, givedBullets);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
