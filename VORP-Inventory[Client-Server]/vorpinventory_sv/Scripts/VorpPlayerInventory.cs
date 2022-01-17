@@ -17,7 +17,7 @@ namespace VorpInventory.Scripts
         {
             EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
             EventHandlers["vorpinventory:getInventory"] += new Action<Player>(getInventory);
-            EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(serverGiveItem);
+            EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(ServerGiveItem);
             EventHandlers["vorpinventory:serverGiveWeapon"] += new Action<Player, int, int>(serverGiveWeapon);
             EventHandlers["vorpinventory:serverDropItem"] += new Action<Player, string, int>(serverDropItem);
             EventHandlers["vorpinventory:serverDropMoney"] += new Action<Player, double>(serverDropMoney);
@@ -314,7 +314,7 @@ namespace VorpInventory.Scripts
 
                         if (Config.MaxItems != 0)
                         {
-                            int totalcount = VorpCoreInvenoryAPI.getUserTotalCount(identifier);
+                            int totalcount = VorpCoreInvenoryAPI.GetTotalAmountOfItems(identifier);
                             totalcount += Pickups[obj]["amount"];
                             if (totalcount <= Config.MaxItems)
                             {
@@ -454,21 +454,21 @@ namespace VorpInventory.Scripts
                     ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
             }
         }
-        private void serverGiveItem([FromSource] Player source, string itemname, int amount, int target)
+        private void ServerGiveItem([FromSource] Player source, string itemname, int amount, int target)
         {
             bool give = true;
 
-            Player p = PlayerList[target];
+            Player targetPlayer = PlayerList[target];
 
-            if (p == null)
+            if (targetPlayer == null)
             {
                 Logger.Error($"Target Player '{target}' does not exist.");
                 return;
             }
 
             string identifier = "steam:" + source.Identifiers["steam"];
-            string targetIdentifier = "steam:" + p.Identifiers["steam"];
-            Debug.WriteLine("giving an item");
+            string targetIdentifier = "steam:" + targetPlayer.Identifiers["steam"];
+            
             if (ItemDatabase.UserInventory.ContainsKey(identifier) && ItemDatabase.UserInventory.ContainsKey(targetIdentifier) && ItemDatabase.UserInventory[identifier].ContainsKey(itemname))
             {
                 if (ItemDatabase.UserInventory[identifier][itemname].getCount() >= amount)
@@ -482,7 +482,7 @@ namespace VorpInventory.Scripts
                         }
 
                     }
-                    int totalcount = VorpCoreInvenoryAPI.getUserTotalCount(targetIdentifier);
+                    int totalcount = VorpCoreInvenoryAPI.GetTotalAmountOfItems(targetIdentifier);
                     totalcount += amount;
                     if (totalcount > Config.MaxItems)
 
@@ -492,25 +492,25 @@ namespace VorpInventory.Scripts
 
                     if (give)
                     {
-                        addItem(int.Parse(p.Handle), itemname, amount);
+                        addItem(int.Parse(targetPlayer.Handle), itemname, amount);
                         subItem(int.Parse(source.Handle), itemname, amount);
-                        p.TriggerEvent("vorpinventory:receiveItem", itemname, amount);
+                        targetPlayer.TriggerEvent("vorpinventory:receiveItem", itemname, amount);
                         source.TriggerEvent("vorpinventory:receiveItem2", itemname, amount);
                         TriggerClientEvent(source, "vorp:TipRight", Config.lang["yougaveitem"], 2000);
-                        TriggerClientEvent(p, "vorp:TipRight", Config.lang["YouReceiveditem"], 2000);
+                        TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.lang["YouReceiveditem"], 2000);
                     }
                     else
                     {
 
                         TriggerClientEvent(source, "vorp:TipRight", Config.lang["fullInventoryGive"], 2000);
-                        TriggerClientEvent(p, "vorp:TipRight", Config.lang["fullInventory"], 2000);
+                        TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.lang["fullInventory"], 2000);
                     }
 
                 }
                 else
                 {
                     TriggerClientEvent(source, "vorp:TipRight", Config.lang["itemerror"], 2000);
-                    TriggerClientEvent(p, "vorp:TipRight", Config.lang["itemerror"], 2000);
+                    TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.lang["itemerror"], 2000);
                 }
             }
             else

@@ -36,6 +36,14 @@ namespace VorpInventory.Database
             return ServerItems[itemName];
         }
 
+        public static ItemClass GetUserItem(string identifier, string itemName)
+        {
+            Dictionary<string, ItemClass> userItems = GetInventory(identifier);
+            if (userItems == null) return null;
+            if (!userItems.ContainsKey(itemName)) return null;
+            return userItems[itemName];
+        }
+
         public void SetupItems()
         {
             Logger.Debug($"Setting up Items");
