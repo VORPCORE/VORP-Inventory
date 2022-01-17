@@ -750,7 +750,7 @@ namespace VorpInventory.Scripts
         {
             try
             {
-                if (!ItemDatabase.ServerItems.ContainsKey(name))
+                if (ItemDatabase.GetItem(name) == null)
                 {
                     Debug.WriteLine($"Item: {name} not exist on Database please add this item on Table `Items`");
                     return;
