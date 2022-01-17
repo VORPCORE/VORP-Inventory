@@ -176,7 +176,7 @@ namespace VorpInventory.Scripts
                 {
                     if (cuantity <= ItemDatabase.UserInventory[identifier][name].getCount())
                     {
-                        ItemDatabase.UserInventory[identifier][name].quitCount(cuantity);
+                        ItemDatabase.UserInventory[identifier][name].Subtract(cuantity);
                         SaveInventoryItemsSupport(p);
                     }
 

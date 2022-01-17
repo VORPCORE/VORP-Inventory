@@ -774,7 +774,7 @@ namespace VorpInventory.Scripts
 
                     if (quantity <= item.getCount())
                     {
-                        item.quitCount(quantity);
+                        item.Subtract(quantity);
                         persistChanges = true;
                     }
 
