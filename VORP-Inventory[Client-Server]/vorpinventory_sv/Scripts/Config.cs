@@ -25,8 +25,8 @@ namespace VorpInventory.Scripts
 
         internal Config()
         {
-            PluginManager.Instance.EventRegistry["vorp_NewCharacter"] += new Action<int>(OnNewCharacter);
-            PluginManager.Instance.EventRegistry[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(OnGetConfig);
+            EventHandlers["vorp_NewCharacter"] += new Action<int>(OnNewCharacter);
+            EventHandlers[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(OnGetConfig);
 
             SetupConfig();
         }
