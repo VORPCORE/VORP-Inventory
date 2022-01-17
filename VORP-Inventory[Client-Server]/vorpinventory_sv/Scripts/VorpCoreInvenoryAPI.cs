@@ -340,7 +340,7 @@ namespace VorpInventory.Scripts
         private void registerUsableItem(string name, CallbackDelegate cb)
         {
             usableItemsFunctions[name] = cb;
-            Logger.Info($"{API.GetCurrentResourceName()}: Function callback of item: {name} registered!");
+            Logger.Info($"{API.GetCurrentResourceName()}: Function callback of usable item: {name} registered!");
         }
 
         private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
