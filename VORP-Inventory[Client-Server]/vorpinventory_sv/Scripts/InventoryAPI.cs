@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Threading.Tasks;
+using VorpInventory.Database;
 using VorpInventory.Diagnostics;
 using VorpInventory.Models;
 
-namespace VorpInventory
+namespace VorpInventory.Scripts
 {
     public class InventoryAPI : BaseScript
     {

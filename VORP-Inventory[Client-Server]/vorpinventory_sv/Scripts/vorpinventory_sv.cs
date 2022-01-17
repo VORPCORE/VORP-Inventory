@@ -3,10 +3,11 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VorpInventory.Database;
 using VorpInventory.Diagnostics;
 using VorpInventory.Models;
 
-namespace VorpInventory
+namespace VorpInventory.Scripts
 {
     public class VorpInventory : BaseScript
     {

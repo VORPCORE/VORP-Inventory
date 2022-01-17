@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using VorpInventory.Diagnostics;
 
-namespace VorpInventory
+namespace VorpInventory.Scripts
 {
     public class Config : BaseScript
     {
