@@ -741,37 +741,58 @@ namespace VorpInventory.Scripts
 
         private void subItem(int player, string name, int quantity)
         {
-            if (!ItemDatabase.ServerItems.ContainsKey(name))
+            try
             {
-                Debug.WriteLine($"Item: {name} not exist on Database please add this item on Table `Items`");
-                return;
-            }
-
-            Player p = PlayerList[player];
-
-            if (p == null)
-            {
-                Logger.Error($"subItem: Player '{player}' does not exist.");
-                return;
-            }
-
-            string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.UserInventory.ContainsKey(identifier))
-            {
-                if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
+                if (!ItemDatabase.ServerItems.ContainsKey(name))
                 {
-                    if (quantity <= ItemDatabase.UserInventory[identifier][name].getCount())
-                    {
-                        ItemDatabase.UserInventory[identifier][name].quitCount(quantity);
-                        SaveInventoryItemsSupport(p);
-                    }
-                    p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.UserInventory[identifier][name].getCount());
-                    if (ItemDatabase.UserInventory[identifier][name].getCount() == 0)
-                    {
-                        ItemDatabase.UserInventory[identifier].Remove(name);
-                        SaveInventoryItemsSupport(p);
-                    }
+                    Debug.WriteLine($"Item: {name} not exist on Database please add this item on Table `Items`");
+                    return;
                 }
+
+                Player p = PlayerList[player];
+
+                if (p == null)
+                {
+                    Logger.Error($"subItem: Player '{player}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+                if (userInventory == null)
+                {
+                    Logger.Error($"subItem: Player '{player}' inventory does not exist.");
+                    return;
+                }
+
+                if (userInventory.ContainsKey(name))
+                {
+                    ItemClass item = userInventory[name];
+
+                    bool persistChanges = false;
+
+                    if (quantity <= item.getCount())
+                    {
+                        item.quitCount(quantity);
+                        persistChanges = true;
+                    }
+
+                    p.TriggerEvent("vorpCoreClient:subItem", name, item.getCount());
+
+                    if (item.getCount() == 0)
+                    {
+                        userInventory.Remove(name);
+                        persistChanges = true;
+                    }
+
+                    if (persistChanges)
+                        SaveInventoryItemsSupport(p);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"VORP Inventory: subItem");
             }
         }
 
