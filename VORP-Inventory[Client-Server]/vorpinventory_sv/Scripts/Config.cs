@@ -53,15 +53,8 @@ namespace VorpInventory
             MaxItems = config["MaxItemsInInventory"]["Items"].ToObject<int>();
             MaxWeapons = config["MaxItemsInInventory"]["Weapons"].ToObject<int>();
 
-            if (MaxItems < 0)
-            {
-                MaxItems = 0;
-            }
-            if (MaxWeapons < 0)
-            {
-                MaxWeapons = 0;
-            }
-
+            if (MaxItems < 0) MaxItems = 0;
+            if (MaxWeapons < 0) MaxWeapons = 0;
         }
 
         private void getConfig([FromSource] Player source)

@@ -50,21 +50,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config.cs" />
+    <Compile Include="Models\PlayerInventory.cs" />
+    <Compile Include="Scripts\Config.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
-    <Compile Include="InventoryAPI.cs" />
+    <Compile Include="Scripts\InventoryAPI.cs" />
     <Compile Include="Models\ItemClass.cs" />
-    <Compile Include="ItemDatabase.cs" />
+    <Compile Include="Database\ItemDatabase.cs" />
     <Compile Include="Models\Items.cs" />
-    <Compile Include="vorpinventory_sv.cs" />
+    <Compile Include="PlugingManager.cs" />
+    <Compile Include="Scripts\vorpinventory_sv.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\WeaponClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Database\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
