@@ -39,12 +39,13 @@
             }
         }
 
-        public void Subtract(int amountToSubtract)
+        public int Subtract(int amountToSubtract)
         {
             if (amountToSubtract < 0)
                 amountToSubtract = 0;
 
             count -= amountToSubtract;
+            return count;
         }
 
         public void setLimit(int limit)

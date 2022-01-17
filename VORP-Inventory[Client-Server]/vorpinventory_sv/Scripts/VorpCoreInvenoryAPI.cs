@@ -22,7 +22,7 @@ namespace VorpInventory.Scripts
             EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(giveWeapon);
             EventHandlers["vorpCore:registerWeapon"] += new Action<int, string, ExpandoObject, ExpandoObject>(registerWeapon);
             EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(addItem);
-            EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(subItem);
+            EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(SubtractItem);
             EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
             EventHandlers["vorpCore:getUserInventory"] += new Action<int, CallbackDelegate>(getInventory);
             EventHandlers["vorpCore:canCarryItems"] += new Action<int, int, CallbackDelegate>(canCarryAmountItem);
@@ -746,7 +746,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void subItem(int player, string name, int quantity)
+        private void SubtractItem(int player, string name, int quantity)
         {
             try
             {
@@ -776,25 +776,22 @@ namespace VorpInventory.Scripts
                 if (userInventory.ContainsKey(name))
                 {
                     ItemClass item = userInventory[name];
+                    int itemCount = item.getCount();
 
-                    bool persistChanges = false;
+                    bool update = false;
 
-                    if (quantity <= item.getCount())
+                    if (quantity <= itemCount)
                     {
-                        item.Subtract(quantity);
-                        persistChanges = true;
+                        itemCount = item.Subtract(quantity);
                     }
 
-                    p.TriggerEvent("vorpCoreClient:subItem", name, item.getCount());
-
-                    if (item.getCount() == 0)
+                    if (itemCount == 0)
                     {
                         userInventory.Remove(name);
-                        persistChanges = true;
                     }
 
-                    if (persistChanges)
-                        SaveInventoryItemsSupport(p);
+                    p.TriggerEvent("vorpCoreClient:subItem", name, itemCount);
+                    SaveInventoryItemsSupport(p);
                 }
             }
             catch (Exception ex)
