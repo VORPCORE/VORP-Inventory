@@ -21,15 +21,18 @@ namespace VorpInventory.Scripts
         public static int MaxItems = 0;
         public static int MaxWeapons = 0;
 
-        PlayerList PlayerList;
+        PlayerList PlayerList => PlugingManager.PlayerList;
 
-        public Config()
+        internal Config()
         {
-            PlayerList = Players;
+            PlugingManager.Instance.EventRegistry["vorp_NewCharacter"] += new Action<int>(OnNewCharacter);
+            PlugingManager.Instance.EventRegistry[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(OnGetConfig);
 
-            EventHandlers["vorp_NewCharacter"] += new Action<int>(itemsConfig);
-            EventHandlers[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(getConfig);
+            SetupConfig();
+        }
 
+        private static void SetupConfig()
+        {
             if (File.Exists($"{resourcePath}/Config.json"))
             {
                 ConfigString = File.ReadAllText($"{resourcePath}/Config.json", Encoding.UTF8);
@@ -39,14 +42,13 @@ namespace VorpInventory.Scripts
                     string langstring = File.ReadAllText($"{resourcePath}/languages/{config["defaultlang"]}.json",
                         Encoding.UTF8);
                     lang = JsonConvert.DeserializeObject<Dictionary<string, string>>(langstring);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"{API.GetCurrentResourceName()}: Language {config["defaultlang"]}.json loaded!");
-                    Console.ForegroundColor = ConsoleColor.White;
+
+                    Logger.Success($"{API.GetCurrentResourceName()}: Language {config["defaultlang"]}.json loaded!");
 
                 }
                 else
                 {
-                    Debug.WriteLine($"{API.GetCurrentResourceName()}: {config["defaultlang"]}.json Not Found");
+                    Logger.Error($"{API.GetCurrentResourceName()}: {config["defaultlang"]}.json Not Found");
                 }
             }
 
@@ -57,12 +59,12 @@ namespace VorpInventory.Scripts
             if (MaxWeapons < 0) MaxWeapons = 0;
         }
 
-        private void getConfig([FromSource] Player source)
+        private void OnGetConfig([FromSource] Player source)
         {
             source.TriggerEvent($"{API.GetCurrentResourceName()}:SendConfig", ConfigString, lang);
         }
 
-        private async void itemsConfig(int player)
+        private async void OnNewCharacter(int player)
         {
             await Delay(5000);
             Player p = PlayerList[player];

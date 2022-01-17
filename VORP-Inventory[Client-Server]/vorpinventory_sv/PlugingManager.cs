@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VorpInventory.Diagnostics;
 using VorpInventory.Models;
+using VorpInventory.Scripts;
 
 namespace VorpInventory
 {
@@ -17,6 +18,9 @@ namespace VorpInventory
 
         public EventHandlerDictionary EventRegistry => EventHandlers;
         public ExportDictionary ExportRegistry => Exports;
+
+        // private scripts
+        Config _scriptConfig = new Config();
 
         public PlugingManager()
         {
@@ -54,19 +58,32 @@ namespace VorpInventory
             Database.ItemDatabase.SetupItems();
             Database.ItemDatabase.SetupLoadouts();
 
+            RegisterScript(_scriptConfig);
+
             AddEvents();
         }
 
         void AddEvents()
         {
-            EventRegistry.Add("playerJoined", new Action<Player>(player =>
+            EventRegistry.Add("playerJoined", new Action<Player>(([FromSource] player) =>
             {
 
             }));
 
-            EventRegistry.Add("playerDropped", new Action<Player>(player =>
+            EventRegistry.Add("playerDropped", new Action<Player>(([FromSource] player) =>
             {
 
+            }));
+
+            EventRegistry.Add("onResourceStart", new Action<string>(resourceName =>
+            {
+                if (resourceName != GetCurrentResourceName()) return;
+            }));
+
+            EventRegistry.Add("onResourceStop", new Action<string>(resourceName =>
+            {
+                if (resourceName != GetCurrentResourceName()) return;
+                UnregisterScript(_scriptConfig);
             }));
         }
     }
