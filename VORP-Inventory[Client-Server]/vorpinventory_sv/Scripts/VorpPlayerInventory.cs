@@ -457,7 +457,7 @@ namespace VorpInventory.Scripts
         private void serverGiveItem([FromSource] Player source, string itemname, int amount, int target)
         {
             bool give = true;
-            
+
             Player p = PlayerList[target];
 
             if (p == null)
@@ -561,90 +561,50 @@ namespace VorpInventory.Scripts
 
             source.TriggerEvent("vorpInventory:giveInventory", inventory);
 
-
-
-            //Exports["ghmattimysql"].execute("SELECT identifier,inventory FROM characters WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((uinvento) =>
-            //{
-            //    if (uinvento.Count == 0)
-            //    {
-            //        Debug.WriteLine("No users inventory");
-            //        Dictionary<string, ItemClass> items = new Dictionary<string, ItemClass>();
-            //        ItemDatabase.usersInventory.Add(steamId, items); // Si no existe le metemos en la caché para tenerlo preparado para recibir cosas
-            //    }
-            //    else
-            //    {
-
-            //        //Carga del inventario
-            //        Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
-            //        List<WeaponClass> userwep = new List<WeaponClass>();
-            //        if (uinvento[0].inventory != null)
-            //        {
-            //            dynamic thing = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(uinvento[0].inventory);
-            //            foreach (dynamic itemname in ItemDatabase.items)
-            //            {
-            //                if (thing[itemname.item.ToString()] != null)
-            //                {
-            //                    ItemClass item = new ItemClass(int.Parse(thing[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
-            //                        itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
-            //                    userinv.Add(itemname.item.ToString(), item);
-            //                }
-            //            }
-            //            ItemDatabase.usersInventory[steamId] = userinv;
-            //        }
-            //        else
-            //        {
-            //            ItemDatabase.usersInventory[steamId] = userinv;
-            //        }
-
-            //        source.TriggerEvent("vorpInventory:giveInventory", uinvento[0].inventory);
-            //    }
-
-            //}));
-
             Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { steamId, charIdentifier }, new Action<dynamic>((weaponsinvento) =>
-           {
-               if (weaponsinvento.Count == 0)
-               {
+            {
+                if (weaponsinvento.Count == 0)
+                {
 
-               }
-               else
-               {
-                   WeaponClass wp;
-                   foreach (var row in weaponsinvento)
-                   {
-                       JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
-                       JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
-                       Dictionary<string, int> amunition = new Dictionary<string, int>();
-                       List<string> components = new List<string>();
-                       foreach (JProperty ammos in ammo.Properties())
-                       {
-                           //Debug.WriteLine(ammos.Name);
-                           amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
-                       }
-                       foreach (JToken x in comp)
-                       {
-                           components.Add(x.ToString());
-                       }
+                }
+                else
+                {
+                    WeaponClass wp;
+                    foreach (var row in weaponsinvento)
+                    {
+                        JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
+                        JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
+                        Dictionary<string, int> amunition = new Dictionary<string, int>();
+                        List<string> components = new List<string>();
+                        foreach (JProperty ammos in ammo.Properties())
+                        {
+                            //Debug.WriteLine(ammos.Name);
+                            amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
+                        }
+                        foreach (JToken x in comp)
+                        {
+                            components.Add(x.ToString());
+                        }
 
-                       bool auused = false;
-                       if (row.used == 1)
-                       {
-                           auused = true;
-                       }
+                        bool auused = false;
+                        if (row.used == 1)
+                        {
+                            auused = true;
+                        }
 
-                       bool auused2 = false;
-                       if (row.used2 == 1)
-                       {
-                           auused2 = true;
-                       }
-                       wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charIdentifier);
-                       ItemDatabase.UserWeapons[wp.getId()] = wp;
-                   }
+                        bool auused2 = false;
+                        if (row.used2 == 1)
+                        {
+                            auused2 = true;
+                        }
+                        wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charIdentifier);
+                        ItemDatabase.UserWeapons[wp.getId()] = wp;
+                    }
 
-                   source.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
-               }
+                    source.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
+                }
 
-           }));
+            }));
         }
     }
 }
