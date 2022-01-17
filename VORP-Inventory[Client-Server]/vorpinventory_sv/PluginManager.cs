@@ -58,6 +58,7 @@ namespace VorpInventory
 
             TriggerEvent("getCore", new Action<dynamic>((dic) =>
             {
+                Logger.Success($"VORP Core Setup");
                 CORE = dic;
             }));
 

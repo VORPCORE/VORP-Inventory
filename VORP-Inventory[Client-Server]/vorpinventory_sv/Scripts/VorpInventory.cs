@@ -11,14 +11,10 @@ namespace VorpInventory.Scripts
 {
     public class VorpInventory : BaseScript
     {
-        public static dynamic CORE;
-
-        PlayerList PlayerList;
+        PlayerList PlayerList => PluginManager.PlayerList;
 
         public VorpInventory()
         {
-            PlayerList = Players;
-
             EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
             EventHandlers["vorpinventory:getInventory"] += new Action<Player>(getInventory);
             EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(serverGiveItem);
@@ -34,18 +30,13 @@ namespace VorpInventory.Scripts
             EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool, bool>(usedWeapon);
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(setWeaponBullets);
             EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(giveMoneyToPlayer);
-
-            TriggerEvent("getCore", new Action<dynamic>((dic) =>
-            {
-                CORE = dic;
-            }));
         }
 
         private void serverDropMoney([FromSource] Player source, double amount)
         {
             int _source = int.Parse(source.Handle);
 
-            dynamic UserCharacter = VorpInventory.CORE.getUser(_source).getUsedCharacter;
+            dynamic UserCharacter = PluginManager.CORE.getUser(_source).getUsedCharacter;
 
             double sourceMoney = UserCharacter.money;
 
@@ -69,7 +60,7 @@ namespace VorpInventory.Scripts
         {
             int _source = int.Parse(source.Handle);
 
-            dynamic UserCharacter = VorpInventory.CORE.getUser(_source).getUsedCharacter;
+            dynamic UserCharacter = PluginManager.CORE.getUser(_source).getUsedCharacter;
 
             double sourceMoney = UserCharacter.money;
 
@@ -92,7 +83,7 @@ namespace VorpInventory.Scripts
                 return;
             }
 
-            dynamic UserCharacter = VorpInventory.CORE.getUser(_source).getUsedCharacter;
+            dynamic UserCharacter = PluginManager.CORE.getUser(_source).getUsedCharacter;
 
             double sourceMoney = UserCharacter.money;
             Debug.WriteLine(sourceMoney.ToString());
@@ -113,7 +104,7 @@ namespace VorpInventory.Scripts
             else
             {
                 UserCharacter.removeCurrency(0, amount);
-                dynamic TargetUserCharacter = VorpInventory.CORE.getUser(target).getUsedCharacter;
+                dynamic TargetUserCharacter = PluginManager.CORE.getUser(target).getUsedCharacter;
                 TargetUserCharacter.addCurrency(0, amount);
                 source.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouPaid"], amount.ToString(), _target.Name), 3000);
                 _target.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouReceived"], amount.ToString(), source.Name), 3000);
@@ -138,7 +129,7 @@ namespace VorpInventory.Scripts
         {
             await Delay(1000);
             string identifier = "steam:" + source.Identifiers["steam"];
-            dynamic CoreUser = CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
+            dynamic CoreUser = PluginManager.CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
 
             int charIdentifier = CoreUser.charIdentifier;
 
@@ -257,7 +248,7 @@ namespace VorpInventory.Scripts
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
-                dynamic CoreUser = CORE.getUser(player).getUsedCharacter;
+                dynamic CoreUser = PluginManager.CORE.getUser(player).getUsedCharacter;
                 int charIdentifier = CoreUser.charIdentifier;
                 Exports["ghmattimysql"]
                     .execute(
@@ -281,7 +272,7 @@ namespace VorpInventory.Scripts
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary("");
-                dynamic CoreUser = CORE.getUser(player).getUsedCharacter;
+                dynamic CoreUser = PluginManager.CORE.getUser(player).getUsedCharacter;
                 int charIdentifier = CoreUser.charIdentifier;
                 Exports["ghmattimysql"]
                     .execute(
@@ -294,7 +285,7 @@ namespace VorpInventory.Scripts
         {
             string identifier = "steam:" + player.Identifiers["steam"];
             int source = int.Parse(player.Handle);
-            dynamic CoreUser = CORE.getUser(source).getUsedCharacter;
+            dynamic CoreUser = PluginManager.CORE.getUser(source).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
             if (Pickups.ContainsKey(obj))
             {
@@ -542,7 +533,7 @@ namespace VorpInventory.Scripts
         {
             string steamId = "steam:" + source.Identifiers["steam"];
 
-            dynamic CoreUser = CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
+            dynamic CoreUser = PluginManager.CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
 
             int charIdentifier = CoreUser.charIdentifier;
             string inventory = CoreUser.inventory;

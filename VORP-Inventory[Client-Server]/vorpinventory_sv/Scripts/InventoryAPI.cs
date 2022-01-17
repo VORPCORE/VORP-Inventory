@@ -54,7 +54,7 @@ namespace VorpInventory.Scripts
                 }
                 if (items.Count >= 0)
                 {
-                    dynamic CoreUser = VorpInventory.CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
+                    dynamic CoreUser = PluginManager.CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
                     int charIdentifier = CoreUser.charIdentifier;
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
                     Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier });
@@ -73,7 +73,7 @@ namespace VorpInventory.Scripts
             }
 
             string identifier = "steam:" + p.Identifiers["steam"];
-            dynamic CoreUser = VorpInventory.CORE.getUser(source).getUsedCharacter;
+            dynamic CoreUser = PluginManager.CORE.getUser(source).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
             int totalcount = getUserTotalCountWeapons(identifier, charIdentifier) + quantity;
             if (Config.MaxWeapons != -1)
@@ -797,7 +797,7 @@ namespace VorpInventory.Scripts
             }
 
             string identifier;
-            dynamic CoreUser = VorpInventory.CORE.getUser(target).getUsedCharacter;
+            dynamic CoreUser = PluginManager.CORE.getUser(target).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
 
             if (targetIsPlayer)
@@ -883,7 +883,7 @@ namespace VorpInventory.Scripts
             }
 
             string identifier = "steam:" + p.Identifiers["steam"];
-            dynamic CoreUser = VorpInventory.CORE.getUser(player).getUsedCharacter;
+            dynamic CoreUser = PluginManager.CORE.getUser(player).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
 
             if (Config.MaxWeapons != 0)
@@ -924,7 +924,7 @@ namespace VorpInventory.Scripts
                 return;
             }
 
-            dynamic CoreUser = VorpInventory.CORE.getUser(player).getUsedCharacter;
+            dynamic CoreUser = PluginManager.CORE.getUser(player).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
 
             string identifier = "steam:" + p.Identifiers["steam"];
