@@ -104,6 +104,7 @@ namespace VorpInventory
                 
                 Logger.Info($"Stopping VORP Inventory");
 
+                UnregisterScript(_itemDatabase);
                 UnregisterScript(_scriptConfig);
                 UnregisterScript(_scriptVorpCoreInventoryApi);
                 UnregisterScript(_scriptVorpPlayerInventory);
