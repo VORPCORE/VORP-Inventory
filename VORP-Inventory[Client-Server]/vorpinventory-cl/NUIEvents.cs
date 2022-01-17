@@ -47,7 +47,7 @@ namespace vorpinventory_cl
             EventHandlers["vorp_inventory:CloseInv"] += new Action(CloseInventory);
 
             //HorseModule
-            EventHandlers["vorp_inventory:OpenHorseInventory"] += new Action<string,int>(OpenHorseInventory);
+            EventHandlers["vorp_inventory:OpenHorseInventory"] += new Action<string, int>(OpenHorseInventory);
             EventHandlers["vorp_inventory:ReloadHorseInventory"] += new Action<string>(ReloadHorseInventory);
 
             API.RegisterNuiCallbackType("TakeFromHorse");
@@ -67,7 +67,7 @@ namespace vorpinventory_cl
             EventHandlers["__cfx_nui:MoveTosteal"] += new Action<ExpandoObject>(NUIMoveTosteal);
 
             //CartModule
-            EventHandlers["vorp_inventory:OpenCartInventory"] += new Action<string,int>(OpenCartInventory);
+            EventHandlers["vorp_inventory:OpenCartInventory"] += new Action<string, int>(OpenCartInventory);
             EventHandlers["vorp_inventory:ReloadCartInventory"] += new Action<string>(ReloadCartInventory);
 
             API.RegisterNuiCallbackType("TakeFromCart");
@@ -198,7 +198,7 @@ namespace vorpinventory_cl
             //"action", "setSecondInventoryItems"
             API.SetNuiFocus(true, true);
 
-            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"horse\", \"title\": \""+ horseName + "\", \"horseid\": " + horseid.ToString() + "}");
+            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"horse\", \"title\": \"" + horseName + "\", \"horseid\": " + horseid.ToString() + "}");
             InInventory = true;
             TriggerEvent("vorp_stables:setClosedInv", true);
         }
@@ -419,7 +419,7 @@ namespace vorpinventory_cl
                         {
                             if (isProcessingPay)
                                 return;
-                            
+
                             isProcessingPay = true;
                             TriggerServerEvent("vorp_inventory:giveMoneyToPlayer", target, double.Parse(data2["count"].ToString()));
                         }
@@ -440,18 +440,18 @@ namespace vorpinventory_cl
                         {
                             TriggerServerEvent("vorpinventory:serverGiveWeapon2", int.Parse(data2["id"].ToString()), target);
 
-                           /*  if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data2["id"].ToString())))
-                            {
-                                if (vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getUsed())
-                                {
-                                    vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].setUsed(false);
-                                    vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].RemoveWeaponFromPed();
-                                }
-                                vorp_inventoryClient.userWeapons.Remove(int.Parse(data2["id"].ToString()));
-                            } */
-                            }
+                            /*  if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data2["id"].ToString())))
+                             {
+                                 if (vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getUsed())
+                                 {
+                                     vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].setUsed(false);
+                                     vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].RemoveWeaponFromPed();
+                                 }
+                                 vorp_inventoryClient.userWeapons.Remove(int.Parse(data2["id"].ToString()));
+                             } */
+                        }
 
-                            LoadInv();
+                        LoadInv();
                     }
                 }
             }
@@ -468,13 +468,13 @@ namespace vorpinventory_cl
             {
                 // string eventString = "vorp:use" + data["item"];
                 // TriggerServerEvent(eventString); Version antigua
-                TriggerServerEvent("vorp:use",data["item"]);
+                TriggerServerEvent("vorp:use", data["item"]);
             }
-            else if(data["type"].ToString().Contains("item_weapon"))
+            else if (data["type"].ToString().Contains("item_weapon"))
             {
                 uint weaponHash = 0;
                 API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
-                
+
                 bool isWeaponARevolver = Function.Call<bool>((Hash)0xC212F1D05A8232BB, API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()));
                 bool isWeaponAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()));
                 string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
@@ -495,10 +495,11 @@ namespace vorpinventory_cl
                         vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
                         TriggerServerEvent("syn_weapons:weaponused", data);
                         Debug.WriteLine($"used 2 : {vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed2()}");
-                        
+
                     }
-                }else if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed() &&
-                    !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()), 0, true))
+                }
+                else if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed() &&
+                   !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()), 0, true))
                 {
                     Debug.WriteLine("THEIR PART");
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
@@ -527,7 +528,8 @@ namespace vorpinventory_cl
             else if (type == "item_standard")
             {
                 Debug.Write(aux["number"].ToString());
-                if (aux["number"].ToString() != null && aux["number"].ToString() != "") {
+                if (aux["number"].ToString() != null && aux["number"].ToString() != "")
+                {
 
 
                     if (int.Parse(aux["number"].ToString()) > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= int.Parse(aux["number"].ToString()))

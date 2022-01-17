@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using VorpInventory.Database;
 using VorpInventory.Diagnostics;
+using VorpInventory.Extensions;
 using VorpInventory.Models;
 
 namespace VorpInventory.Scripts
@@ -22,11 +23,11 @@ namespace VorpInventory.Scripts
             EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(giveWeapon);
             EventHandlers["vorpCore:registerWeapon"] += new Action<int, string, ExpandoObject, ExpandoObject>(registerWeapon);
             EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(addItem);
-            EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(subItem);
+            EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(SubtractItem);
             EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
             EventHandlers["vorpCore:getUserInventory"] += new Action<int, CallbackDelegate>(getInventory);
             EventHandlers["vorpCore:canCarryItems"] += new Action<int, int, CallbackDelegate>(canCarryAmountItem);
-            EventHandlers["vorpCore:canCarryItem"] += new Action<int, string, int, CallbackDelegate>(canCarryItem);
+            EventHandlers["vorpCore:canCarryItem"] += new Action<int, string, int, CallbackDelegate>(UserCanCarryItem);
             EventHandlers["vorpCore:canCarryWeapons"] += new Action<int, int, CallbackDelegate>(canCarryAmountWeapons);
             EventHandlers["vorpCore:subBullets"] += new Action<int, int, string, int>(subBullets);
             EventHandlers["vorpCore:addBullets"] += new Action<int, int, string, int>(addBullets);
@@ -44,35 +45,43 @@ namespace VorpInventory.Scripts
             await Delay(1000);
             string identifier = "steam:" + source.Identifiers["steam"];
             Dictionary<string, int> items = new Dictionary<string, int>();
-            if (ItemDatabase.UserInventory.ContainsKey(identifier))
+
+            Dictionary<string, ItemClass> userItems = ItemDatabase.GetInventory(identifier);
+            if (userItems == null) return;
+
+            foreach (var item in userItems)
             {
-                foreach (var item in ItemDatabase.UserInventory[identifier])
-                {
-                    items.Add(item.Key, item.Value.getCount());
-                }
-                if (items.Count >= 0)
-                {
-                    dynamic CoreUser = PluginManager.CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
-                    int charIdentifier = CoreUser.charIdentifier;
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier });
-                }
+                items.Add(item.Key, item.Value.getCount());
+            }
+
+            if (items.Count >= 0)
+            {
+                // This needs to be changed, either inventory is added directly into CORE or inventory manages active clients
+                dynamic coreUserCharacter = source.GetCoreUserCharacter();
+                if (coreUserCharacter == null) return; // we don't know the user, so we cannot save them (Call Dr House!)
+                int charIdentifier = coreUserCharacter.charIdentifier;
+
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier });
             }
         }
 
         private void canCarryAmountWeapons(int source, int quantity, CallbackDelegate cb)
         {
-            Player p = PlayerList[source];
+            Player player = PlayerList[source];
 
-            if (p == null)
+            if (player == null)
             {
                 Logger.Error($"canCarryAmountWeapons: Player '{source}' does not exist.");
                 return;
             }
 
-            string identifier = "steam:" + p.Identifiers["steam"];
-            dynamic CoreUser = PluginManager.CORE.getUser(source).getUsedCharacter;
-            int charIdentifier = CoreUser.charIdentifier;
+            string identifier = "steam:" + player.Identifiers["steam"];
+            
+            dynamic coreUserCharacter = player.GetCoreUserCharacter();
+            if (coreUserCharacter == null) return;
+
+            int charIdentifier = coreUserCharacter.charIdentifier;
             int totalcount = getUserTotalCountWeapons(identifier, charIdentifier) + quantity;
             if (Config.MaxWeapons != -1)
             {
@@ -94,18 +103,18 @@ namespace VorpInventory.Scripts
 
         private void canCarryAmountItem(int source, int quantity, CallbackDelegate cb)
         {
-            Player p = PlayerList[source];
+            Player player = PlayerList[source];
 
-            if (p == null)
+            if (player == null)
             {
                 Logger.Error($"canCarryAmountItem: Player '{source}' does not exist.");
                 return;
             }
 
-            string identifier = "steam:" + p.Identifiers["steam"];
+            string identifier = "steam:" + player.Identifiers["steam"];
             if (ItemDatabase.UserInventory.ContainsKey(identifier) && Config.MaxItems != -1)
             {
-                int totalcount = getUserTotalCount(identifier) + quantity;
+                int totalcount = GetTotalAmountOfItems(identifier) + quantity;
                 if ((totalcount <= Config.MaxItems))
                 {
                     cb.Invoke(true);
@@ -122,140 +131,72 @@ namespace VorpInventory.Scripts
 
         }
 
-        private void canCarryItem(int source, string itemName, int quantity, CallbackDelegate cb)
+        private void UserCanCarryItem(int source, string itemName, int amountToCarry, CallbackDelegate cb)
         {
-            Player p = PlayerList[source];
+            Player player = PlayerList[source];
 
-            if (p == null)
+            if (player == null)
             {
                 Logger.Error($"canCarryItem: Player '{source}' does not exist.");
+                cb.Invoke(false);
+            }
+
+            string identifier = "steam:" + player.Identifiers["steam"];
+
+            Items item = ItemDatabase.GetItem(itemName);
+            if (item == null)
+            {
+                Logger.Error($"canCarryItem: Item '{itemName}' does not exist.");
+                cb.Invoke(false);
+            }
+
+            int maxLimitItem = item.getLimit();
+            Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+
+            int maxLimitConfig = Config.MaxItems;
+            int newTotalAmountOfCurrentItems = GetTotalAmountOfItems(identifier) + amountToCarry;
+
+            bool result = false;
+
+            // If the user has no inventory, then allow them to be given the item
+            if (userInventory == null)
+            {
+                result = CheckIfUserCanHaveItem(amountToCarry, maxLimitItem, maxLimitConfig, newTotalAmountOfCurrentItems);
+                cb.Invoke(result);
                 return;
             }
 
-            string identifier = "steam:" + p.Identifiers["steam"];
-
-
-            if (ItemDatabase.ServerItems.ContainsKey(itemName))
+            // If the user does not have the item, then allow them to be given the item
+            if (!userInventory.ContainsKey(itemName))
             {
-                int limit = ItemDatabase.ServerItems[itemName].getLimit();
-
-
-                if (limit != -1)
-                {
-                    if (ItemDatabase.UserInventory.ContainsKey(identifier))
-                    {
-                        if (ItemDatabase.UserInventory[identifier].ContainsKey(itemName))
-                        {
-                            int count = ItemDatabase.UserInventory[identifier][itemName].getCount();
-
-                            int total = count + quantity;
-
-                            if (total <= limit)
-                            {
-                                if (Config.MaxItems != -1)
-                                {
-                                    int totalcount = getUserTotalCount(identifier) + quantity;
-                                    if ((totalcount <= Config.MaxItems))
-                                    {
-                                        cb.Invoke(true);
-                                    }
-                                    else
-                                    {
-                                        cb.Invoke(false);
-                                    }
-                                }
-                                else
-                                {
-                                    cb.Invoke(true);
-                                }
-                            }
-                            else
-                            {
-                                cb.Invoke(false);
-                            }
-
-                        }
-                        else
-                        {
-                            if (quantity <= limit)
-                            {
-                                if (Config.MaxItems != -1)
-                                {
-                                    int totalcount = getUserTotalCount(identifier) + quantity;
-                                    if ((totalcount <= Config.MaxItems))
-                                    {
-                                        cb.Invoke(true);
-                                    }
-                                    else
-                                    {
-                                        cb.Invoke(false);
-                                    }
-                                }
-                                else
-                                {
-                                    cb.Invoke(true);
-                                }
-                            }
-                            else
-                            {
-                                cb.Invoke(false);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (quantity <= limit)
-                        {
-                            if (Config.MaxItems != -1)
-                            {
-                                int totalcount = quantity;
-                                if ((totalcount <= Config.MaxItems))
-                                {
-                                    cb.Invoke(true);
-                                }
-                                else
-                                {
-                                    cb.Invoke(false);
-                                }
-                            }
-                            else
-                            {
-                                cb.Invoke(true);
-                            }
-                        }
-                        else
-                        {
-                            cb.Invoke(false);
-                        }
-                    }
-
-                }
-                else
-                {
-                    if (Config.MaxItems != -1)
-                    {
-                        int totalcount = getUserTotalCount(identifier) + quantity;
-                        if ((totalcount <= Config.MaxItems))
-                        {
-                            cb.Invoke(true);
-                        }
-                        else
-                        {
-                            cb.Invoke(false);
-                        }
-                    }
-                    else
-                    {
-                        cb.Invoke(true);
-                    }
-                }
-            }
-            else
-            {
-                Debug.WriteLine($"Use Item Error{itemName}");
+                result = CheckIfUserCanHaveItem(amountToCarry, maxLimitItem, maxLimitConfig, newTotalAmountOfCurrentItems);
+                cb.Invoke(result);
+                return;
             }
 
+            // If the user has the item, we still check to see how many
+            ItemClass userItem = userInventory[itemName];
+            int itemQuantity = userItem.getCount();
 
+            amountToCarry = itemQuantity + amountToCarry;
+            result = CheckIfUserCanHaveItem(amountToCarry, maxLimitItem, maxLimitConfig, newTotalAmountOfCurrentItems);
+            cb.Invoke(result);
+            return;
+
+            static bool CheckIfUserCanHaveItem(int amountToCarry, int maxLimitItem, int maxLimitConfig, int newTotalAmountOfCurrentItems)
+            {
+                if (maxLimitConfig != -1)
+                {
+                    if (amountToCarry > maxLimitItem) return false;
+                    if (maxLimitConfig != -1)
+                    {
+                        if (newTotalAmountOfCurrentItems > maxLimitConfig) return false;
+                        return true;
+                    }
+                    return true;
+                }
+                return true;
+            }
         }
 
         private void getInventory(int source, CallbackDelegate cb)
@@ -306,34 +247,41 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void useItem([FromSource] Player source, string itemname, params object[] args)
+        private void useItem([FromSource] Player source, string itemName, params object[] args)
         {
-            string identifier = "steam:" + source.Identifiers["steam"];
-            if (usableItemsFunctions.ContainsKey(itemname))
+            try
             {
-                if (ItemDatabase.ServerItems.ContainsKey(itemname))
+                if (!usableItemsFunctions.ContainsKey(itemName))
                 {
-                    Dictionary<string, object> argumentos = new Dictionary<string, object>()
+                    Logger.Error($"Item '{itemName}' doesn't exist as a usable item");
+                    return;
+                }
+
+                Items item = ItemDatabase.GetItem(itemName);
+                if (item == null)
+                {
+                    Logger.Error($"Item '{itemName}' not found in Server Items.");
+                    return;
+                }
+
+                Dictionary<string, object> argumentos = new()
                     {
                         {"source", int.Parse(source.Handle)},
-                        {"item", ItemDatabase.ServerItems[itemname].getItemDictionary()},
+                        {"item", ItemDatabase.ServerItems[itemName].getItemDictionary()},
                         {"args",args}
                     };
-                    usableItemsFunctions[itemname](argumentos);
-                }
-                else
-                {
-                    Debug.WriteLine($"Use Item Error{itemname}");
-                }
+                usableItemsFunctions[itemName](argumentos);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"useItem");
             }
         }
 
         private void registerUsableItem(string name, CallbackDelegate cb)
         {
             usableItemsFunctions[name] = cb;
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"{API.GetCurrentResourceName()}: Function callback of item: {name} registered!");
-            Console.ForegroundColor = ConsoleColor.White;
+            Logger.Info($"{API.GetCurrentResourceName()}: Function callback of usable item: {name} registered!");
         }
 
         private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
@@ -631,7 +579,7 @@ namespace VorpInventory.Scripts
                             {
                                 if (Config.MaxItems != 0)
                                 {
-                                    int totalcount = getUserTotalCount(identifier);
+                                    int totalcount = GetTotalAmountOfItems(identifier);
                                     totalcount += cuantity;
                                     if (totalcount <= Config.MaxItems)
                                     {
@@ -652,7 +600,7 @@ namespace VorpInventory.Scripts
                             {
                                 if (Config.MaxItems != 0)
                                 {
-                                    int totalcount = getUserTotalCount(identifier);
+                                    int totalcount = GetTotalAmountOfItems(identifier);
                                     totalcount += cuantity;
                                     if (totalcount <= Config.MaxItems)
                                     {
@@ -676,7 +624,7 @@ namespace VorpInventory.Scripts
 
                             if (Config.MaxItems != 0)
                             {
-                                int totalcount = getUserTotalCount(identifier);
+                                int totalcount = GetTotalAmountOfItems(identifier);
                                 totalcount += cuantity;
                                 if (totalcount <= Config.MaxItems)
                                 {
@@ -698,7 +646,7 @@ namespace VorpInventory.Scripts
                         {
                             if (Config.MaxItems != 0)
                             {
-                                int totalcount = getUserTotalCount(identifier);
+                                int totalcount = GetTotalAmountOfItems(identifier);
                                 totalcount += cuantity;
                                 if (totalcount <= Config.MaxItems)
                                 {
@@ -739,39 +687,55 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void subItem(int player, string name, int cuantity)
+        private void SubtractItem(int player, string itemName, int quantity)
         {
-            if (!ItemDatabase.ServerItems.ContainsKey(name))
+            try
             {
-                Debug.WriteLine($"Item: {name} not exist on Database please add this item on Table `Items`");
-                return;
-            }
-
-            Player p = PlayerList[player];
-
-            if (p == null)
-            {
-                Logger.Error($"subItem: Player '{player}' does not exist.");
-                return;
-            }
-
-            string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.UserInventory.ContainsKey(identifier))
-            {
-                if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
+                if (ItemDatabase.GetItem(itemName) == null)
                 {
-                    if (cuantity <= ItemDatabase.UserInventory[identifier][name].getCount())
-                    {
-                        ItemDatabase.UserInventory[identifier][name].quitCount(cuantity);
-                        SaveInventoryItemsSupport(p);
-                    }
-                    p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.UserInventory[identifier][name].getCount());
-                    if (ItemDatabase.UserInventory[identifier][name].getCount() == 0)
-                    {
-                        ItemDatabase.UserInventory[identifier].Remove(name);
-                        SaveInventoryItemsSupport(p);
-                    }
+                    Debug.WriteLine($"Item: {itemName} not exist on Database please add this item on Table `Items`");
+                    return;
                 }
+
+                Player p = PlayerList[player];
+
+                if (p == null)
+                {
+                    Logger.Error($"subItem: Player '{player}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+                if (userInventory == null)
+                {
+                    Logger.Error($"subItem: Player '{player}' inventory does not exist.");
+                    return;
+                }
+
+                if (userInventory.ContainsKey(itemName))
+                {
+                    ItemClass item = userInventory[itemName];
+                    int itemCount = item.getCount();
+
+                    if (quantity <= itemCount)
+                    {
+                        itemCount = item.Subtract(quantity);
+                    }
+
+                    if (itemCount == 0)
+                    {
+                        userInventory.Remove(itemName);
+                    }
+
+                    p.TriggerEvent("vorpCoreClient:subItem", itemName, itemCount);
+                    SaveInventoryItemsSupport(p);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"VORP Inventory: subItem");
             }
         }
 
@@ -938,10 +902,14 @@ namespace VorpInventory.Scripts
         }
 
 
-        public static int getUserTotalCount(string identifier)
+        public static int GetTotalAmountOfItems(string identifier)
         {
             int t_count = 0;
-            foreach (var item in ItemDatabase.UserInventory[identifier].Values)
+
+            Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+            if (userInventory == null) return 0;
+
+            foreach (ItemClass item in userInventory.Values)
             {
                 t_count += item.getCount();
             }

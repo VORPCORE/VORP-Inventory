@@ -103,7 +103,7 @@ namespace vorpinventory_cl
             {
                 auxcomponents.Add(comp.ToString());
             }
-            WeaponClass weapon = new WeaponClass(id, propietary, name, ammoaux, auxcomponents, false,false);
+            WeaponClass weapon = new WeaponClass(id, propietary, name, ammoaux, auxcomponents, false, false);
             if (!userWeapons.ContainsKey(weapon.getId()))
             {
                 userWeapons.Add(weapon.getId(), weapon);

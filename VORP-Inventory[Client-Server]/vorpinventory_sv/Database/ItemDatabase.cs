@@ -24,6 +24,26 @@ namespace VorpInventory.Database
             SetupLoadouts();
         }
 
+        public static Dictionary<string, ItemClass> GetInventory(string identifier)
+        {
+            if (!UserInventory.ContainsKey(identifier)) return null;
+            return UserInventory[identifier];
+        }
+
+        public static Items GetItem(string itemName)
+        {
+            if (!ServerItems.ContainsKey(itemName)) return null;
+            return ServerItems[itemName];
+        }
+
+        public static ItemClass GetUserItem(string identifier, string itemName)
+        {
+            Dictionary<string, ItemClass> userItems = GetInventory(identifier);
+            if (userItems == null) return null;
+            if (!userItems.ContainsKey(itemName)) return null;
+            return userItems[itemName];
+        }
+
         public void SetupItems()
         {
             Logger.Debug($"Setting up Items");

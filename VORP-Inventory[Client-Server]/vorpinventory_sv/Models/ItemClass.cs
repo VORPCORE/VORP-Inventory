@@ -39,9 +39,13 @@
             }
         }
 
-        public void quitCount(int count)
+        public int Subtract(int amountToSubtract)
         {
-            this.count -= count;
+            if (amountToSubtract < 0)
+                amountToSubtract = 0;
+
+            count -= amountToSubtract;
+            return count;
         }
 
         public void setLimit(int limit)

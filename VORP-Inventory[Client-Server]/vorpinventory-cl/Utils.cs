@@ -2,8 +2,6 @@
 using CitizenFX.Core.Native;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
-using vorpinventory_sv;
 
 
 namespace vorpinventory_cl
@@ -30,9 +28,10 @@ namespace vorpinventory_cl
         public static void useWeapon(int id)
         {
             //API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
-            
-            if (vorp_inventoryClient.userWeapons[id].getUsed2() ) {
-                API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true,true, 3, false, 0.5f, 1.0f, 752097756, false,0, false);
+
+            if (vorp_inventoryClient.userWeapons[id].getUsed2())
+            {
+                API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, true, 3, false, 0.5f, 1.0f, 752097756, false, 0, false);
                 Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, 0, 0, 0);
                 API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0);
                 foreach (KeyValuePair<string, int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
@@ -40,12 +39,14 @@ namespace vorpinventory_cl
                     API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
                     Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
                 }
-            } else {
+            }
+            else
+            {
                 oldUseWeapon(id);
             }
         }
 
-        public static void oldUseWeapon(int id )
+        public static void oldUseWeapon(int id)
         {
             //API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, 2);
             API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, true, 2, false, 0.5f, 1.0f, 752097756, false, 0, false);

@@ -21,7 +21,7 @@ namespace vorpinventory_cl
             EventHandlers["vorp:PlayerForceRespawn"] += new Action(DeadActions);
             Tick += principalFunctionPickups;
             Tick += principalFunctionPickupsMoney;
-            
+
         }
 
         private static int PickPrompt;
@@ -41,7 +41,7 @@ namespace vorpinventory_cl
             {
                 TriggerServerEvent("vorpinventory:serverDropAllMoney");
             }
-            
+
             dropallPlease();
         }
 
