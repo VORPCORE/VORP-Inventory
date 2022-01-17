@@ -1,7 +1,0 @@
-E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory-cl.csprojAssemblyReference.cache
-E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\Build\fxmanifest.lua
-E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorpinventory-cl.net.dll
-E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorpinventory-cl.net.pdb
-E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory-cl.csproj.CopyComplete
-E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory-cl.net.dll
-E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory-cl.net.pdb
