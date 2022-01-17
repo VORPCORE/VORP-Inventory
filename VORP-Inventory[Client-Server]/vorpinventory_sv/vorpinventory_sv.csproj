@@ -58,7 +58,7 @@
     <Compile Include="Models\ItemClass.cs" />
     <Compile Include="Database\ItemDatabase.cs" />
     <Compile Include="Models\Items.cs" />
-    <Compile Include="PlugingManager.cs" />
+    <Compile Include="PluginManager.cs" />
     <Compile Include="Scripts\VorpInventory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\WeaponClass.cs" />
