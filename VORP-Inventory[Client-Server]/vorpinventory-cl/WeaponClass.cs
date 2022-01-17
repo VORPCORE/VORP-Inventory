@@ -14,7 +14,7 @@ namespace vorpinventory_sv
         private List<string> components;
         private bool used;
         private bool used2;
-        public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used,bool used2)
+        public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used, bool used2)
         {
             this.id = id;
             this.name = name;
@@ -30,7 +30,7 @@ namespace vorpinventory_sv
         {
             setUsed(false);
             setUsed2(false);
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, getUsed(),getUsed2());
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, getUsed(), getUsed2());
             int hash = API.GetHashKey(name);
             RemoveWeaponFromPed();
             Utils.cleanAmmo(id);
@@ -56,17 +56,17 @@ namespace vorpinventory_sv
                     API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
                     Debug.WriteLine($"equiped one : {weaponHash}");
                     Debug.WriteLine($"{(uint)API.GetHashKey(this.name)}");
-                                                                                           
-                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), weaponHash, 1, 1,1, 2, false, 0.5,1.0, 752097756, 0,true,0.0);
-                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 1,1, 1, 3, false, 0.5, 1.0, 752097756, 0, true, 0.0);
+
+                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), weaponHash, 1, 1, 1, 2, false, 0.5, 1.0, 752097756, 0, true, 0.0);
+                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 1, 1, 1, 3, false, 0.5, 1.0, 752097756, 0, true, 0.0);
                     Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), weaponHash, 0, 1, 0, 0);
                     Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, 0, 0, 0);
-                   
+
                 }
                 else
                 {
                     API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, true, 0);
-                    
+
                 }
                 API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0);
                 foreach (KeyValuePair<string, int> ammos in this.ammo)
@@ -75,7 +75,7 @@ namespace vorpinventory_sv
                     Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
                 }
             }
-            
+
         }
 
         public void loadComponents()
@@ -106,7 +106,7 @@ namespace vorpinventory_sv
         public void setUsed2(bool used2)
         {
             this.used2 = used2;
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, this.used,used2); ;
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, this.used, used2); ;
         }
         public string getPropietary()
         {
