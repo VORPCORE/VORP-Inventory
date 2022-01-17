@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VorpInventory.Models
 {
-    internal class PlayerInventory
+    public class PlayerInventory
     {
     }
 }
