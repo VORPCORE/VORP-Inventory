@@ -81,9 +81,13 @@ namespace VorpInventory
 
             }));
 
-            EventRegistry.Add("playerDropped", new Action<Player>(([FromSource] player) =>
+            EventRegistry.Add("playerDropped", new Action<Player, string>(([FromSource] player, reason) =>
             {
-
+                string steamIdent = $"steam:{player.Identifiers["steam"]}";
+                if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
+                {
+                    Database.ItemDatabase.UserInventory.Remove(steamIdent);
+                }
             }));
 
             EventRegistry.Add("onResourceStart", new Action<string>(resourceName =>
