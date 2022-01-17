@@ -55,13 +55,16 @@
     <Compile Include="InventoryAPI.cs" />
     <Compile Include="ItemClass.cs" />
     <Compile Include="ItemDatabase.cs" />
-    <Compile Include="Items.cs" />
+    <Compile Include="Models\Items.cs" />
     <Compile Include="vorpinventory_sv.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeaponClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Database\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

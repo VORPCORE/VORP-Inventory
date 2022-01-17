@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace vorpinventory_sv
+namespace vorpinventory_sv.Models
 {
     public class Items
     {
