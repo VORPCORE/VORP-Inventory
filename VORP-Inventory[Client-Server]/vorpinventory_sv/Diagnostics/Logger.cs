@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace vorpinventory_sv.Diagnostics
+namespace VorpInventory.Diagnostics
 {
     class Logger
     {

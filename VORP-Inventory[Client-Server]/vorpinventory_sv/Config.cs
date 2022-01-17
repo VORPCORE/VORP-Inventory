@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using vorpinventory_sv.Diagnostics;
+using VorpInventory.Diagnostics;
 
-namespace vorpinventory_sv
+namespace VorpInventory
 {
     public class Config : BaseScript
     {

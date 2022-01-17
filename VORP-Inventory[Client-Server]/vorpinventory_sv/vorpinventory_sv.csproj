@@ -7,7 +7,7 @@
     <ProjectGuid>{80729F2D-5A1F-4BFE-8C15-574B063909E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>vorpinventory_sv</RootNamespace>
+    <RootNamespace>VorpInventory</RootNamespace>
     <AssemblyName>vorpinventory_sv.net</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -53,12 +53,12 @@
     <Compile Include="Config.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="InventoryAPI.cs" />
-    <Compile Include="ItemClass.cs" />
+    <Compile Include="Models\ItemClass.cs" />
     <Compile Include="ItemDatabase.cs" />
     <Compile Include="Models\Items.cs" />
     <Compile Include="vorpinventory_sv.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WeaponClass.cs" />
+    <Compile Include="Models\WeaponClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

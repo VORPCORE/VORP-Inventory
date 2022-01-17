@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using vorpinventory_sv.Models;
+using VorpInventory.Models;
 
-namespace vorpinventory_sv
+namespace VorpInventory
 {
     public class ItemDatabase : BaseScript
     {

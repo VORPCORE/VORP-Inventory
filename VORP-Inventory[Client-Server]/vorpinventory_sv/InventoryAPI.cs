@@ -4,9 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Threading.Tasks;
-using vorpinventory_sv.Diagnostics;
+using VorpInventory.Diagnostics;
+using VorpInventory.Models;
 
-namespace vorpinventory_sv
+namespace VorpInventory
 {
     public class InventoryAPI : BaseScript
     {
@@ -57,7 +58,7 @@ namespace vorpinventory_sv
                 }
                 if (items.Count >= 0)
                 {
-                    dynamic CoreUser = vorpinventory_sv.CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
+                    dynamic CoreUser = VorpInventory.CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
                     int charIdentifier = CoreUser.charIdentifier;
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
                     Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier });
@@ -76,7 +77,7 @@ namespace vorpinventory_sv
             }
 
             string identifier = "steam:" + p.Identifiers["steam"];
-            dynamic CoreUser = vorpinventory_sv.CORE.getUser(source).getUsedCharacter;
+            dynamic CoreUser = VorpInventory.CORE.getUser(source).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
             int totalcount = getUserTotalCountWeapons(identifier, charIdentifier) + quantity;
             if (Config.MaxWeapons != -1)
@@ -800,7 +801,7 @@ namespace vorpinventory_sv
             }
 
             string identifier;
-            dynamic CoreUser = vorpinventory_sv.CORE.getUser(target).getUsedCharacter;
+            dynamic CoreUser = VorpInventory.CORE.getUser(target).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
 
             if (targetIsPlayer)
@@ -886,7 +887,7 @@ namespace vorpinventory_sv
             }
 
             string identifier = "steam:" + p.Identifiers["steam"];
-            dynamic CoreUser = vorpinventory_sv.CORE.getUser(player).getUsedCharacter;
+            dynamic CoreUser = VorpInventory.CORE.getUser(player).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
 
             if (Config.MaxWeapons != 0)
@@ -927,7 +928,7 @@ namespace vorpinventory_sv
                 return;
             }
 
-            dynamic CoreUser = vorpinventory_sv.CORE.getUser(player).getUsedCharacter;
+            dynamic CoreUser = VorpInventory.CORE.getUser(player).getUsedCharacter;
             int charIdentifier = CoreUser.charIdentifier;
 
             string identifier = "steam:" + p.Identifiers["steam"];

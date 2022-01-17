@@ -3,17 +3,18 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using vorpinventory_sv.Diagnostics;
+using VorpInventory.Diagnostics;
+using VorpInventory.Models;
 
-namespace vorpinventory_sv
+namespace VorpInventory
 {
-    public class vorpinventory_sv : BaseScript
+    public class VorpInventory : BaseScript
     {
         public static dynamic CORE;
 
         PlayerList PlayerList;
 
-        public vorpinventory_sv()
+        public VorpInventory()
         {
             PlayerList = Players;
 
@@ -43,7 +44,7 @@ namespace vorpinventory_sv
         {
             int _source = int.Parse(source.Handle);
 
-            dynamic UserCharacter = vorpinventory_sv.CORE.getUser(_source).getUsedCharacter;
+            dynamic UserCharacter = VorpInventory.CORE.getUser(_source).getUsedCharacter;
 
             double sourceMoney = UserCharacter.money;
 
@@ -67,7 +68,7 @@ namespace vorpinventory_sv
         {
             int _source = int.Parse(source.Handle);
 
-            dynamic UserCharacter = vorpinventory_sv.CORE.getUser(_source).getUsedCharacter;
+            dynamic UserCharacter = VorpInventory.CORE.getUser(_source).getUsedCharacter;
 
             double sourceMoney = UserCharacter.money;
 
@@ -90,7 +91,7 @@ namespace vorpinventory_sv
                 return;
             }
 
-            dynamic UserCharacter = vorpinventory_sv.CORE.getUser(_source).getUsedCharacter;
+            dynamic UserCharacter = VorpInventory.CORE.getUser(_source).getUsedCharacter;
 
             double sourceMoney = UserCharacter.money;
             Debug.WriteLine(sourceMoney.ToString());
@@ -111,7 +112,7 @@ namespace vorpinventory_sv
             else
             {
                 UserCharacter.removeCurrency(0, amount);
-                dynamic TargetUserCharacter = vorpinventory_sv.CORE.getUser(target).getUsedCharacter;
+                dynamic TargetUserCharacter = VorpInventory.CORE.getUser(target).getUsedCharacter;
                 TargetUserCharacter.addCurrency(0, amount);
                 source.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouPaid"], amount.ToString(), _target.Name), 3000);
                 _target.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouReceived"], amount.ToString(), source.Name), 3000);
