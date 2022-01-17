@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using vorpinventory_sv.Diagnostics;
+using VorpInventory.Diagnostics;
 
-namespace vorpinventory_sv
+namespace VorpInventory.Scripts
 {
     public class Config : BaseScript
     {
@@ -21,15 +21,18 @@ namespace vorpinventory_sv
         public static int MaxItems = 0;
         public static int MaxWeapons = 0;
 
-        PlayerList PlayerList;
+        PlayerList PlayerList => PluginManager.PlayerList;
 
-        public Config()
+        internal Config()
         {
-            PlayerList = Players;
+            EventHandlers["vorp_NewCharacter"] += new Action<int>(OnNewCharacter);
+            EventHandlers[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(OnGetConfig);
 
-            EventHandlers["vorp_NewCharacter"] += new Action<int>(itemsConfig);
-            EventHandlers[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(getConfig);
+            SetupConfig();
+        }
 
+        private static void SetupConfig()
+        {
             if (File.Exists($"{resourcePath}/Config.json"))
             {
                 ConfigString = File.ReadAllText($"{resourcePath}/Config.json", Encoding.UTF8);
@@ -39,37 +42,29 @@ namespace vorpinventory_sv
                     string langstring = File.ReadAllText($"{resourcePath}/languages/{config["defaultlang"]}.json",
                         Encoding.UTF8);
                     lang = JsonConvert.DeserializeObject<Dictionary<string, string>>(langstring);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"{API.GetCurrentResourceName()}: Language {config["defaultlang"]}.json loaded!");
-                    Console.ForegroundColor = ConsoleColor.White;
+
+                    Logger.Success($"{API.GetCurrentResourceName()}: Language {config["defaultlang"]}.json loaded!");
 
                 }
                 else
                 {
-                    Debug.WriteLine($"{API.GetCurrentResourceName()}: {config["defaultlang"]}.json Not Found");
+                    Logger.Error($"{API.GetCurrentResourceName()}: {config["defaultlang"]}.json Not Found");
                 }
             }
 
             MaxItems = config["MaxItemsInInventory"]["Items"].ToObject<int>();
             MaxWeapons = config["MaxItemsInInventory"]["Weapons"].ToObject<int>();
 
-            if (MaxItems < 0)
-            {
-                MaxItems = 0;
-            }
-            if (MaxWeapons < 0)
-            {
-                MaxWeapons = 0;
-            }
-
+            if (MaxItems < 0) MaxItems = 0;
+            if (MaxWeapons < 0) MaxWeapons = 0;
         }
 
-        private void getConfig([FromSource] Player source)
+        private void OnGetConfig([FromSource] Player source)
         {
             source.TriggerEvent($"{API.GetCurrentResourceName()}:SendConfig", ConfigString, lang);
         }
 
-        private async void itemsConfig(int player)
+        private async void OnNewCharacter(int player)
         {
             await Delay(5000);
             Player p = PlayerList[player];
