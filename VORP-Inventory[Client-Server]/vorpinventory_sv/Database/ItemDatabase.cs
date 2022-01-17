@@ -8,7 +8,7 @@ using VorpInventory.Models;
 
 namespace VorpInventory.Database
 {
-    public static class ItemDatabase
+    public class ItemDatabase : BaseScript
     {
         // List of items with their labels so that the client knows the label of each item
         public static dynamic items;
@@ -18,10 +18,16 @@ namespace VorpInventory.Database
         public static Dictionary<int, WeaponClass> UserWeapons = new Dictionary<int, WeaponClass>();
         public static Dictionary<string, Items> ServerItems = new Dictionary<string, Items>();
 
-        public static void SetupItems()
+        internal ItemDatabase()
+        {
+            SetupItems();
+            SetupLoadouts();
+        }
+
+        public void SetupItems()
         {
             Logger.Debug($"Setting up Items");
-            PluginManager.Instance.ExportRegistry["ghmattimysql"].execute("SELECT * FROM items", new Action<dynamic>((result) =>
+            Exports["ghmattimysql"].execute("SELECT * FROM items", new Action<dynamic>((result) =>
             {
                 if (result.Count == 0)
                 {
@@ -39,10 +45,10 @@ namespace VorpInventory.Database
             Logger.Debug($"Item setup completed");
         }
 
-        public static void SetupLoadouts()
+        public void SetupLoadouts()
         {
             Logger.Debug($"Setting up Loadouts");
-            PluginManager.Instance.ExportRegistry["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>((loadout) =>
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>((loadout) =>
             {
                 if (loadout.Count != 0)
                 {

@@ -20,6 +20,8 @@ namespace VorpInventory
         public EventHandlerDictionary EventRegistry => EventHandlers;
         public ExportDictionary ExportRegistry => Exports;
 
+        // Database
+        Database.ItemDatabase _itemDatabase = new();
         // private scripts
         Config _scriptConfig = new Config();
         VorpCoreInvenoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInvenoryAPI();
@@ -28,11 +30,12 @@ namespace VorpInventory
         public PluginManager()
         {
             Logger.Info($"Init VORP Inventory");
+
+            Instance = this;
             PlayerList = Players;
 
             Setup();
 
-            Instance = this;
             Logger.Info($"VORP Inventory Loaded");
         }
 
@@ -64,9 +67,7 @@ namespace VorpInventory
                 CORE = dic;
             }));
 
-            Database.ItemDatabase.SetupItems();
-            Database.ItemDatabase.SetupLoadouts();
-
+            RegisterScript(_itemDatabase);
             RegisterScript(_scriptConfig);
             RegisterScript(_scriptVorpCoreInventoryApi);
             RegisterScript(_scriptVorpPlayerInventory);
