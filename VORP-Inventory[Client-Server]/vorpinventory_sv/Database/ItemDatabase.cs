@@ -21,7 +21,7 @@ namespace VorpInventory.Database
         public static void SetupItems()
         {
             Logger.Debug($"Setting up Items");
-            PlugingManager.Instance.ExportRegistry["ghmattimysql"].execute("SELECT * FROM items", new Action<dynamic>((result) =>
+            PluginManager.Instance.ExportRegistry["ghmattimysql"].execute("SELECT * FROM items", new Action<dynamic>((result) =>
             {
                 if (result.Count == 0)
                 {
@@ -42,7 +42,7 @@ namespace VorpInventory.Database
         public static void SetupLoadouts()
         {
             Logger.Debug($"Setting up Loadouts");
-            PlugingManager.Instance.ExportRegistry["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>((loadout) =>
+            PluginManager.Instance.ExportRegistry["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>((loadout) =>
             {
                 if (loadout.Count != 0)
                 {

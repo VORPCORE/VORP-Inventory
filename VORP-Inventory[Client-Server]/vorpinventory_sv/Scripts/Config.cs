@@ -21,12 +21,12 @@ namespace VorpInventory.Scripts
         public static int MaxItems = 0;
         public static int MaxWeapons = 0;
 
-        PlayerList PlayerList => PlugingManager.PlayerList;
+        PlayerList PlayerList => PluginManager.PlayerList;
 
         internal Config()
         {
-            PlugingManager.Instance.EventRegistry["vorp_NewCharacter"] += new Action<int>(OnNewCharacter);
-            PlugingManager.Instance.EventRegistry[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(OnGetConfig);
+            PluginManager.Instance.EventRegistry["vorp_NewCharacter"] += new Action<int>(OnNewCharacter);
+            PluginManager.Instance.EventRegistry[$"{API.GetCurrentResourceName()}:getConfig"] += new Action<Player>(OnGetConfig);
 
             SetupConfig();
         }

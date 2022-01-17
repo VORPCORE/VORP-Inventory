@@ -9,10 +9,11 @@ using VorpInventory.Scripts;
 
 namespace VorpInventory
 {
-    public class PlugingManager : BaseScript
+    public class PluginManager : BaseScript
     {
-        public static PlugingManager Instance { get; private set; }
+        public static PluginManager Instance { get; private set; }
         public static PlayerList PlayerList;
+        public static dynamic CORE;
 
         public static Dictionary<int, PlayerInventory> PlayerInventories = new();
 
@@ -22,7 +23,7 @@ namespace VorpInventory
         // private scripts
         Config _scriptConfig = new Config();
 
-        public PlugingManager()
+        public PluginManager()
         {
             Logger.Info($"Init VORP Inventory");
             PlayerList = Players;
@@ -54,6 +55,11 @@ namespace VorpInventory
         async void Setup()
         {
             await VendorReady(); // wait till ghmattimysql resource has started
+
+            TriggerEvent("getCore", new Action<dynamic>((dic) =>
+            {
+                CORE = dic;
+            }));
 
             Database.ItemDatabase.SetupItems();
             Database.ItemDatabase.SetupLoadouts();

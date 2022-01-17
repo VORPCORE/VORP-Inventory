@@ -13,7 +13,6 @@ namespace VorpInventory.Scripts
     public class InventoryAPI : BaseScript
     {
         public static Dictionary<string, CallbackDelegate> usableItemsFunctions = new Dictionary<string, CallbackDelegate>();
-        public static dynamic CORE;
 
         PlayerList PlayerList;
 
@@ -40,10 +39,6 @@ namespace VorpInventory.Scripts
             EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
             EventHandlers["vorpCore:registerUsableItem"] += new Action<string, CallbackDelegate>(registerUsableItem);
             EventHandlers["vorp:use"] += new Action<Player, string, object[]>(useItem);
-            TriggerEvent("getCore", new Action<dynamic>((dic) =>
-            {
-                CORE = dic;
-            }));
         }
 
         public async Task SaveInventoryItemsSupport(Player source)
@@ -450,7 +445,7 @@ namespace VorpInventory.Scripts
             int charIdentifier;
             try
             {
-                dynamic CoreUser = CORE.getUser(player).getUsedCharacter;
+                dynamic CoreUser = PluginManager.CORE.getUser(player).getUsedCharacter;
                 charIdentifier = CoreUser.charIdentifier;
             }
             catch
