@@ -9,11 +9,11 @@ using VorpInventory.Models;
 
 namespace VorpInventory.Scripts
 {
-    public class VorpInventory : BaseScript
+    public class VorpPlayerInventory : BaseScript
     {
         PlayerList PlayerList => PluginManager.PlayerList;
 
-        public VorpInventory()
+        internal VorpPlayerInventory()
         {
             EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
             EventHandlers["vorpinventory:getInventory"] += new Action<Player>(getInventory);
@@ -314,7 +314,7 @@ namespace VorpInventory.Scripts
 
                         if (Config.MaxItems != 0)
                         {
-                            int totalcount = InventoryAPI.getUserTotalCount(identifier);
+                            int totalcount = VorpCoreInvenoryAPI.getUserTotalCount(identifier);
                             totalcount += Pickups[obj]["amount"];
                             if (totalcount <= Config.MaxItems)
                             {
@@ -350,7 +350,7 @@ namespace VorpInventory.Scripts
                 {
                     if (Config.MaxWeapons != 0)
                     {
-                        int totalcount = InventoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
+                        int totalcount = VorpCoreInvenoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
                         totalcount += 1;
                         if (totalcount <= Config.MaxWeapons)
                         {
@@ -482,7 +482,7 @@ namespace VorpInventory.Scripts
                         }
 
                     }
-                    int totalcount = InventoryAPI.getUserTotalCount(targetIdentifier);
+                    int totalcount = VorpCoreInvenoryAPI.getUserTotalCount(targetIdentifier);
                     totalcount += amount;
                     if (totalcount > Config.MaxItems)
 

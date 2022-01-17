@@ -22,6 +22,8 @@ namespace VorpInventory
 
         // private scripts
         Config _scriptConfig = new Config();
+        VorpCoreInvenoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInvenoryAPI();
+        VorpPlayerInventory _scriptVorpPlayerInventory = new VorpPlayerInventory();
 
         public PluginManager()
         {
@@ -66,6 +68,8 @@ namespace VorpInventory
             Database.ItemDatabase.SetupLoadouts();
 
             RegisterScript(_scriptConfig);
+            RegisterScript(_scriptVorpCoreInventoryApi);
+            RegisterScript(_scriptVorpPlayerInventory);
 
             AddEvents();
         }
@@ -85,12 +89,19 @@ namespace VorpInventory
             EventRegistry.Add("onResourceStart", new Action<string>(resourceName =>
             {
                 if (resourceName != GetCurrentResourceName()) return;
+
+                Logger.Info($"VORP Inventory Started");
             }));
 
             EventRegistry.Add("onResourceStop", new Action<string>(resourceName =>
             {
                 if (resourceName != GetCurrentResourceName()) return;
+                
+                Logger.Info($"Stopping VORP Inventory");
+
                 UnregisterScript(_scriptConfig);
+                UnregisterScript(_scriptVorpCoreInventoryApi);
+                UnregisterScript(_scriptVorpPlayerInventory);
             }));
         }
     }
