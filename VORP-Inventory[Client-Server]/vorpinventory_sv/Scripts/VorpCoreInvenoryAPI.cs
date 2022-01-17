@@ -778,8 +778,6 @@ namespace VorpInventory.Scripts
                     ItemClass item = userInventory[name];
                     int itemCount = item.getCount();
 
-                    bool update = false;
-
                     if (quantity <= itemCount)
                     {
                         itemCount = item.Subtract(quantity);
