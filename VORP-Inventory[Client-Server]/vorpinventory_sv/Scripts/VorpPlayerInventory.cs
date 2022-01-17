@@ -119,9 +119,9 @@ namespace VorpInventory.Scripts
 
         private void setWeaponBullets([FromSource] Player player, int weaponId, string type, int bullet)
         {
-            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
             {
-                ItemDatabase.userWeapons[weaponId].setAmmo(bullet, type);
+                ItemDatabase.UserWeapons[weaponId].setAmmo(bullet, type);
             }
         }
 
@@ -134,9 +134,9 @@ namespace VorpInventory.Scripts
             int charIdentifier = CoreUser.charIdentifier;
 
             Dictionary<string, int> items = new Dictionary<string, int>();
-            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            if (ItemDatabase.UserInventory.ContainsKey(identifier))
             {
-                foreach (var item in ItemDatabase.usersInventory[identifier])
+                foreach (var item in ItemDatabase.UserInventory[identifier])
                 {
                     items.Add(item.Key, item.Value.getCount());
                 }
@@ -170,19 +170,19 @@ namespace VorpInventory.Scripts
             }
 
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            if (ItemDatabase.UserInventory.ContainsKey(identifier))
             {
-                if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+                if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
                 {
-                    if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
+                    if (cuantity <= ItemDatabase.UserInventory[identifier][name].getCount())
                     {
-                        ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
+                        ItemDatabase.UserInventory[identifier][name].quitCount(cuantity);
                         SaveInventoryItemsSupport(p);
                     }
 
-                    if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
+                    if (ItemDatabase.UserInventory[identifier][name].getCount() == 0)
                     {
-                        ItemDatabase.usersInventory[identifier].Remove(name);
+                        ItemDatabase.UserInventory[identifier].Remove(name);
                         SaveInventoryItemsSupport(p);
                     }
                 }
@@ -201,22 +201,22 @@ namespace VorpInventory.Scripts
             }
 
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            if (ItemDatabase.UserInventory.ContainsKey(identifier))
             {
-                if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+                if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
                 {
                     if (cuantity > 0)
                     {
-                        ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                        ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
                         SaveInventoryItemsSupport(p);
                     }
                 }
                 else
                 {
-                    if (ItemDatabase.svItems.ContainsKey(name))
+                    if (ItemDatabase.ServerItems.ContainsKey(name))
                     {
-                        ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                            ItemDatabase.svItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.svItems[name].getCanRemove()));
+                        ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
+                            ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
                         SaveInventoryItemsSupport(p);
                     }
                 }
@@ -224,11 +224,11 @@ namespace VorpInventory.Scripts
             else
             {
                 Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
-                ItemDatabase.usersInventory.Add(identifier, userinv);
-                if (ItemDatabase.svItems.ContainsKey(name))
+                ItemDatabase.UserInventory.Add(identifier, userinv);
+                if (ItemDatabase.ServerItems.ContainsKey(name))
                 {
-                    ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                        ItemDatabase.svItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.svItems[name].getCanRemove()));
+                    ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
+                        ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
                     SaveInventoryItemsSupport(p);
                 }
             }
@@ -245,14 +245,14 @@ namespace VorpInventory.Scripts
             }
 
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.userWeapons.ContainsKey(weapId))
+            if (ItemDatabase.UserWeapons.ContainsKey(weapId))
             {
-                ItemDatabase.userWeapons[weapId].setPropietary(identifier);
+                ItemDatabase.UserWeapons[weapId].setPropietary(identifier);
                 dynamic CoreUser = PluginManager.CORE.getUser(player).getUsedCharacter;
                 int charIdentifier = CoreUser.charIdentifier;
                 Exports["ghmattimysql"]
                     .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
                         new[] { weapId });
             }
         }
@@ -269,14 +269,14 @@ namespace VorpInventory.Scripts
             }
 
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.userWeapons.ContainsKey(weapId))
+            if (ItemDatabase.UserWeapons.ContainsKey(weapId))
             {
-                ItemDatabase.userWeapons[weapId].setPropietary("");
+                ItemDatabase.UserWeapons[weapId].setPropietary("");
                 dynamic CoreUser = PluginManager.CORE.getUser(player).getUsedCharacter;
                 int charIdentifier = CoreUser.charIdentifier;
                 Exports["ghmattimysql"]
                     .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
                         new[] { weapId });
             }
         }
@@ -291,16 +291,16 @@ namespace VorpInventory.Scripts
             {
                 if (Pickups[obj]["weaponid"] == 1)
                 {
-                    if (ItemDatabase.usersInventory.ContainsKey(identifier))
+                    if (ItemDatabase.UserInventory.ContainsKey(identifier))
                     {
 
-                        if (ItemDatabase.svItems[Pickups[obj]["name"]].getLimit() != -1)
+                        if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() != -1)
                         {
-                            if (ItemDatabase.usersInventory[identifier].ContainsKey(Pickups[obj]["name"]))
+                            if (ItemDatabase.UserInventory[identifier].ContainsKey(Pickups[obj]["name"]))
                             {
-                                int totalcount = Pickups[obj]["amount"] + ItemDatabase.usersInventory[identifier][Pickups[obj]["name"]].getCount();
+                                int totalcount = Pickups[obj]["amount"] + ItemDatabase.UserInventory[identifier][Pickups[obj]["name"]].getCount();
 
-                                if (ItemDatabase.svItems[Pickups[obj]["name"]].getLimit() < totalcount)
+                                if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() < totalcount)
                                 {
                                     TriggerClientEvent(player, "vorp:TipRight", Config.lang["fullInventory"], 2000);
                                     return;
@@ -361,8 +361,8 @@ namespace VorpInventory.Scripts
                             TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
                                 Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
                             TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
-                            player.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.userWeapons[weaponId].getPropietary(),
-                                ItemDatabase.userWeapons[weaponId].getName(), ItemDatabase.userWeapons[weaponId].getAllAmmo(), ItemDatabase.userWeapons[weaponId].getAllComponents());
+                            player.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
+                                ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
                             player.TriggerEvent("vorpInventory:playerAnim", obj);
                             Pickups.Remove(obj);
                         }
@@ -422,7 +422,7 @@ namespace VorpInventory.Scripts
         private void serverDropWeapon([FromSource] Player source, int weaponId)
         {
             subWeapon(int.Parse(source.Handle), weaponId);
-            source.TriggerEvent("vorpInventory:createPickup", ItemDatabase.userWeapons[weaponId].getName(), 1, weaponId);
+            source.TriggerEvent("vorpInventory:createPickup", ItemDatabase.UserWeapons[weaponId].getName(), 1, weaponId);
         }
 
         //Items methods
@@ -446,12 +446,12 @@ namespace VorpInventory.Scripts
 
             string identifier = "steam:" + source.Identifiers["steam"];
 
-            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
             {
                 subWeapon(int.Parse(source.Handle), weaponId);
                 addWeapon(int.Parse(p.Handle), weaponId);
-                p.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.userWeapons[weaponId].getPropietary(),
-                    ItemDatabase.userWeapons[weaponId].getName(), ItemDatabase.userWeapons[weaponId].getAllAmmo(), ItemDatabase.userWeapons[weaponId].getAllComponents());
+                p.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
+                    ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
             }
         }
         private void serverGiveItem([FromSource] Player source, string itemname, int amount, int target)
@@ -469,14 +469,14 @@ namespace VorpInventory.Scripts
             string identifier = "steam:" + source.Identifiers["steam"];
             string targetIdentifier = "steam:" + p.Identifiers["steam"];
             Debug.WriteLine("giving an item");
-            if (ItemDatabase.usersInventory.ContainsKey(identifier) && ItemDatabase.usersInventory.ContainsKey(targetIdentifier) && ItemDatabase.usersInventory[identifier].ContainsKey(itemname))
+            if (ItemDatabase.UserInventory.ContainsKey(identifier) && ItemDatabase.UserInventory.ContainsKey(targetIdentifier) && ItemDatabase.UserInventory[identifier].ContainsKey(itemname))
             {
-                if (ItemDatabase.usersInventory[identifier][itemname].getCount() >= amount)
+                if (ItemDatabase.UserInventory[identifier][itemname].getCount() >= amount)
                 {
-                    if (ItemDatabase.usersInventory[targetIdentifier].ContainsKey(itemname))
+                    if (ItemDatabase.UserInventory[targetIdentifier].ContainsKey(itemname))
                     {
-                        if (ItemDatabase.usersInventory[targetIdentifier][itemname].getCount() + amount
-                            >= ItemDatabase.usersInventory[targetIdentifier][itemname].getLimit())
+                        if (ItemDatabase.UserInventory[targetIdentifier][itemname].getCount() + amount
+                            >= ItemDatabase.UserInventory[targetIdentifier][itemname].getLimit())
                         {
                             give = false;
                         }
@@ -552,11 +552,11 @@ namespace VorpInventory.Scripts
                         userinv.Add(itemname.item.ToString(), item);
                     }
                 }
-                ItemDatabase.usersInventory[steamId] = userinv;
+                ItemDatabase.UserInventory[steamId] = userinv;
             }
             else
             {
-                ItemDatabase.usersInventory[steamId] = userinv;
+                ItemDatabase.UserInventory[steamId] = userinv;
             }
 
             source.TriggerEvent("vorpInventory:giveInventory", inventory);
@@ -638,7 +638,7 @@ namespace VorpInventory.Scripts
                            auused2 = true;
                        }
                        wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charIdentifier);
-                       ItemDatabase.userWeapons[wp.getId()] = wp;
+                       ItemDatabase.UserWeapons[wp.getId()] = wp;
                    }
 
                    source.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);

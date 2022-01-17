@@ -13,10 +13,10 @@ namespace VorpInventory.Database
         // List of items with their labels so that the client knows the label of each item
         public static dynamic items;
         // List of itemclass with the name of its owner to be able to do the whole theme of adding and removing when it is stolen and others
-        public static Dictionary<string, Dictionary<string, ItemClass>> usersInventory = new Dictionary<string, Dictionary<string, ItemClass>>();
+        public static Dictionary<string, Dictionary<string, ItemClass>> UserInventory = new Dictionary<string, Dictionary<string, ItemClass>>();
 
-        public static Dictionary<int, WeaponClass> userWeapons = new Dictionary<int, WeaponClass>();
-        public static Dictionary<string, Items> svItems = new Dictionary<string, Items>();
+        public static Dictionary<int, WeaponClass> UserWeapons = new Dictionary<int, WeaponClass>();
+        public static Dictionary<string, Items> ServerItems = new Dictionary<string, Items>();
 
         public static void SetupItems()
         {
@@ -32,7 +32,7 @@ namespace VorpInventory.Database
                     items = result;
                     foreach (dynamic item in items)
                     {
-                        svItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove, item.type, item.usable));
+                        ServerItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove, item.type, item.usable));
                     }
                 }
             }));
@@ -80,7 +80,7 @@ namespace VorpInventory.Database
                                 auused2 = true;
                             }
                             wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charId);
-                            userWeapons[wp.getId()] = wp;
+                            UserWeapons[wp.getId()] = wp;
                         }
                         catch (Exception ex)
                         {
