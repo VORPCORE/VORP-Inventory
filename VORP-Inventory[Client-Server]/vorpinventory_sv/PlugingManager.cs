@@ -1,4 +1,5 @@
 ﻿using CitizenFX.Core;
+using static CitizenFX.Core.Native.API;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,6 +23,8 @@ namespace VorpInventory
             Logger.Info($"Init VORP Inventory");
             PlayerList = Players;
 
+            Setup();
+
             Instance = this;
             Logger.Info($"VORP Inventory Loaded");
         }
@@ -34,6 +37,37 @@ namespace VorpInventory
         public void DetachTickHandler(Func<Task> task)
         {
             Tick -= task;
+        }
+
+        async Task VendorReady()
+        {
+            while (!(GetResourceState("ghmattimysql") == "started"))
+            {
+                await Delay(500);
+            }
+        }
+
+        async void Setup()
+        {
+            await VendorReady(); // wait till ghmattimysql resource has started
+
+            Database.ItemDatabase.SetupItems();
+            Database.ItemDatabase.SetupLoadouts();
+
+            AddEvents();
+        }
+
+        void AddEvents()
+        {
+            EventRegistry.Add("playerJoined", new Action<Player>(player =>
+            {
+
+            }));
+
+            EventRegistry.Add("playerDropped", new Action<Player>(player =>
+            {
+
+            }));
         }
     }
 }
