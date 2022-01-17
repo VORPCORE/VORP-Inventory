@@ -306,34 +306,41 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void useItem([FromSource] Player source, string itemname, params object[] args)
+        private void useItem([FromSource] Player source, string itemName, params object[] args)
         {
-            string identifier = "steam:" + source.Identifiers["steam"];
-            if (usableItemsFunctions.ContainsKey(itemname))
+            try
             {
-                if (ItemDatabase.ServerItems.ContainsKey(itemname))
+                if (!usableItemsFunctions.ContainsKey(itemName))
                 {
-                    Dictionary<string, object> argumentos = new Dictionary<string, object>()
+                    Logger.Error($"Item '{itemName}' doesn't exist as a usable item");
+                    return;
+                }
+
+                Items item = ItemDatabase.GetItem(itemName);
+                if (item == null)
+                {
+                    Logger.Error($"Item '{itemName}' not found in Server Items.");
+                    return;
+                }
+
+                Dictionary<string, object> argumentos = new()
                     {
                         {"source", int.Parse(source.Handle)},
-                        {"item", ItemDatabase.ServerItems[itemname].getItemDictionary()},
+                        {"item", ItemDatabase.ServerItems[itemName].getItemDictionary()},
                         {"args",args}
                     };
-                    usableItemsFunctions[itemname](argumentos);
-                }
-                else
-                {
-                    Debug.WriteLine($"Use Item Error{itemname}");
-                }
+                usableItemsFunctions[itemName](argumentos);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"useItem");
             }
         }
 
         private void registerUsableItem(string name, CallbackDelegate cb)
         {
             usableItemsFunctions[name] = cb;
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"{API.GetCurrentResourceName()}: Function callback of item: {name} registered!");
-            Console.ForegroundColor = ConsoleColor.White;
+            Logger.Info($"{API.GetCurrentResourceName()}: Function callback of item: {name} registered!");
         }
 
         private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
