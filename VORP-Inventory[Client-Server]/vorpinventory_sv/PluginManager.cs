@@ -49,11 +49,24 @@ namespace VorpInventory
             Tick -= task;
         }
 
+        string _GHMattiMySqlResourceState => GetResourceState("ghmattimysql");
+
         async Task VendorReady()
         {
-            while (!(GetResourceState("ghmattimysql") == "started"))
+            string dbResource = _GHMattiMySqlResourceState;
+            if (dbResource == "missing")
+            {
+                while (true)
+                {
+                    Logger.Error($"ghmattimysql resource not found! Please make sure you have the resource!");
+                    await Delay(1000);
+                }
+            }
+
+            while (!(dbResource == "started"))
             {
                 await Delay(500);
+                dbResource = _GHMattiMySqlResourceState;
             }
         }
 
