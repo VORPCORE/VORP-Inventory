@@ -739,7 +739,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void subItem(int player, string name, int cuantity)
+        private void subItem(int player, string name, int quantity)
         {
             if (!ItemDatabase.ServerItems.ContainsKey(name))
             {
@@ -760,9 +760,9 @@ namespace VorpInventory.Scripts
             {
                 if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
                 {
-                    if (cuantity <= ItemDatabase.UserInventory[identifier][name].getCount())
+                    if (quantity <= ItemDatabase.UserInventory[identifier][name].getCount())
                     {
-                        ItemDatabase.UserInventory[identifier][name].quitCount(cuantity);
+                        ItemDatabase.UserInventory[identifier][name].quitCount(quantity);
                         SaveInventoryItemsSupport(p);
                     }
                     p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.UserInventory[identifier][name].getCount());
