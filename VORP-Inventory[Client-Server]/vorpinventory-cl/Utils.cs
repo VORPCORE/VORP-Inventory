@@ -103,9 +103,9 @@ namespace vorpinventory_cl
             return aux;
         }
 
-        public static List<int> getNearestPlayers()
+        public static List<int> getNearestPlayers(float distance = 5.0f)
         {
-            float closestDistance = 5.0F;
+            float closestDistance = distance;
             int localPed = API.PlayerPedId();
             Vector3 coords = API.GetEntityCoords(localPed, true, true);
             List<int> closestPlayers = new List<int>();
@@ -121,10 +121,10 @@ namespace vorpinventory_cl
                 if (target != localPed)
                 {
                     Vector3 targetCoords = API.GetEntityCoords(target, true, true);
-                    float distance = API.GetDistanceBetweenCoords(targetCoords.X, targetCoords.Y, targetCoords.Z,
+                    float distanceBetween = API.GetDistanceBetweenCoords(targetCoords.X, targetCoords.Y, targetCoords.Z,
                         coords.X, coords.Y, coords.Z, false);
 
-                    if (closestDistance > distance)
+                    if (closestDistance > distanceBetween)
                     {
                         closestPlayers.Add(player);
                     }
