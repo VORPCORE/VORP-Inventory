@@ -1,10 +1,12 @@
 ﻿using CitizenFX.Core;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VorpInventory.Database;
 using VorpInventory.Diagnostics;
+using VorpInventory.Extensions;
 using VorpInventory.Models;
 
 namespace VorpInventory.Scripts
@@ -520,9 +522,14 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void getItemsTable([FromSource] Player source)
+        private async void getItemsTable([FromSource] Player source)
         {
-            //Need rework to callback 2.0
+            // must have a better way
+            while (ItemDatabase.items is null)
+            {
+                await BaseScript.Delay(500);
+            }
+
             if (ItemDatabase.items.Count != 0)
             {
                 source.TriggerEvent("vorpInventory:giveItemsTable", ItemDatabase.items);
@@ -531,43 +538,47 @@ namespace VorpInventory.Scripts
 
         private void getInventory([FromSource] Player source)
         {
-            string steamId = "steam:" + source.Identifiers["steam"];
+            string identifier = "steam:" + source.Identifiers["steam"];
+            dynamic CoreUser = source.GetCoreUserCharacter();
 
-            dynamic CoreUser = PluginManager.CORE.getUser(int.Parse(source.Handle)).getUsedCharacter;
+            if (CoreUser == null)
+            {
+                Logger.Error($"Core User '{source.Handle}' could not be found.");
+                return;
+            }
 
             int charIdentifier = CoreUser.charIdentifier;
             string inventory = CoreUser.inventory;
 
             Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
             List<WeaponClass> userwep = new List<WeaponClass>();
+
             if (inventory != null)
             {
-                dynamic thing = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(inventory);
+                // turn this into a class
+                dynamic coreInventory = JsonConvert.DeserializeObject<dynamic>(inventory);
                 foreach (dynamic itemname in ItemDatabase.items)
                 {
-                    if (thing[itemname.item.ToString()] != null)
+                    if (coreInventory[itemname.item.ToString()] != null)
                     {
-                        ItemClass item = new ItemClass(int.Parse(thing[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
+                        ItemClass item = new ItemClass(int.Parse(coreInventory[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
                             itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
                         userinv.Add(itemname.item.ToString(), item);
                     }
                 }
-                ItemDatabase.UserInventory[steamId] = userinv;
             }
-            else
+
+            if (!ItemDatabase.UserInventory.ContainsKey(identifier))
             {
-                ItemDatabase.UserInventory[steamId] = userinv;
+                ItemDatabase.UserInventory.Add(identifier, userinv);
             }
+            ItemDatabase.UserInventory[identifier] = userinv;
 
             source.TriggerEvent("vorpInventory:giveInventory", inventory);
 
-            Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { steamId, charIdentifier }, new Action<dynamic>((weaponsinvento) =>
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier }, new Action<dynamic>((weaponsinvento) =>
             {
-                if (weaponsinvento.Count == 0)
-                {
-
-                }
-                else
+                if (weaponsinvento.Count > 0)
                 {
                     WeaponClass wp;
                     foreach (var row in weaponsinvento)
@@ -601,6 +612,7 @@ namespace VorpInventory.Scripts
                         ItemDatabase.UserWeapons[wp.getId()] = wp;
                     }
 
+                    // is there something wrong with returning an empty list?
                     source.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
                 }
 
