@@ -93,10 +93,10 @@ namespace vorpinventory_cl
                 0.03F, 0.1F, 100, 1, 1, 190, 0);
         }
 
-        public static Dictionary<string, dynamic> expandoProcessing(dynamic objet)
+        public static Dictionary<string, dynamic> ProcessDynamicObject(dynamic dynObject)
         {
             Dictionary<string, dynamic> aux = new Dictionary<string, dynamic>();
-            foreach (var o in objet)
+            foreach (var o in dynObject)
             {
                 aux.Add(o.Key, o.Value);
             }

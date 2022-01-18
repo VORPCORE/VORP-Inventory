@@ -335,7 +335,7 @@ namespace vorpinventory_cl
 
         private void NUIUnequipWeapon(ExpandoObject obj)
         {
-            Dictionary<string, object> data = Utils.expandoProcessing(obj);
+            Dictionary<string, object> data = Utils.ProcessDynamicObject(obj);
             if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data["id"].ToString())))
             {
                 vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].UnequipWeapon();
@@ -402,8 +402,8 @@ namespace vorpinventory_cl
         {
             int playerPed = API.PlayerPedId();
             List<int> players = Utils.getNearestPlayers();
-            Dictionary<string, object> data = Utils.expandoProcessing(obj);
-            Dictionary<string, object> data2 = Utils.expandoProcessing(data["data"]);
+            Dictionary<string, object> data = Utils.ProcessDynamicObject(obj);
+            Dictionary<string, object> data2 = Utils.ProcessDynamicObject(data["data"]);
             //Debug.WriteLine(data2["id"].ToString());
             foreach (var varia in players)
             {
@@ -459,7 +459,7 @@ namespace vorpinventory_cl
 
         private void NUIUseItem(ExpandoObject obj)
         {
-            Dictionary<string, object> data = Utils.expandoProcessing(obj);
+            Dictionary<string, object> data = Utils.ProcessDynamicObject(obj);
             // foreach (var VARIABLE in data)
             // {
             //     Debug.WriteLine($"{VARIABLE.Key}: {VARIABLE.Value}");
@@ -517,7 +517,7 @@ namespace vorpinventory_cl
 
         private void NUIDropItem(ExpandoObject obj)
         {
-            Dictionary<string, dynamic> aux = Utils.expandoProcessing(obj);
+            Dictionary<string, dynamic> aux = Utils.ProcessDynamicObject(obj);
             string itemname = aux["item"];
             string type = aux["type"].ToString();
 
