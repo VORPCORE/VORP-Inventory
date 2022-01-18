@@ -3,6 +3,8 @@
 
     "OpenKey": "0xC1989F95", //0x4CC0E2FE - [B]
 
+    "PickupKey": "0xF84FA74F", // Default: RMB
+
     "DropOnRespawn": {
         "Money": false,
         "Weapons": false,
