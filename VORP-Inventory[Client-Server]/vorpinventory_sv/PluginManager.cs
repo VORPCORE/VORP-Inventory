@@ -95,11 +95,12 @@ namespace VorpInventory
 
             }));
 
-            EventRegistry.Add("playerDropped", new Action<Player, string>(([FromSource] player, reason) =>
+            EventRegistry.Add("playerDropped", new Action<Player, string>(async ([FromSource] player, reason) =>
             {
                 string steamIdent = $"steam:{player.Identifiers["steam"]}";
                 if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
                 {
+                    await _scriptVorpPlayerInventory.SaveInventoryItemsSupport(player);
                     Database.ItemDatabase.UserInventory.Remove(steamIdent);
                 }
             }));
