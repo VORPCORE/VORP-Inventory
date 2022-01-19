@@ -7,7 +7,7 @@
     <ProjectGuid>{C345E405-24BC-42B6-9BDF-9DE5C520B302}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>vorpinventory_cl</RootNamespace>
+    <RootNamespace>VorpInventory</RootNamespace>
     <AssemblyName>vorpinventory_cl.net</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="GetConfig.cs" />
     <Compile Include="InventoryAPI.cs" />
     <Compile Include="ItemClass.cs" />
@@ -60,6 +61,9 @@
     <Compile Include="Utils.cs" />
     <Compile Include="vorp_inventoryClient.cs" />
     <Compile Include="WeaponClass.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="config\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

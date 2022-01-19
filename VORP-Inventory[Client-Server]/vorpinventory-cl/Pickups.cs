@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using vorpinventory_sv;
 
-namespace vorpinventory_cl
+namespace VorpInventory
 {
     public class Pickups : BaseScript
     {
