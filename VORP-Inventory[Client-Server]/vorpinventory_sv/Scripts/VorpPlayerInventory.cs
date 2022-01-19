@@ -602,6 +602,9 @@ namespace VorpInventory.Scripts
             Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
             List<WeaponClass> userwep = new List<WeaponClass>();
 
+            if (PluginManager.ActiveCharacters[player.Handle] != charIdentifier)
+                PluginManager.ActiveCharacters[player.Handle] = charIdentifier;
+
             if (inventory != null)
             {
                 // turn this into a class
