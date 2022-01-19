@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Threading.Tasks;
+using VorpInventory.Diagnostics;
 using vorpinventory_sv;
 
 namespace VorpInventory
@@ -578,13 +579,11 @@ namespace VorpInventory
         [Tick]
         private async Task OnKey()
         {
-            if (!GetConfig.loaded)
+            if (API.IsControlJustReleased(1, PluginManager.CONTROL_OPEN) && API.IsInputDisabled(0))
             {
-                return;
-            }
+                Logger.Debug($"Key pressed");
+                if (!PluginManager.IsLoaded) return;
 
-            if (API.IsControlJustReleased(1, GetConfig.openKey) && API.IsInputDisabled(0))
-            {
                 if (InInventory)
                 {
                     CloseInv();

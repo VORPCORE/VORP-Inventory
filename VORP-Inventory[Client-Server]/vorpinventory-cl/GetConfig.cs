@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
 
-namespace vorpinventory_cl
+namespace VorpInventory
 {
     class GetConfig : BaseScript
     {

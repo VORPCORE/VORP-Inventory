@@ -1,7 +1,7 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using System.Collections.Generic;
-using vorpinventory_cl;
+using VorpInventory;
 
 namespace vorpinventory_sv
 {
