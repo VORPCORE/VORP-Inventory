@@ -11,7 +11,17 @@ namespace VorpInventory.Database
     public class ItemDatabase : BaseScript
     {
         // List of items with their labels so that the client knows the label of each item
-        public static dynamic items;
+        private dynamic _items;
+        public dynamic items // hack till refactor can be complete; items is being cleared by the garbage collector
+        {
+            get {
+                if (_items == null)
+                    SetupItems();
+
+                return _items;
+            }
+            set { _items = value; }
+        }
         // List of itemclass with the name of its owner to be able to do the whole theme of adding and removing when it is stolen and others
         public static Dictionary<string, Dictionary<string, ItemClass>> UserInventory = new Dictionary<string, Dictionary<string, ItemClass>>();
 

@@ -21,7 +21,7 @@ namespace VorpInventory
         public ExportDictionary ExportRegistry => Exports;
 
         // Database
-        Database.ItemDatabase _itemDatabase = new();
+        public static Database.ItemDatabase ItemsDB = new();
         // private scripts
         Config _scriptConfig = new Config();
         VorpCoreInvenoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInvenoryAPI();
@@ -80,7 +80,7 @@ namespace VorpInventory
                 CORE = dic;
             }));
 
-            RegisterScript(_itemDatabase);
+            RegisterScript(ItemsDB);
             RegisterScript(_scriptConfig);
             RegisterScript(_scriptVorpCoreInventoryApi);
             RegisterScript(_scriptVorpPlayerInventory);
@@ -117,7 +117,7 @@ namespace VorpInventory
                 
                 Logger.Info($"Stopping VORP Inventory");
 
-                UnregisterScript(_itemDatabase);
+                UnregisterScript(ItemsDB);
                 UnregisterScript(_scriptConfig);
                 UnregisterScript(_scriptVorpCoreInventoryApi);
                 UnregisterScript(_scriptVorpPlayerInventory);
