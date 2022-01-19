@@ -40,10 +40,10 @@ namespace VorpInventory.Scripts
             EventHandlers["vorp:use"] += new Action<Player, string, object[]>(useItem);
         }
 
-        public async Task SaveInventoryItemsSupport(Player source)
+        public async Task SaveInventoryItemsSupport(Player player)
         {
             await Delay(1000);
-            string identifier = "steam:" + source.Identifiers["steam"];
+            string identifier = "steam:" + player.Identifiers["steam"];
             Dictionary<string, int> items = new Dictionary<string, int>();
 
             Dictionary<string, ItemClass> userItems = ItemDatabase.GetInventory(identifier);
@@ -57,9 +57,14 @@ namespace VorpInventory.Scripts
             if (items.Count >= 0)
             {
                 // This needs to be changed, either inventory is added directly into CORE or inventory manages active clients
-                dynamic coreUserCharacter = source.GetCoreUserCharacter();
-                if (coreUserCharacter == null) return; // we don't know the user, so we cannot save them (Call Dr House!)
-                int charIdentifier = coreUserCharacter.charIdentifier;
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                int charIdentifier = 0;
+
+                if (PluginManager.ActiveCharacters.ContainsKey(player.Handle) && coreUserCharacter == null)
+                    charIdentifier = PluginManager.ActiveCharacters[player.Handle];
+
+                if (coreUserCharacter != null)
+                    charIdentifier = coreUserCharacter.charIdentifier;
 
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
                 Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier });

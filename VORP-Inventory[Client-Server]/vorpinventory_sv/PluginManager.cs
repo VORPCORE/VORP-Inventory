@@ -27,6 +27,8 @@ namespace VorpInventory
         VorpCoreInvenoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInvenoryAPI();
         VorpPlayerInventory _scriptVorpPlayerInventory = new VorpPlayerInventory();
 
+        public static Dictionary<string, int> ActiveCharacters = new();
+
         public PluginManager()
         {
             Logger.Info($"Init VORP Inventory");
@@ -92,7 +94,8 @@ namespace VorpInventory
         {
             EventRegistry.Add("playerJoined", new Action<Player>(([FromSource] player) =>
             {
-
+                if (!ActiveCharacters.ContainsKey(player.Handle))
+                    ActiveCharacters.Add(player.Handle, -1);
             }));
 
             EventRegistry.Add("playerDropped", new Action<Player, string>(async ([FromSource] player, reason) =>
@@ -100,6 +103,7 @@ namespace VorpInventory
                 string steamIdent = $"steam:{player.Identifiers["steam"]}";
                 if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
                 {
+                    ActiveCharacters.Remove(player.Handle);
                     await _scriptVorpPlayerInventory.SaveInventoryItemsSupport(player);
                     Database.ItemDatabase.UserInventory.Remove(steamIdent);
                 }
