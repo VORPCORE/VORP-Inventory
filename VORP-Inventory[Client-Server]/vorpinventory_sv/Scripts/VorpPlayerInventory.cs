@@ -155,13 +155,16 @@ namespace VorpInventory.Scripts
             string identifier = "steam:" + player.Identifiers["steam"];
 
             dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
-            {
-                Logger.Error($"SaveInventoryItemsSupport: Player '{player}' CORE User does not exist.");
-                return;
-            }
+            int charIdentifier = 0;
 
-            int charIdentifier = coreUserCharacter.charIdentifier;
+            if (PluginManager.ActiveCharacters.ContainsKey(player.Handle) && coreUserCharacter == null)
+                charIdentifier = PluginManager.ActiveCharacters[player.Handle];
+
+            if (coreUserCharacter != null)
+                charIdentifier = coreUserCharacter.charIdentifier;
+
+            if (charIdentifier > 0)
+                Logger.Debug($"Saving inventory for '{charIdentifier}'.");
 
             Dictionary<string, int> items = new Dictionary<string, int>();
             if (ItemDatabase.UserInventory.ContainsKey(identifier))
@@ -601,6 +604,9 @@ namespace VorpInventory.Scripts
 
             Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
             List<WeaponClass> userwep = new List<WeaponClass>();
+
+            if (!PluginManager.ActiveCharacters.ContainsKey(player.Handle))
+                PluginManager.ActiveCharacters.Add(player.Handle, charIdentifier);
 
             if (PluginManager.ActiveCharacters[player.Handle] != charIdentifier)
                 PluginManager.ActiveCharacters[player.Handle] = charIdentifier;

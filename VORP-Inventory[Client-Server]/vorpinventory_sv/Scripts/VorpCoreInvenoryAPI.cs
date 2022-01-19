@@ -66,8 +66,11 @@ namespace VorpInventory.Scripts
                 if (coreUserCharacter != null)
                     charIdentifier = coreUserCharacter.charIdentifier;
 
+                if (charIdentifier > 0)
+                    Logger.Debug($"Saving inventory for '{charIdentifier}'.");
+
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier });
+                Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
             }
         }
 
