@@ -168,10 +168,15 @@ namespace vorpinventory_cl
                     auused2 = true;
                 }
                 WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), ammos, components, auused, auused2);
-                userWeapons.Add(auxweapon.getId(), auxweapon);
-                if (auxweapon.getUsed())
+
+                if (!userWeapons.ContainsKey(auxweapon.getId()))
                 {
-                    Utils.useWeapon(auxweapon.getId());
+                    userWeapons.Add(auxweapon.getId(), auxweapon);
+
+                    if (auxweapon.getUsed())
+                    {
+                        Utils.useWeapon(auxweapon.getId());
+                    }
                 }
             }
         }
