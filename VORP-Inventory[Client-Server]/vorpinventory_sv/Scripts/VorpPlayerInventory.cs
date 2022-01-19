@@ -574,14 +574,14 @@ namespace VorpInventory.Scripts
         private async void getItemsTable([FromSource] Player source)
         {
             // must have a better way
-            while (ItemDatabase.items is null)
+            while (PluginManager.ItemsDB.items is null)
             {
                 await BaseScript.Delay(500);
             }
 
-            if (ItemDatabase.items.Count != 0)
+            if (PluginManager.ItemsDB.items.Count != 0)
             {
-                source.TriggerEvent("vorpInventory:giveItemsTable", ItemDatabase.items);
+                source.TriggerEvent("vorpInventory:giveItemsTable", PluginManager.ItemsDB.items);
             }
         }
 
@@ -606,7 +606,8 @@ namespace VorpInventory.Scripts
             {
                 // turn this into a class
                 dynamic coreInventory = JsonConvert.DeserializeObject<dynamic>(inventory);
-                foreach (dynamic itemname in ItemDatabase.items)
+                // turn this into a class, its horrible like this, nothing means anything
+                foreach (dynamic itemname in PluginManager.ItemsDB.items)
                 {
                     if (coreInventory[itemname.item.ToString()] != null)
                     {
