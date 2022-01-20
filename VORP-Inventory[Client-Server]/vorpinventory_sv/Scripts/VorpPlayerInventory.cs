@@ -160,7 +160,7 @@ namespace VorpInventory.Scripts
             if (PluginManager.ActiveCharacters.ContainsKey(player.Handle) && coreUserCharacter == null)
                 charIdentifier = PluginManager.ActiveCharacters[player.Handle];
 
-            if (coreUserCharacter != null && coreUserCharacter.charIdentifier)
+            if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
                 charIdentifier = coreUserCharacter?.charIdentifier;
 
             if (charIdentifier > 0)
