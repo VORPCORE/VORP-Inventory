@@ -160,11 +160,17 @@ namespace VorpInventory.Scripts
             if (PluginManager.ActiveCharacters.ContainsKey(player.Handle) && coreUserCharacter == null)
                 charIdentifier = PluginManager.ActiveCharacters[player.Handle];
 
-            if (coreUserCharacter != null)
-                charIdentifier = coreUserCharacter.charIdentifier;
+            if (coreUserCharacter != null && coreUserCharacter.charIdentifier)
+                charIdentifier = coreUserCharacter?.charIdentifier;
 
             if (charIdentifier > 0)
                 Logger.Debug($"Saving inventory for '{charIdentifier}'.");
+
+            if (charIdentifier == 0)
+            {
+                Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
+                return;
+            }
 
             Dictionary<string, int> items = new Dictionary<string, int>();
             if (ItemDatabase.UserInventory.ContainsKey(identifier))
