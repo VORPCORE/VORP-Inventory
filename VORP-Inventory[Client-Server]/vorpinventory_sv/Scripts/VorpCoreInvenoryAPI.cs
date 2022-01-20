@@ -62,7 +62,7 @@ namespace VorpInventory.Scripts
                     dynamic coreUserCharacter = player.GetCoreUserCharacter();
                     int charIdentifier = 0;
 
-                    if (PluginManager.ActiveCharacters.ContainsKey(player.Handle) && coreUserCharacter == null)
+                    if (PluginManager.ActiveCharacters.ContainsKey(player.Handle))
                         charIdentifier = PluginManager.ActiveCharacters[player.Handle];
 
                     if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
@@ -109,15 +109,18 @@ namespace VorpInventory.Scripts
                 if (totalcount <= Config.MaxWeapons)
                 {
                     cb.Invoke(true);
+                    return;
                 }
                 else
                 {
                     cb.Invoke(false);
+                    return;
                 }
             }
             else
             {
                 cb.Invoke(true);
+                return;
             }
 
         }
@@ -139,15 +142,18 @@ namespace VorpInventory.Scripts
                 if ((totalcount <= Config.MaxItems))
                 {
                     cb.Invoke(true);
+                    return;
                 }
                 else
                 {
                     cb.Invoke(false);
+                    return;
                 }
             }
             else
             {
                 cb.Invoke(true);
+                return;
             }
 
         }
