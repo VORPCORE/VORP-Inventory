@@ -179,6 +179,7 @@ namespace VorpInventory.Scripts
                 {
                     items.Add(item.Key, item.Value.getCount());
                 }
+
                 if (items.Count > 0)
                 {
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);

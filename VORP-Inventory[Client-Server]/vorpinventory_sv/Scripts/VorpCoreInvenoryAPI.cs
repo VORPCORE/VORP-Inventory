@@ -46,39 +46,38 @@ namespace VorpInventory.Scripts
             {
                 await Delay(1000);
                 string identifier = "steam:" + player.Identifiers["steam"];
-                Dictionary<string, int> items = new Dictionary<string, int>();
 
-                Dictionary<string, ItemClass> userItems = ItemDatabase.GetInventory(identifier);
-                if (userItems == null) return;
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                int charIdentifier = 0;
 
-                foreach (var item in userItems)
+                if (PluginManager.ActiveCharacters.ContainsKey(player.Handle))
+                    charIdentifier = PluginManager.ActiveCharacters[player.Handle];
+
+                if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
+                    charIdentifier = coreUserCharacter?.charIdentifier;
+
+                if (charIdentifier > 0)
+                    Logger.Debug($"Saving inventory for '{charIdentifier}'.");
+
+                if (charIdentifier == 0)
                 {
-                    items.Add(item.Key, item.Value.getCount());
+                    Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
+                    return;
                 }
 
-                if (items.Count >= 0)
+                Dictionary<string, int> items = new Dictionary<string, int>();
+                if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
-                    // This needs to be changed, either inventory is added directly into CORE or inventory manages active clients
-                    dynamic coreUserCharacter = player.GetCoreUserCharacter();
-                    int charIdentifier = 0;
-
-                    if (PluginManager.ActiveCharacters.ContainsKey(player.Handle))
-                        charIdentifier = PluginManager.ActiveCharacters[player.Handle];
-
-                    if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
-                        charIdentifier = coreUserCharacter?.charIdentifier;
-
-                    if (charIdentifier > 0)
-                        Logger.Debug($"Saving inventory for '{charIdentifier}'.");
-
-                    if (charIdentifier == 0)
+                    foreach (var item in ItemDatabase.UserInventory[identifier])
                     {
-                        Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
-                        return;
+                        items.Add(item.Key, item.Value.getCount());
                     }
 
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET `inventory` = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
+                    if (items.Count > 0)
+                    {
+                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                        Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
+                    }
                 }
             }
             catch (Exception ex)
