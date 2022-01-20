@@ -1,4 +1,5 @@
 ﻿using System;
+using static CitizenFX.Core.Native.API;
 
 namespace VorpInventory.Diagnostics
 {
@@ -36,7 +37,10 @@ namespace VorpInventory.Diagnostics
 
         public static void Debug(string msg)
         {
-            WriteLine("DEBUG", msg);
+            bool isDebugging = GetConvarInt($"vorp_debug_enable", 0) == 1;
+
+            if (isDebugging)
+                WriteLine("DEBUG", msg);
         }
 
         private static void WriteLine(string title, string msg)
