@@ -1,4 +1,7 @@
 ﻿using CitizenFX.Core;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using VorpInventory.Diagnostics;
 
 namespace VorpInventory.Extensions
@@ -25,6 +28,11 @@ namespace VorpInventory.Extensions
                 return null;
             }
             return coreUser.getUsedCharacter;
+        }
+
+        public static bool HasProperty(ExpandoObject obj, string propertyName)
+        {
+            return obj != null && ((IDictionary<String, object>)obj).ContainsKey(propertyName);
         }
     }
 }

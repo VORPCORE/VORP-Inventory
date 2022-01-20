@@ -42,35 +42,48 @@ namespace VorpInventory.Scripts
 
         public async Task SaveInventoryItemsSupport(Player player)
         {
-            await Delay(1000);
-            string identifier = "steam:" + player.Identifiers["steam"];
-            Dictionary<string, int> items = new Dictionary<string, int>();
-
-            Dictionary<string, ItemClass> userItems = ItemDatabase.GetInventory(identifier);
-            if (userItems == null) return;
-
-            foreach (var item in userItems)
+            try
             {
-                items.Add(item.Key, item.Value.getCount());
+                await Delay(1000);
+                string identifier = "steam:" + player.Identifiers["steam"];
+                Dictionary<string, int> items = new Dictionary<string, int>();
+
+                Dictionary<string, ItemClass> userItems = ItemDatabase.GetInventory(identifier);
+                if (userItems == null) return;
+
+                foreach (var item in userItems)
+                {
+                    items.Add(item.Key, item.Value.getCount());
+                }
+
+                if (items.Count >= 0)
+                {
+                    // This needs to be changed, either inventory is added directly into CORE or inventory manages active clients
+                    dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                    int charIdentifier = 0;
+
+                    if (PluginManager.ActiveCharacters.ContainsKey(player.Handle) && coreUserCharacter == null)
+                        charIdentifier = PluginManager.ActiveCharacters[player.Handle];
+
+                    if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
+                        charIdentifier = coreUserCharacter?.charIdentifier;
+
+                    if (charIdentifier > 0)
+                        Logger.Debug($"Saving inventory for '{charIdentifier}'.");
+
+                    if (charIdentifier == 0)
+                    {
+                        Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
+                        return;
+                    }
+
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                    Exports["ghmattimysql"].execute($"UPDATE characters SET `inventory` = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
+                }
             }
-
-            if (items.Count >= 0)
+            catch (Exception ex)
             {
-                // This needs to be changed, either inventory is added directly into CORE or inventory manages active clients
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
-                int charIdentifier = 0;
-
-                if (PluginManager.ActiveCharacters.ContainsKey(player.Handle) && coreUserCharacter == null)
-                    charIdentifier = PluginManager.ActiveCharacters[player.Handle];
-
-                if (coreUserCharacter != null)
-                    charIdentifier = coreUserCharacter.charIdentifier;
-
-                if (charIdentifier > 0)
-                    Logger.Debug($"Saving inventory for '{charIdentifier}'.");
-
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
+                Logger.Error(ex, "SaveInventoryItemsSupport");
             }
         }
 
