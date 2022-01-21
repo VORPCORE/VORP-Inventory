@@ -597,92 +597,103 @@ namespace VorpInventory.Scripts
 
         private void getInventory([FromSource] Player player)
         {
-            string identifier = "steam:" + player.Identifiers["steam"];
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-
-            if (coreUserCharacter == null)
+            try
             {
-                Logger.Error($"getInventory: Core User '{player.Handle}' could not be found.");
-                return;
-            }
+                string identifier = "steam:" + player.Identifiers["steam"];
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
 
-            int charIdentifier = coreUserCharacter.charIdentifier;
-            string inventory = coreUserCharacter.inventory;
-
-            Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
-            List<WeaponClass> userwep = new List<WeaponClass>();
-
-            if (!PluginManager.ActiveCharacters.ContainsKey(player.Handle))
-                PluginManager.ActiveCharacters.Add(player.Handle, charIdentifier);
-
-            if (PluginManager.ActiveCharacters[player.Handle] != charIdentifier)
-                PluginManager.ActiveCharacters[player.Handle] = charIdentifier;
-
-            if (inventory != null)
-            {
-                // turn this into a class
-                dynamic coreInventory = JsonConvert.DeserializeObject<dynamic>(inventory);
-                // turn this into a class, its horrible like this, nothing means anything
-                foreach (dynamic itemname in PluginManager.ItemsDB.items)
+                if (coreUserCharacter == null)
                 {
-                    if (coreInventory[itemname.item.ToString()] != null)
+                    Logger.Error($"getInventory: Core User '{player.Handle}' could not be found.");
+                    return;
+                }
+
+                int charIdentifier = coreUserCharacter.charIdentifier;
+                string inventory = coreUserCharacter.inventory;
+
+                Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+                List<WeaponClass> userwep = new List<WeaponClass>();
+
+                if (!PluginManager.ActiveCharacters.ContainsKey(player.Handle))
+                    PluginManager.ActiveCharacters.Add(player.Handle, charIdentifier);
+
+                if (PluginManager.ActiveCharacters[player.Handle] != charIdentifier)
+                    PluginManager.ActiveCharacters[player.Handle] = charIdentifier;
+
+                if (inventory != null)
+                {
+                    // turn this into a class
+                    dynamic coreInventory = JsonConvert.DeserializeObject<dynamic>(inventory);
+                    // turn this into a class, its horrible like this, nothing means anything
+                    foreach (dynamic itemname in PluginManager.ItemsDB.items)
                     {
-                        ItemClass item = new ItemClass(int.Parse(coreInventory[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
-                            itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
-                        userinv.Add(itemname.item.ToString(), item);
+                        if (coreInventory[itemname.item.ToString()] != null)
+                        {
+                            ItemClass item = new ItemClass(int.Parse(coreInventory[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
+                                itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
+                            userinv.Add(itemname.item.ToString(), item);
+                        }
                     }
                 }
-            }
 
-            if (!ItemDatabase.UserInventory.ContainsKey(identifier))
-            {
-                ItemDatabase.UserInventory.Add(identifier, userinv);
-            }
-            ItemDatabase.UserInventory[identifier] = userinv;
-
-            player.TriggerEvent("vorpInventory:giveInventory", inventory);
-
-            Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier }, new Action<dynamic>((weaponsinvento) =>
-            {
-                if (weaponsinvento.Count > 0)
+                if (!ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
-                    WeaponClass wp;
-                    foreach (var row in weaponsinvento)
+                    ItemDatabase.UserInventory.Add(identifier, userinv);
+                }
+                ItemDatabase.UserInventory[identifier] = userinv;
+
+                player.TriggerEvent("vorpInventory:giveInventory", inventory);
+
+                Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier }, new Action<dynamic>((weaponsinvento) =>
+                {
+                    if (weaponsinvento.Count > 0)
                     {
-                        JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
-                        JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
-                        Dictionary<string, int> amunition = new Dictionary<string, int>();
-                        List<string> components = new List<string>();
-                        foreach (JProperty ammos in ammo.Properties())
+                        WeaponClass wp;
+                        foreach (var row in weaponsinvento)
                         {
+                            JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
+                            JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
+                            Dictionary<string, int> amunition = new Dictionary<string, int>();
+                            List<string> components = new List<string>();
+                            foreach (JProperty ammos in ammo.Properties())
+                            {
                             //Debug.WriteLine(ammos.Name);
                             amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
-                        }
-                        foreach (JToken x in comp)
-                        {
-                            components.Add(x.ToString());
-                        }
+                            }
+                            foreach (JToken x in comp)
+                            {
+                                components.Add(x.ToString());
+                            }
 
-                        bool auused = false;
-                        if (row.used == 1)
-                        {
-                            auused = true;
-                        }
+                            bool auused = false;
+                            if (row.used == 1)
+                            {
+                                auused = true;
+                            }
 
-                        bool auused2 = false;
-                        if (row.used2 == 1)
-                        {
-                            auused2 = true;
+                            bool auused2 = false;
+                            if (row.used2 == 1)
+                            {
+                                auused2 = true;
+                            }
+                            wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charIdentifier);
+                            ItemDatabase.UserWeapons[wp.getId()] = wp;
                         }
-                        wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charIdentifier);
-                        ItemDatabase.UserWeapons[wp.getId()] = wp;
-                    }
 
                     // is there something wrong with returning an empty list?
                     player.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
-                }
+                    }
 
-            }));
+                }));
+            }
+            catch(NullReferenceException nEX)
+            {
+                Logger.Error(nEX, $"getInventory: Player dropped or connecting?");
+            }
+            catch(Exception ex)
+            {
+                Logger.Error(ex, $"getInventory");
+            }
         }
     }
 }
