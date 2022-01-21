@@ -46,39 +46,38 @@ namespace VorpInventory.Scripts
             {
                 await Delay(1000);
                 string identifier = "steam:" + player.Identifiers["steam"];
-                Dictionary<string, int> items = new Dictionary<string, int>();
 
-                Dictionary<string, ItemClass> userItems = ItemDatabase.GetInventory(identifier);
-                if (userItems == null) return;
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                int charIdentifier = 0;
 
-                foreach (var item in userItems)
+                if (PluginManager.ActiveCharacters.ContainsKey(player.Handle))
+                    charIdentifier = PluginManager.ActiveCharacters[player.Handle];
+
+                if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
+                    charIdentifier = coreUserCharacter?.charIdentifier;
+
+                if (charIdentifier > 0)
+                    Logger.Debug($"Saving inventory for '{charIdentifier}'.");
+
+                if (charIdentifier == 0)
                 {
-                    items.Add(item.Key, item.Value.getCount());
+                    Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
+                    return;
                 }
 
-                if (items.Count >= 0)
+                Dictionary<string, int> items = new Dictionary<string, int>();
+                if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
-                    // This needs to be changed, either inventory is added directly into CORE or inventory manages active clients
-                    dynamic coreUserCharacter = player.GetCoreUserCharacter();
-                    int charIdentifier = 0;
-
-                    if (PluginManager.ActiveCharacters.ContainsKey(player.Handle))
-                        charIdentifier = PluginManager.ActiveCharacters[player.Handle];
-
-                    if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
-                        charIdentifier = coreUserCharacter?.charIdentifier;
-
-                    if (charIdentifier > 0)
-                        Logger.Debug($"Saving inventory for '{charIdentifier}'.");
-
-                    if (charIdentifier == 0)
+                    foreach (var item in ItemDatabase.UserInventory[identifier])
                     {
-                        Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
-                        return;
+                        items.Add(item.Key, item.Value.getCount());
                     }
 
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET `inventory` = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
+                    if (items.Count > 0)
+                    {
+                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                        Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
+                    }
                 }
             }
             catch (Exception ex)
@@ -127,102 +126,124 @@ namespace VorpInventory.Scripts
 
         private void canCarryAmountItem(int source, int quantity, CallbackDelegate cb)
         {
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"canCarryAmountItem: Player '{source}' does not exist.");
-                return;
-            }
+                Player player = PlayerList[source];
 
-            string identifier = "steam:" + player.Identifiers["steam"];
-            if (ItemDatabase.UserInventory.ContainsKey(identifier) && Config.MaxItems != -1)
-            {
-                int totalcount = GetTotalAmountOfItems(identifier) + quantity;
-                if ((totalcount <= Config.MaxItems))
+                if (player == null)
+                {
+                    Logger.Error($"canCarryAmountItem: Player '{source}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + player.Identifiers["steam"];
+                if (ItemDatabase.UserInventory.ContainsKey(identifier) && Config.MaxItems != -1)
+                {
+                    int totalcount = GetTotalAmountOfItems(identifier) + quantity;
+                    if ((totalcount <= Config.MaxItems))
+                    {
+                        cb.Invoke(true);
+                        return;
+                    }
+                    else
+                    {
+                        cb.Invoke(false);
+                        return;
+                    }
+                }
+                else
                 {
                     cb.Invoke(true);
                     return;
                 }
-                else
-                {
-                    cb.Invoke(false);
-                    return;
-                }
             }
-            else
+            catch (NullReferenceException nrEx)
             {
-                cb.Invoke(true);
-                return;
+                Logger.Error(nrEx, $"canCarryAmountItem: SOME HOW LOST STEAM?!");
             }
-
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"canCarryAmountItem");
+            }
         }
 
         private void UserCanCarryItem(int source, string itemName, int amountToCarry, CallbackDelegate cb)
         {
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"canCarryItem: Player '{source}' does not exist.");
-                cb.Invoke(false);
-            }
+                Player player = PlayerList[source];
 
-            string identifier = "steam:" + player.Identifiers["steam"];
-
-            Items item = ItemDatabase.GetItem(itemName);
-            if (item == null)
-            {
-                Logger.Error($"canCarryItem: Item '{itemName}' does not exist.");
-                cb.Invoke(false);
-            }
-
-            int maxLimitItem = item.getLimit();
-            Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
-
-            int maxLimitConfig = Config.MaxItems;
-            int newTotalAmountOfCurrentItems = GetTotalAmountOfItems(identifier) + amountToCarry;
-
-            bool result = false;
-
-            // If the user has no inventory, then allow them to be given the item
-            if (userInventory == null)
-            {
-                result = CheckIfUserCanHaveItem(amountToCarry, maxLimitItem, maxLimitConfig, newTotalAmountOfCurrentItems);
-                cb.Invoke(result);
-                return;
-            }
-
-            // If the user does not have the item, then allow them to be given the item
-            if (!userInventory.ContainsKey(itemName))
-            {
-                result = CheckIfUserCanHaveItem(amountToCarry, maxLimitItem, maxLimitConfig, newTotalAmountOfCurrentItems);
-                cb.Invoke(result);
-                return;
-            }
-
-            // If the user has the item, we still check to see how many
-            ItemClass userItem = userInventory[itemName];
-            int itemQuantity = userItem.getCount();
-
-            amountToCarry = itemQuantity + amountToCarry;
-            result = CheckIfUserCanHaveItem(amountToCarry, maxLimitItem, maxLimitConfig, newTotalAmountOfCurrentItems);
-            cb.Invoke(result);
-            return;
-
-            static bool CheckIfUserCanHaveItem(int amountToCarry, int maxLimitItem, int maxLimitConfig, int newTotalAmountOfCurrentItems)
-            {
-                if (maxLimitConfig != -1)
+                if (player == null)
                 {
-                    if (amountToCarry > maxLimitItem) return false;
+                    Logger.Error($"canCarryItem: Player '{source}' does not exist.");
+                    cb.Invoke(false);
+                }
+
+                string identifier = "steam:" + player.Identifiers["steam"];
+
+                Items item = ItemDatabase.GetItem(itemName);
+                if (item == null)
+                {
+                    Logger.Error($"canCarryItem: Item '{itemName}' does not exist.");
+                    cb.Invoke(false);
+                }
+
+                int maxLimitItem = item.getLimit();
+                Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+
+                int maxLimitConfig = Config.MaxItems;
+                int newTotalAmountOfCurrentItems = GetTotalAmountOfItems(identifier) + amountToCarry;
+
+                bool result = false;
+
+                // If the user has no inventory, then allow them to be given the item
+                if (userInventory == null)
+                {
+                    result = CheckIfUserCanHaveItem(amountToCarry, maxLimitItem, maxLimitConfig, newTotalAmountOfCurrentItems);
+                    cb.Invoke(result);
+                    return;
+                }
+
+                // If the user does not have the item, then allow them to be given the item
+                if (!userInventory.ContainsKey(itemName))
+                {
+                    result = CheckIfUserCanHaveItem(amountToCarry, maxLimitItem, maxLimitConfig, newTotalAmountOfCurrentItems);
+                    cb.Invoke(result);
+                    return;
+                }
+
+                // If the user has the item, we still check to see how many
+                ItemClass userItem = userInventory[itemName];
+                int itemQuantity = userItem.getCount();
+
+                amountToCarry = itemQuantity + amountToCarry;
+                result = CheckIfUserCanHaveItem(amountToCarry, maxLimitItem, maxLimitConfig, newTotalAmountOfCurrentItems);
+                cb.Invoke(result);
+                return;
+
+                static bool CheckIfUserCanHaveItem(int amountToCarry, int maxLimitItem, int maxLimitConfig, int newTotalAmountOfCurrentItems)
+                {
                     if (maxLimitConfig != -1)
                     {
-                        if (newTotalAmountOfCurrentItems > maxLimitConfig) return false;
+                        if (amountToCarry > maxLimitItem) return false;
+                        if (maxLimitConfig != -1)
+                        {
+                            if (newTotalAmountOfCurrentItems > maxLimitConfig) return false;
+                            return true;
+                        }
                         return true;
                     }
                     return true;
                 }
-                return true;
+
+            }
+            catch (NullReferenceException nrEx)
+            {
+                Logger.Error(nrEx, $"canCarryAmountItem: SOME HOW LOST STEAM?!");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"canCarryAmountItem");
             }
         }
 
