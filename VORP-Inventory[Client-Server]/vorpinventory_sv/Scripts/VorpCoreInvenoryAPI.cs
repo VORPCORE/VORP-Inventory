@@ -569,27 +569,45 @@ namespace VorpInventory.Scripts
 
         private void getItems(int source, CallbackDelegate funcion, string item)
         {
-            Player p = PlayerList[source];
-
-            if (p == null)
+            try
             {
-                Logger.Error($"getItems: Player '{source}' does not exist.");
-                return;
+                Player player = PlayerList[source];
+
+                if (player == null)
+                {
+                    Logger.Error($"getItems: Player '{source}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + player.Identifiers["steam"];
+
+                if (ItemDatabase.UserInventory.ContainsKey(identifier))
+                {
+                    Dictionary<string, ItemClass> inventory = ItemDatabase.GetInventory(identifier);
+
+                    if (inventory == null)
+                    {
+                        funcion.Invoke(0);
+                        return;
+                    }
+
+                    if (inventory.ContainsKey(item))
+                    {
+                        ItemClass itemClass = inventory[item];
+                        funcion.Invoke(itemClass.getCount());
+                    }
+                    else
+                    {
+                        funcion.Invoke(0);
+                    }
+                }
             }
-
-            string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.UserInventory.ContainsKey(identifier))
+            catch (Exception ex)
             {
-                if (ItemDatabase.UserInventory[identifier].ContainsKey(item))
-                {
-                    funcion.Invoke(ItemDatabase.UserInventory[identifier][item].getCount());
-                }
-                else
-                {
-                    funcion.Invoke(0);
-                }
+                Logger.Error(ex, "getItems");
             }
         }
+
         private async void addItem(int player, string name, int cuantity)
         {
             try
