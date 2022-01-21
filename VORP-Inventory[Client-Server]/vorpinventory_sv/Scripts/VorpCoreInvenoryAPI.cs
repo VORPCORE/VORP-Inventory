@@ -926,8 +926,8 @@ namespace VorpInventory.Scripts
                 ItemDatabase.UserWeapons[weapId].setCharId(charIdentifier);
                 Exports["ghmattimysql"]
                     .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
-                        new object[] { weapId });
+                        $"UPDATE loadout SET identifier = ?, charidentifier = ? WHERE id=?",
+                        new object[] { ItemDatabase.UserWeapons[weapId].getPropietary(), charIdentifier, weapId });
                 player.TriggerEvent("vorpinventory:receiveWeapon", weapId, ItemDatabase.UserWeapons[weapId].getPropietary(),
                     ItemDatabase.UserWeapons[weapId].getName(), ItemDatabase.UserWeapons[weapId].getAllAmmo(), ItemDatabase.UserWeapons[weapId].getAllComponents());
                 if (targetIsPlayer && ptarget != null)
