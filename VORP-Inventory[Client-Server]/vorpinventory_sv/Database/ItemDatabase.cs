@@ -59,6 +59,12 @@ namespace VorpInventory.Database
             Logger.Debug($"Setting up Items");
             Exports["ghmattimysql"].execute("SELECT * FROM items", new Action<dynamic>((result) =>
             {
+                if (result == null)
+                {
+                    Logger.Warn($"No items returned from the database");
+                    return;
+                }
+
                 if (result.Count == 0)
                 {
                     Logger.Warn("No items in the items table of the database.");
@@ -80,6 +86,12 @@ namespace VorpInventory.Database
             Logger.Debug($"Setting up Loadouts");
             Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>((loadout) =>
             {
+                if (loadout == null)
+                {
+                    Logger.Warn($"No loadouts returned from the database");
+                    return;
+                }
+
                 if (loadout.Count != 0)
                 {
                     WeaponClass wp;
