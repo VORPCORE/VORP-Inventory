@@ -9,3 +9,4 @@ VORP-Inventory[Client-Server]/Build/vorp_inventory.zip
 /VORP-Inventory\[Client-Server\]/vorpinventory_cl/bin
 /VORP-Inventory\[Client-Server\]/Build/vorp_inventory/*.zip
 /VORP-Inventory\[Client-Server\]/.vs
+/VORP-Inventory\[Client-Server\]/VORP.Inventory.Server
