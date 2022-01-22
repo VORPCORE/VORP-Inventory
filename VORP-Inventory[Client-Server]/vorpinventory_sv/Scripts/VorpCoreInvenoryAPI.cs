@@ -38,6 +38,8 @@ namespace VorpInventory.Scripts
             EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
             EventHandlers["vorpCore:registerUsableItem"] += new Action<string, CallbackDelegate>(registerUsableItem);
             EventHandlers["vorp:use"] += new Action<Player, string, object[]>(useItem);
+
+            Exports.Add("CanCarryWeapon", UserCanCarryWeapon);
         }
 
         public async Task SaveInventoryItemsSupport(Player player)
@@ -88,18 +90,31 @@ namespace VorpInventory.Scripts
 
         private void canCarryAmountWeapons(int source, int quantity, CallbackDelegate cb)
         {
-            Player player = PlayerList[source];
+            try
+            {
+                bool result = UserCanCarryWeapon(source, quantity);
+                cb.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"canCarryAmountWeapons");
+            }
+        }
+
+        private bool UserCanCarryWeapon(int playerServerId, int quantity)
+        {
+            Player player = PlayerList[playerServerId];
 
             if (player == null)
             {
-                Logger.Error($"canCarryAmountWeapons: Player '{source}' does not exist.");
-                return;
+                Logger.Error($"canCarryAmountWeapons: Player '{playerServerId}' does not exist.");
+                return false;
             }
 
             string identifier = "steam:" + player.Identifiers["steam"];
-            
+
             dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null) return;
+            if (coreUserCharacter == null) return false;
 
             int charIdentifier = coreUserCharacter.charIdentifier;
             int totalcount = getUserTotalCountWeapons(identifier, charIdentifier) + quantity;
@@ -107,21 +122,17 @@ namespace VorpInventory.Scripts
             {
                 if (totalcount <= Config.MaxWeapons)
                 {
-                    cb.Invoke(true);
-                    return;
+                    return true;
                 }
                 else
                 {
-                    cb.Invoke(false);
-                    return;
+                    return false;
                 }
             }
             else
             {
-                cb.Invoke(true);
-                return;
+                return false;
             }
-
         }
 
         private void canCarryAmountItem(int source, int quantity, CallbackDelegate cb)
@@ -263,7 +274,7 @@ namespace VorpInventory.Scripts
                 if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
                     List<object> useritems = new List<object>();
-                    var itemsDBO = ItemDatabase.UserInventory[identifier];
+                    Dictionary<string, ItemClass> itemsDBO = ItemDatabase.UserInventory[identifier];
 
                     if (itemsDBO == null)
                     {
@@ -271,16 +282,19 @@ namespace VorpInventory.Scripts
                         cb.Invoke(useritems);
                     }
 
-                    foreach (var items in itemsDBO)
+                    foreach (KeyValuePair<string, ItemClass> items in itemsDBO)
                     {
+                        ItemClass itemClass = items.Value;
+                        if (itemClass == null) continue;
+
                         Dictionary<string, object> item = new Dictionary<string, object>()
                         {
-                            {"label", items.Value.getLabel()},
-                            {"name", items.Value.getName()},
-                            {"type", items.Value.getType()},
-                            {"count", items.Value.getCount()},
-                            {"limit", items.Value.getLimit()},
-                            {"usable", items.Value.getUsable()}
+                            {"label", itemClass.getLabel()},
+                            {"name", itemClass.getName()},
+                            {"type", itemClass.getType()},
+                            {"count", itemClass.getCount()},
+                            {"limit", itemClass.getLimit()},
+                            {"usable", itemClass.getUsable()}
                         };
 
                         useritems.Add(item);
