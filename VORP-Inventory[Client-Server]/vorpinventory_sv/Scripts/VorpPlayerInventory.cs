@@ -86,54 +86,66 @@ namespace VorpInventory.Scripts
 
         private async void giveMoneyToPlayer([FromSource] Player player, int target, double amount)
         {
-            int _source = int.Parse(player.Handle);
-            Player _target = PlayerList[target];
-
-            if (_target == null)
+            try
             {
-                Logger.Error($"Target Player '{_target} does not exist.");
-                return;
-            }
+                Player _target = PlayerList[target];
 
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
-            {
-                Logger.Error($"getUserWeapons: Player '{player.Handle}' CORE User does not exist.");
-                return;
-            }
-
-            double sourceMoney = coreUserCharacter.money;
-            Debug.WriteLine(sourceMoney.ToString());
-            Debug.WriteLine(amount.ToString());
-            if (amount <= 0)
-            {
-                player.TriggerEvent("vorp:TipRight", Config.lang["TryExploits"], 3000);
-                await Delay(3000);
-                player.TriggerEvent("vorp_inventory:ProcessingReady");
-            }
-            else if (sourceMoney < amount)
-            {
-                player.TriggerEvent("vorp:TipRight", Config.lang["NotEnoughMoney"], 3000);
-                await Delay(3000);
-                player.TriggerEvent("vorp_inventory:ProcessingReady");
-
-            }
-            else
-            {
-                coreUserCharacter.removeCurrency(0, amount);
-                dynamic targetCoreUserCharacter = PluginManager.CORE.getUser(target).getUsedCharacter;
-
-                if (targetCoreUserCharacter == null)
+                if (_target == null)
                 {
-                    Logger.Error($"giveMoneyToPlayer: Target Player '{target}' CORE User does not exist.");
+                    Logger.Error($"giveMoneyToPlayer: Target Player '{_target} does not exist.");
                     return;
                 }
 
-                targetCoreUserCharacter.addCurrency(0, amount);
-                player.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouPaid"], amount.ToString(), _target.Name), 3000);
-                _target.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouReceived"], amount.ToString(), player.Name), 3000);
-                await Delay(3000);
-                player.TriggerEvent("vorp_inventory:ProcessingReady");
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                if (coreUserCharacter == null)
+                {
+                    Logger.Error($"giveMoneyToPlayer: Player '{player.Handle}' CORE User does not exist.");
+                    return;
+                }
+
+                if (!Common.HasProperty(coreUserCharacter, "money"))
+                {
+                    Logger.Error($"giveMoneyToPlayer: Player '{player.Handle}' CORE User Character missing property 'money'.");
+                    return;
+                }
+
+                double sourceMoney = coreUserCharacter.money;
+                Debug.WriteLine(sourceMoney.ToString());
+                Debug.WriteLine(amount.ToString());
+                if (amount <= 0)
+                {
+                    player.TriggerEvent("vorp:TipRight", Config.lang["TryExploits"], 3000);
+                    await Delay(3000);
+                    player.TriggerEvent("vorp_inventory:ProcessingReady");
+                }
+                else if (sourceMoney < amount)
+                {
+                    player.TriggerEvent("vorp:TipRight", Config.lang["NotEnoughMoney"], 3000);
+                    await Delay(3000);
+                    player.TriggerEvent("vorp_inventory:ProcessingReady");
+
+                }
+                else
+                {
+                    coreUserCharacter.removeCurrency(0, amount);
+                    dynamic targetCoreUserCharacter = PluginManager.CORE.getUser(target).getUsedCharacter;
+
+                    if (targetCoreUserCharacter == null)
+                    {
+                        Logger.Error($"giveMoneyToPlayer: Target Player '{target}' CORE User does not exist.");
+                        return;
+                    }
+
+                    targetCoreUserCharacter.addCurrency(0, amount);
+                    player.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouPaid"], amount.ToString(), _target.Name), 3000);
+                    _target.TriggerEvent("vorp:TipRight", string.Format(Config.lang["YouReceived"], amount.ToString(), player.Name), 3000);
+                    await Delay(3000);
+                    player.TriggerEvent("vorp_inventory:ProcessingReady");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "giveMoneyToPlayer");
             }
         }
 
