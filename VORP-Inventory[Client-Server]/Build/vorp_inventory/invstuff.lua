@@ -9,12 +9,22 @@ end)
 RegisterServerEvent("vorpinventory:check_slots")
 AddEventHandler("vorpinventory:check_slots", function()
     local _source = tonumber(source)
-    local eq = VorpInv.getUserInventory(source)
+    local eq = 0
+    if _source ~= 0 and _source >= 1 and _source ~= nil then
+        eq = VorpInv.getUserInventory(_source)
+    else
+        print("source player ".._source)
+    end
     local test = eq
     local slot_check = 0
-    for i = 1, #test do
-        slot_check = slot_check + test[i].count
+    if test ~= nil then
+        for i = 1, #test do
+            slot_check = slot_check + test[i].count
+        end
+    else
+    slot_check = 0
     end
-    local stufftosend = slot_check.." / 50"
-    TriggerClientEvent("syn:getnuistuff", _source, stufftosend)
+    local itemsToCheck = tonumber(slot_check)
+    local maxCarryLimit = 200 -- max carry limit
+    TriggerClientEvent("syn:getnuistuff", _source, itemsToCheck ,maxCarryLimit)
 end)
