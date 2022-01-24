@@ -907,71 +907,78 @@ namespace VorpInventory.Scripts
 
         private void giveWeapon(int source, int weapId, int target)
         {
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"giveWeapon: Player '{source}' does not exist.");
-                return;
-            }
+                Player player = PlayerList[source];
 
-            Player ptarget = null;
-            bool targetIsPlayer = false;
-            foreach (Player pla in PlayerList)
-            {
-                if (int.Parse(pla.Handle) == target)
+                if (player == null)
                 {
-                    targetIsPlayer = true;
-                }
-            }
-
-            if (targetIsPlayer)
-            {
-                ptarget = PlayerList[target];
-
-                if (ptarget == null)
-                {
-                    Logger.Error($"giveWeapon: Target Player '{target}' does not exist.");
+                    Logger.Error($"giveWeapon: Player '{source}' does not exist.");
                     return;
                 }
-            }
 
-            string identifier = "steam:" + player.Identifiers["steam"];
-
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
-            {
-                Logger.Error($"giveWeapon: Player '{source}' CORE User does not exist.");
-                return;
-            }
-
-            int charIdentifier = coreUserCharacter.charIdentifier;
-
-            if (Config.MaxWeapons != 0)
-            {
-                int totalcount = getUserTotalCountWeapons(identifier, charIdentifier);
-                totalcount += 1;
-                if (totalcount > Config.MaxWeapons)
+                Player ptarget = null;
+                bool targetIsPlayer = false;
+                foreach (Player pla in PlayerList)
                 {
-                    Debug.WriteLine($"{player.Name} Can't carry more weapons");
+                    if (int.Parse(pla.Handle) == target)
+                    {
+                        targetIsPlayer = true;
+                    }
+                }
+
+                if (targetIsPlayer)
+                {
+                    ptarget = PlayerList[target];
+
+                    if (ptarget == null)
+                    {
+                        Logger.Error($"giveWeapon: Target Player '{target}' does not exist.");
+                        return;
+                    }
+                }
+
+                string identifier = "steam:" + player.Identifiers["steam"];
+
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                if (coreUserCharacter == null)
+                {
+                    Logger.Error($"giveWeapon: Player '{source}' CORE User does not exist.");
                     return;
                 }
-            }
 
-            if (ItemDatabase.UserWeapons.ContainsKey(weapId))
-            {
-                ItemDatabase.UserWeapons[weapId].setPropietary(identifier);
-                ItemDatabase.UserWeapons[weapId].setCharId(charIdentifier);
-                Exports["ghmattimysql"]
-                    .execute(
-                        $"UPDATE loadout SET identifier = ?, charidentifier = ? WHERE id=?",
-                        new object[] { ItemDatabase.UserWeapons[weapId].getPropietary(), charIdentifier, weapId });
-                player.TriggerEvent("vorpinventory:receiveWeapon", weapId, ItemDatabase.UserWeapons[weapId].getPropietary(),
-                    ItemDatabase.UserWeapons[weapId].getName(), ItemDatabase.UserWeapons[weapId].getAllAmmo(), ItemDatabase.UserWeapons[weapId].getAllComponents());
-                if (targetIsPlayer && ptarget != null)
+                int charIdentifier = coreUserCharacter.charIdentifier;
+
+                if (Config.MaxWeapons != 0)
                 {
-                    ptarget.TriggerEvent("vorpCoreClient:subWeapon", weapId);
+                    int totalcount = getUserTotalCountWeapons(identifier, charIdentifier);
+                    totalcount += 1;
+                    if (totalcount > Config.MaxWeapons)
+                    {
+                        Debug.WriteLine($"{player.Name} Can't carry more weapons");
+                        return;
+                    }
                 }
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weapId))
+                {
+                    ItemDatabase.UserWeapons[weapId].setPropietary(identifier);
+                    ItemDatabase.UserWeapons[weapId].setCharId(charIdentifier);
+                    Exports["ghmattimysql"]
+                        .execute(
+                            $"UPDATE loadout SET identifier = ?, charidentifier = ? WHERE id=?",
+                            new object[] { ItemDatabase.UserWeapons[weapId].getPropietary(), charIdentifier, weapId });
+                    player.TriggerEvent("vorpinventory:receiveWeapon", weapId, ItemDatabase.UserWeapons[weapId].getPropietary(),
+                        ItemDatabase.UserWeapons[weapId].getName(), ItemDatabase.UserWeapons[weapId].getAllAmmo(), ItemDatabase.UserWeapons[weapId].getAllComponents());
+                    if (targetIsPlayer && ptarget != null)
+                    {
+                        ptarget.TriggerEvent("vorpCoreClient:subWeapon", weapId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"giveWeapon: possible player has dropped?");
             }
         }
 
