@@ -244,27 +244,41 @@ namespace VorpInventory.Scripts
         //For other scripts add items
         private void addItem(int source, string name, int cuantity)
         {
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"Player '{source}' does not exist.");
-                return;
-            }
+                Player player = PlayerList[source];
 
-            string identifier = "steam:" + player.Identifiers["steam"];
-            if (ItemDatabase.UserInventory.ContainsKey(identifier))
-            {
-                if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
+                if (player == null)
                 {
-                    if (cuantity > 0)
+                    Logger.Error($"Player '{source}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + player.Identifiers["steam"];
+                if (ItemDatabase.UserInventory.ContainsKey(identifier))
+                {
+                    if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
                     {
-                        ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
-                        SaveInventoryItemsSupport(player);
+                        if (cuantity > 0)
+                        {
+                            ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
+                            SaveInventoryItemsSupport(player);
+                        }
+                    }
+                    else
+                    {
+                        if (ItemDatabase.ServerItems.ContainsKey(name))
+                        {
+                            ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
+                                ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
+                            SaveInventoryItemsSupport(player);
+                        }
                     }
                 }
                 else
                 {
+                    Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+                    ItemDatabase.UserInventory.Add(identifier, userinv);
                     if (ItemDatabase.ServerItems.ContainsKey(name))
                     {
                         ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
@@ -273,16 +287,9 @@ namespace VorpInventory.Scripts
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
-                ItemDatabase.UserInventory.Add(identifier, userinv);
-                if (ItemDatabase.ServerItems.ContainsKey(name))
-                {
-                    ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
-                        ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
-                    SaveInventoryItemsSupport(player);
-                }
+                Logger.Error(ex, $"addItem: Possible player dropped?");
             }
         }
 
