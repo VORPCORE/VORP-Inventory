@@ -459,12 +459,13 @@ namespace VorpInventory.Scripts
             int source = int.Parse(player.Handle);
             if (PickupsMoney.ContainsKey(obj))
             {
-
                 TriggerClientEvent("vorpInventory:shareMoneyPickupClient", PickupsMoney[obj]["obj"],
                 PickupsMoney[obj]["amount"], PickupsMoney[obj]["coords"], 2);
                 TriggerClientEvent("vorpInventory:removePickupClient", PickupsMoney[obj]["obj"]);
                 player.TriggerEvent("vorpInventory:playerAnim", obj);
                 TriggerEvent("vorp:addMoney", source, 0, PickupsMoney[obj]["amount"]);
+                
+                if (!PickupsMoney.ContainsKey(obj)) return;
                 PickupsMoney.Remove(obj);
             }
         }
@@ -484,10 +485,14 @@ namespace VorpInventory.Scripts
             });
         }
 
+        // is obj a networkid ?
         private void shareMoneyPickupServer(int obj, double amount, Vector3 position)
         {
+            if (PickupsMoney.ContainsKey(obj)) return; // don't add or do anything, if it already exists
+
             TriggerClientEvent("vorpInventory:shareMoneyPickupClient", obj, amount, position, 1);
             Debug.WriteLine(obj.ToString());
+
             PickupsMoney.Add(obj, new Dictionary<string, dynamic>
             {
                 ["name"] = "Dollars",
