@@ -1,5 +1,6 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -260,6 +261,7 @@ namespace VorpInventory.Scripts
 
         private void getInventory(int source, CallbackDelegate cb)
         {
+            List<object> useritems = new List<object>();
             try
             {
                 Player player = PlayerList[source];
@@ -273,7 +275,6 @@ namespace VorpInventory.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
-                    List<object> useritems = new List<object>();
                     Dictionary<string, ItemClass> itemsDBO = ItemDatabase.UserInventory[identifier];
 
                     if (itemsDBO == null)
@@ -306,6 +307,11 @@ namespace VorpInventory.Scripts
             catch (Exception ex)
             {
                 Logger.Error(ex, "getInventory");
+                if (useritems.Count > 0)
+                {
+                    string itemStr = JsonConvert.SerializeObject(useritems);
+                    Logger.Error($"Items at time of error: {itemStr}");
+                }
             }
         }
 
