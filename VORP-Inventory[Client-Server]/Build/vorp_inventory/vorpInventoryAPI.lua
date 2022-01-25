@@ -91,7 +91,7 @@ exports('vorp_inventoryApi',function()
 
     self.getUserInventory = function(source)
         local inv
-        TriggerEvent("vorpCore:getUserInventory",source,function(invent)
+        TriggerEvent("vorpCore:getUserInventory", source, function(invent)
             inv = invent
         end)
         return inv
