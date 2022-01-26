@@ -108,10 +108,12 @@ namespace VorpInventory
             EventRegistry.Add("playerDropped", new Action<Player, string>(async ([FromSource] player, reason) =>
             {
                 string steamIdent = $"steam:{player.Identifiers["steam"]}";
-                int coreUserCharacterId = await player.GetCoreUserCharacterId();
                 if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
                 {
-                    await _scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(steamIdent, coreUserCharacterId);
+                    //int coreUserCharacterId = await player?.GetCoreUserCharacterId();
+                    //if (coreUserCharacterId != -1)
+                    //    await _scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(steamIdent, coreUserCharacterId);
+
                     Database.ItemDatabase.UserInventory.Remove(steamIdent);
                     ActiveCharacters.Remove(player.Handle);
                 }
