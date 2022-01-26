@@ -62,13 +62,9 @@ namespace VorpInventory.Scripts
                         items.Add(item.Key, item.Value.getCount());
                     }
 
-                    if (items.Count > 0)
-                    {
-                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                        Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
-                        return true;
-                    }
-                    return false;
+                    string json = JsonConvert.SerializeObject(items);
+                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
+                    return true;
                 }
                 return false;
             }
