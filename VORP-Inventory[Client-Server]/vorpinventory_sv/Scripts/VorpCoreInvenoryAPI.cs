@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Text;
 using System.Threading.Tasks;
 using VorpInventory.Database;
 using VorpInventory.Diagnostics;
@@ -43,35 +44,20 @@ namespace VorpInventory.Scripts
             Exports.Add("CanCarryWeapon", UserCanCarryWeapon);
         }
 
-        public async Task SaveInventoryItemsSupport(Player player)
+        public async Task<bool> SaveInventoryItemsSupport(string steamIdendifier, int coreCharacterId)
         {
             try
             {
-                await Delay(1000);
-                string identifier = "steam:" + player.Identifiers["steam"];
+                await Delay(0);
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
-                int charIdentifier = 0;
+                if (string.IsNullOrEmpty(steamIdendifier)) return false;
 
-                if (PluginManager.ActiveCharacters.ContainsKey(player.Handle))
-                    charIdentifier = PluginManager.ActiveCharacters[player.Handle];
-
-                if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
-                    charIdentifier = coreUserCharacter?.charIdentifier;
-
-                if (charIdentifier > 0)
-                    Logger.Debug($"Saving inventory for '{charIdentifier}'.");
-
-                if (charIdentifier == 0)
-                {
-                    Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
-                    return;
-                }
+                if (coreCharacterId == -1) return false;
 
                 Dictionary<string, int> items = new Dictionary<string, int>();
-                if (ItemDatabase.UserInventory.ContainsKey(identifier))
+                if (ItemDatabase.UserInventory.ContainsKey(steamIdendifier))
                 {
-                    foreach (var item in ItemDatabase.UserInventory[identifier])
+                    foreach (var item in ItemDatabase.UserInventory[steamIdendifier])
                     {
                         items.Add(item.Key, item.Value.getCount());
                     }
@@ -79,13 +65,17 @@ namespace VorpInventory.Scripts
                     if (items.Count > 0)
                     {
                         string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                        Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
+                        Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
+                        return true;
                     }
+                    return false;
                 }
+                return false;
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, "SaveInventoryItemsSupport");
+                return false;
             }
         }
 
@@ -648,6 +638,7 @@ namespace VorpInventory.Scripts
 
                 bool added = false;
                 string identifier = "steam:" + p.Identifiers["steam"];
+                int coreUserCharacterId = p.GetCoreUserCharacterId();
 
                 if (!ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
@@ -759,7 +750,18 @@ namespace VorpInventory.Scripts
                         bool usable = ItemDatabase.UserInventory[identifier][name].getUsable();
                         bool canRemove = ItemDatabase.UserInventory[identifier][name].getCanRemove();
                         p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
-                        SaveInventoryItemsSupport(p);
+                        bool result = await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                        if (!result)
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            sb.Append("Method: AddItem\n");
+                            sb.Append("Message: Player inventory not saved\n");
+                            sb.Append($"Player SteamID: {identifier}\n");
+                            sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
+                            sb.Append($"If CharacterId = -1, then the Core did not return the character.");
+                            sb.Append($"Inventory: {JsonConvert.SerializeObject(ItemDatabase.UserInventory[identifier])}");
+                            Logger.Warn($"{sb}");
+                        }
                     }
                     else
                     {
@@ -773,7 +775,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void SubtractItem(int player, string itemName, int quantity)
+        private async void SubtractItem(int player, string itemName, int quantity)
         {
             try
             {
@@ -792,6 +794,7 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + p.Identifiers["steam"];
+                int coreUserCharacterId = p.GetCoreUserCharacterId();
 
                 Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
                 if (userInventory == null)
@@ -816,7 +819,18 @@ namespace VorpInventory.Scripts
                     }
 
                     p.TriggerEvent("vorpCoreClient:subItem", itemName, itemCount);
-                    SaveInventoryItemsSupport(p);
+                    bool result = await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                    if (!result)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append("Method: SubtractItem\n");
+                        sb.Append("Message: Player inventory not saved\n");
+                        sb.Append($"Player SteamID: {identifier}\n");
+                        sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
+                        sb.Append($"If CharacterId = -1, then the Core did not return the character.");
+                        sb.Append($"Inventory: {JsonConvert.SerializeObject(ItemDatabase.UserInventory[identifier])}");
+                        Logger.Warn($"{sb}");
+                    }
                 }
             }
             catch (Exception ex)
