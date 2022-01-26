@@ -110,15 +110,16 @@ namespace VorpInventory
                 try
                 {
                     string steamIdent = $"steam:{player.Identifiers["steam"]}";
-                    if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
-                    {
-                        //int coreUserCharacterId = await player?.GetCoreUserCharacterId();
-                        //if (coreUserCharacterId != -1)
-                        //    await _scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(steamIdent, coreUserCharacterId);
 
+                    //int coreUserCharacterId = await player?.GetCoreUserCharacterId();
+                    //if (coreUserCharacterId != -1)
+                    //    await _scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(steamIdent, coreUserCharacterId);
+
+                    if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
                         Database.ItemDatabase.UserInventory.Remove(steamIdent);
-                        ActiveCharacters.Remove(player.Handle);
-                    }
+
+                    if (ActiveCharacters.ContainsKey(player.Handle))
+                            ActiveCharacters.Remove(player.Handle);
                 }
                 catch (Exception ex)
                 {
