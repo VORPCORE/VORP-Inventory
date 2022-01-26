@@ -23,9 +23,9 @@ namespace VorpInventory
         // Database
         public static Database.ItemDatabase ItemsDB = new();
         // private scripts
-        Config _scriptConfig = new Config();
-        VorpCoreInvenoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInvenoryAPI();
-        VorpPlayerInventory _scriptVorpPlayerInventory = new VorpPlayerInventory();
+        public static Config _scriptConfig = new Config();
+        public static VorpCoreInvenoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInvenoryAPI();
+        public static VorpPlayerInventory _scriptVorpPlayerInventory = new VorpPlayerInventory();
 
         public static Dictionary<string, int> ActiveCharacters = new();
 
@@ -109,9 +109,9 @@ namespace VorpInventory
                 string steamIdent = $"steam:{player.Identifiers["steam"]}";
                 if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
                 {
-                    ActiveCharacters.Remove(player.Handle);
                     await _scriptVorpPlayerInventory.SaveInventoryItemsSupport(player);
                     Database.ItemDatabase.UserInventory.Remove(steamIdent);
+                    ActiveCharacters.Remove(player.Handle);
                 }
             }));
 

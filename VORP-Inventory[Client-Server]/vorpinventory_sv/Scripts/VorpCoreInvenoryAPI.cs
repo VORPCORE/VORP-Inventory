@@ -55,12 +55,14 @@ namespace VorpInventory.Scripts
                 if (coreCharacterId == -1) return false; // no characterId provided
 
                 Dictionary<string, ItemClass> itemClasses = ItemDatabase.GetInventory(steamIdendifier);
-                if (itemClasses is null) return false; // nothing to save, they have no inventory
-
                 Dictionary<string, int> items = new Dictionary<string, int>();
-                foreach (KeyValuePair<string, ItemClass> item in itemClasses)
+
+                if (itemClasses is not null)
                 {
-                    items.Add(item.Key, item.Value.getCount());
+                    foreach (KeyValuePair<string, ItemClass> item in itemClasses)
+                    {
+                        items.Add(item.Key, item.Value.getCount());
+                    }
                 }
 
                 string json = JsonConvert.SerializeObject(items);

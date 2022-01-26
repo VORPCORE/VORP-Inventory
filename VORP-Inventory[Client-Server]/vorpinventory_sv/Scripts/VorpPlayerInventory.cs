@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using VorpInventory.Database;
 using VorpInventory.Diagnostics;
@@ -163,40 +164,22 @@ namespace VorpInventory.Scripts
 
         public async Task SaveInventoryItemsSupport(Player player)
         {
-            await Delay(1000);
+            await Delay(0);
             string identifier = "steam:" + player.Identifiers["steam"];
+            int coreUserCharacterId = await player.GetCoreUserCharacterId();
 
-            dynamic coreUserCharacter = await player.GetCoreUserCharacter();
-            int charIdentifier = 0;
-
-            if (PluginManager.ActiveCharacters.ContainsKey(player.Handle))
-                charIdentifier = PluginManager.ActiveCharacters[player.Handle];
-
-            if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
-                charIdentifier = coreUserCharacter?.charIdentifier;
-
-            if (charIdentifier > 0)
-                Logger.Debug($"Saving inventory for '{charIdentifier}'.");
-
-            if (charIdentifier == 0)
+            bool result = await PluginManager._scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+            
+            if (!result)
             {
-                Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
-                return;
-            }
-
-            Dictionary<string, int> items = new Dictionary<string, int>();
-            if (ItemDatabase.UserInventory.ContainsKey(identifier))
-            {
-                foreach (var item in ItemDatabase.UserInventory[identifier])
-                {
-                    items.Add(item.Key, item.Value.getCount());
-                }
-
-                if (items.Count > 0)
-                {
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
-                }
+                StringBuilder sb = new StringBuilder();
+                sb.Append("Method: SaveInventoryItemsSupport\n");
+                sb.Append("Message: Player inventory not saved\n");
+                sb.Append($"Player SteamID: {identifier}\n");
+                sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
+                sb.Append($"If CharacterId = -1, then the Core did not return the character.\n");
+                sb.Append($"Inventory: {JsonConvert.SerializeObject(ItemDatabase.UserInventory[identifier])}");
+                Logger.Warn($"{sb}");
             }
         }
 
