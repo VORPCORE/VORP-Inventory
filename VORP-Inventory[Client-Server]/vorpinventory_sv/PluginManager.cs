@@ -107,15 +107,22 @@ namespace VorpInventory
 
             EventRegistry.Add("playerDropped", new Action<Player, string>(async ([FromSource] player, reason) =>
             {
-                string steamIdent = $"steam:{player.Identifiers["steam"]}";
-                if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
+                try
                 {
-                    //int coreUserCharacterId = await player?.GetCoreUserCharacterId();
-                    //if (coreUserCharacterId != -1)
-                    //    await _scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(steamIdent, coreUserCharacterId);
+                    string steamIdent = $"steam:{player.Identifiers["steam"]}";
+                    if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
+                    {
+                        //int coreUserCharacterId = await player?.GetCoreUserCharacterId();
+                        //if (coreUserCharacterId != -1)
+                        //    await _scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(steamIdent, coreUserCharacterId);
 
-                    Database.ItemDatabase.UserInventory.Remove(steamIdent);
-                    ActiveCharacters.Remove(player.Handle);
+                        Database.ItemDatabase.UserInventory.Remove(steamIdent);
+                        ActiveCharacters.Remove(player.Handle);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, $"playerDropped: So, they don't exist?!");
                 }
             }));
 
