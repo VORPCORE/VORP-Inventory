@@ -756,7 +756,7 @@ namespace VorpInventory.Scripts
                             sb.Append("Message: Player inventory not saved\n");
                             sb.Append($"Player SteamID: {identifier}\n");
                             sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
-                            sb.Append($"If CharacterId = -1, then the Core did not return the character.");
+                            sb.Append($"If CharacterId = -1, then the Core did not return the character.\n");
                             sb.Append($"Inventory: {JsonConvert.SerializeObject(ItemDatabase.UserInventory[identifier])}");
                             Logger.Warn($"{sb}");
                         }
@@ -825,7 +825,7 @@ namespace VorpInventory.Scripts
                         sb.Append("Message: Player inventory not saved\n");
                         sb.Append($"Player SteamID: {identifier}\n");
                         sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
-                        sb.Append($"If CharacterId = -1, then the Core did not return the character.");
+                        sb.Append($"If CharacterId = -1, then the Core did not return the character.\n");
                         sb.Append($"Inventory: {JsonConvert.SerializeObject(userInventory)}");
                         Logger.Warn($"{sb}");
                     }
