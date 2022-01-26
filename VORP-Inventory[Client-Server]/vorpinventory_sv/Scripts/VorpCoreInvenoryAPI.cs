@@ -50,27 +50,25 @@ namespace VorpInventory.Scripts
             {
                 await Delay(0);
 
-                if (string.IsNullOrEmpty(steamIdendifier)) return false;
+                if (string.IsNullOrEmpty(steamIdendifier)) return false; // no steamId provided
 
-                if (coreCharacterId == -1) return false;
+                if (coreCharacterId == -1) return false; // no characterId provided
+
+                Dictionary<string, ItemClass> itemClasses = ItemDatabase.GetInventory(steamIdendifier);
+                if (itemClasses is null) return false; // nothing to save, they have no inventory
 
                 Dictionary<string, int> items = new Dictionary<string, int>();
-                if (ItemDatabase.UserInventory.ContainsKey(steamIdendifier))
+                foreach (KeyValuePair<string, ItemClass> item in itemClasses)
                 {
-                    foreach (var item in ItemDatabase.UserInventory[steamIdendifier])
-                    {
-                        items.Add(item.Key, item.Value.getCount());
-                    }
-
-                    string json = JsonConvert.SerializeObject(items);
-
-                    if (items.Count == 0) json = "{}"; // empty object...
-
-                    // why?! is the steamID required? when the Character ID is unique?! why?!
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET `inventory` = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
-                    return true;
+                    items.Add(item.Key, item.Value.getCount());
                 }
-                return false;
+
+                string json = JsonConvert.SerializeObject(items);
+                if (items.Count == 0) json = "{}"; // empty object if items is empty
+
+                // why?! is the steamID required? when the Character ID is unique?! why?!
+                Exports["ghmattimysql"].execute($"UPDATE characters SET `inventory` = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
+                return true;
             }
             catch (Exception ex)
             {
