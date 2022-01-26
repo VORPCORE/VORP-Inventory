@@ -63,7 +63,11 @@ namespace VorpInventory.Scripts
                     }
 
                     string json = JsonConvert.SerializeObject(items);
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
+
+                    if (items.Count == 0) json = "{}"; // empty object...
+
+                    // why?! is the steamID required? when the Character ID is unique?! why?!
+                    Exports["ghmattimysql"].execute($"UPDATE characters SET `inventory` = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
                     return true;
                 }
                 return false;
