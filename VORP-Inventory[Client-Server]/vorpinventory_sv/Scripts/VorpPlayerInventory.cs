@@ -162,11 +162,9 @@ namespace VorpInventory.Scripts
             }
         }
 
-        public async Task SaveInventoryItemsSupport(Player player)
+        public async Task SaveInventoryItemsSupport(string identifier, int coreUserCharacterId)
         {
             await Delay(0);
-            string identifier = "steam:" + player.Identifiers["steam"];
-            int coreUserCharacterId = await player.GetCoreUserCharacterId();
 
             bool result = await PluginManager._scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(identifier, coreUserCharacterId);
             
@@ -194,7 +192,7 @@ namespace VorpInventory.Scripts
         }
 
         //Sub items for other scripts
-        private void subItem(int source, string name, int cuantity)
+        private async void subItem(int source, string name, int cuantity)
         {
             Player player = PlayerList[source];
 
@@ -205,6 +203,7 @@ namespace VorpInventory.Scripts
             }
 
             string identifier = "steam:" + player.Identifiers["steam"];
+            int coreUserCharacterId = await player.GetCoreUserCharacterId();
             if (ItemDatabase.UserInventory.ContainsKey(identifier))
             {
                 if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
@@ -212,20 +211,20 @@ namespace VorpInventory.Scripts
                     if (cuantity <= ItemDatabase.UserInventory[identifier][name].getCount())
                     {
                         ItemDatabase.UserInventory[identifier][name].Subtract(cuantity);
-                        SaveInventoryItemsSupport(player);
+                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                     }
 
                     if (ItemDatabase.UserInventory[identifier][name].getCount() == 0)
                     {
                         ItemDatabase.UserInventory[identifier].Remove(name);
-                        SaveInventoryItemsSupport(player);
+                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                     }
                 }
             }
         }
 
         //For other scripts add items
-        private void addItem(int source, string name, int cuantity)
+        private async void addItem(int source, string name, int cuantity)
         {
             try
             {
@@ -238,6 +237,7 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
+                int coreUserCharacterId = await player.GetCoreUserCharacterId();
                 if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
                     if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
@@ -245,7 +245,7 @@ namespace VorpInventory.Scripts
                         if (cuantity > 0)
                         {
                             ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
-                            SaveInventoryItemsSupport(player);
+                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                         }
                     }
                     else
@@ -254,7 +254,7 @@ namespace VorpInventory.Scripts
                         {
                             ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
                                 ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
-                            SaveInventoryItemsSupport(player);
+                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                         }
                     }
                 }
@@ -266,7 +266,7 @@ namespace VorpInventory.Scripts
                     {
                         ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
                             ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
-                        SaveInventoryItemsSupport(player);
+                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                     }
                 }
             }

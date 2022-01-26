@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VorpInventory.Diagnostics;
 using VorpInventory.Models;
 using VorpInventory.Scripts;
+using VorpInventory.Extensions;
 
 namespace VorpInventory
 {
@@ -107,9 +108,10 @@ namespace VorpInventory
             EventRegistry.Add("playerDropped", new Action<Player, string>(async ([FromSource] player, reason) =>
             {
                 string steamIdent = $"steam:{player.Identifiers["steam"]}";
+                int coreUserCharacterId = await player.GetCoreUserCharacterId();
                 if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
                 {
-                    await _scriptVorpPlayerInventory.SaveInventoryItemsSupport(player);
+                    await _scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(steamIdent, coreUserCharacterId);
                     Database.ItemDatabase.UserInventory.Remove(steamIdent);
                     ActiveCharacters.Remove(player.Handle);
                 }
