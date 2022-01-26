@@ -76,11 +76,7 @@ namespace VorpInventory
         {
             await VendorReady(); // wait till ghmattimysql resource has started
 
-            TriggerEvent("getCore", new Action<dynamic>((dic) =>
-            {
-                Logger.Success($"VORP Core Setup");
-                CORE = dic;
-            }));
+            await GetCore();
 
             RegisterScript(ItemsDB);
             RegisterScript(_scriptConfig);
@@ -88,6 +84,16 @@ namespace VorpInventory
             RegisterScript(_scriptVorpPlayerInventory);
 
             AddEvents();
+        }
+
+        public async Task GetCore()
+        {
+            TriggerEvent("getCore", new Action<dynamic>((getCoreResult) =>
+            {
+                Logger.Success($"VORP Core Setup");
+                CORE = getCoreResult;
+            }));
+            await Delay(0);
         }
 
         void AddEvents()
