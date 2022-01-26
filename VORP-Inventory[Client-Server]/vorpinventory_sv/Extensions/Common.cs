@@ -9,9 +9,8 @@ namespace VorpInventory.Extensions
 {
     static class Common
     {
-        public static async Task<dynamic> GetCoreUser(this Player player)
+        public static dynamic GetCoreUser(this Player player)
         {
-            await BaseScript.Delay(0);
             if (PluginManager.CORE == null)
             {
                 Logger.Error($"GetCoreUser: Core API is null");
@@ -21,9 +20,9 @@ namespace VorpInventory.Extensions
             return PluginManager.CORE.getUser(int.Parse(player.Handle));
         }
 
-        public static async Task<dynamic> GetCoreUserCharacter(this Player player)
+        public static dynamic GetCoreUserCharacter(this Player player)
         {
-            dynamic coreUser = await player.GetCoreUser();
+            dynamic coreUser = player.GetCoreUser();
             if (coreUser == null)
             {
                 Logger.Warn($"GetCoreUser: Player '{player.Handle}' does not exist.");
@@ -31,9 +30,9 @@ namespace VorpInventory.Extensions
             return coreUser.getUsedCharacter;
         }
 
-        public static async Task<int> GetCoreUserCharacterId(this Player player)
+        public static int GetCoreUserCharacterId(this Player player)
         {
-            dynamic character = await player.GetCoreUserCharacter();
+            dynamic character = player.GetCoreUserCharacter();
 
             if (character == null)
             {
