@@ -17,7 +17,10 @@ namespace VorpInventory.Diagnostics
 
         public static void Warn(string msg)
         {
-            WriteLine("WARN", msg);
+            bool isWarning = GetConvarInt($"vorp_warning_enable", 0) == 1;
+
+            if (isWarning)
+                WriteLine("WARN", msg);
         }
 
         public static void Error(string msg)

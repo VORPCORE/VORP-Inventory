@@ -54,7 +54,7 @@
     <Compile Include="Models\PlayerInventory.cs" />
     <Compile Include="Scripts\Config.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
-    <Compile Include="Scripts\VorpCoreInvenoryAPI.cs" />
+    <Compile Include="Scripts\VorpCoreInventoryAPI.cs" />
     <Compile Include="Models\ItemClass.cs" />
     <Compile Include="Database\ItemDatabase.cs" />
     <Compile Include="Models\Items.cs" />

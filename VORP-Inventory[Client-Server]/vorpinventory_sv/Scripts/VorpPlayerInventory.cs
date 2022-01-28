@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using VorpInventory.Database;
 using VorpInventory.Diagnostics;
@@ -34,7 +35,7 @@ namespace VorpInventory.Scripts
             EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(giveMoneyToPlayer);
         }
 
-        private void serverDropMoney([FromSource] Player player, double amount)
+        private async void serverDropMoney([FromSource] Player player, double amount)
         {
             int _source = int.Parse(player.Handle);
 
@@ -63,7 +64,7 @@ namespace VorpInventory.Scripts
 
         }
 
-        private void serverDropAllMoney([FromSource] Player player)
+        private async void serverDropAllMoney([FromSource] Player player)
         {
             int _source = int.Parse(player.Handle);
 
@@ -161,42 +162,22 @@ namespace VorpInventory.Scripts
             }
         }
 
-        public async Task SaveInventoryItemsSupport(Player player)
+        public async Task SaveInventoryItemsSupport(string identifier, int coreUserCharacterId)
         {
-            await Delay(1000);
-            string identifier = "steam:" + player.Identifiers["steam"];
+            await Delay(0);
 
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            int charIdentifier = 0;
-
-            if (PluginManager.ActiveCharacters.ContainsKey(player.Handle))
-                charIdentifier = PluginManager.ActiveCharacters[player.Handle];
-
-            if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
-                charIdentifier = coreUserCharacter?.charIdentifier;
-
-            if (charIdentifier > 0)
-                Logger.Debug($"Saving inventory for '{charIdentifier}'.");
-
-            if (charIdentifier == 0)
+            bool result = await PluginManager._scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+            
+            if (!result)
             {
-                Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
-                return;
-            }
-
-            Dictionary<string, int> items = new Dictionary<string, int>();
-            if (ItemDatabase.UserInventory.ContainsKey(identifier))
-            {
-                foreach (var item in ItemDatabase.UserInventory[identifier])
-                {
-                    items.Add(item.Key, item.Value.getCount());
-                }
-
-                if (items.Count > 0)
-                {
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
-                }
+                StringBuilder sb = new StringBuilder();
+                sb.Append("Method: SaveInventoryItemsSupport\n");
+                sb.Append("Message: Player inventory not saved\n");
+                sb.Append($"Player SteamID: {identifier}\n");
+                sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
+                sb.Append($"If CharacterId = -1, then the Core did not return the character.\n");
+                sb.Append($"Inventory: {JsonConvert.SerializeObject(ItemDatabase.UserInventory[identifier])}");
+                Logger.Warn($"{sb}");
             }
         }
 
@@ -211,7 +192,7 @@ namespace VorpInventory.Scripts
         }
 
         //Sub items for other scripts
-        private void subItem(int source, string name, int cuantity)
+        private async void subItem(int source, string name, int cuantity)
         {
             Player player = PlayerList[source];
 
@@ -222,6 +203,7 @@ namespace VorpInventory.Scripts
             }
 
             string identifier = "steam:" + player.Identifiers["steam"];
+            int coreUserCharacterId = player.GetCoreUserCharacterId();
             if (ItemDatabase.UserInventory.ContainsKey(identifier))
             {
                 if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
@@ -229,20 +211,20 @@ namespace VorpInventory.Scripts
                     if (cuantity <= ItemDatabase.UserInventory[identifier][name].getCount())
                     {
                         ItemDatabase.UserInventory[identifier][name].Subtract(cuantity);
-                        SaveInventoryItemsSupport(player);
+                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                     }
 
                     if (ItemDatabase.UserInventory[identifier][name].getCount() == 0)
                     {
                         ItemDatabase.UserInventory[identifier].Remove(name);
-                        SaveInventoryItemsSupport(player);
+                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                     }
                 }
             }
         }
 
         //For other scripts add items
-        private void addItem(int source, string name, int cuantity)
+        private async void addItem(int source, string name, int cuantity)
         {
             try
             {
@@ -255,6 +237,7 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
+                int coreUserCharacterId = player.GetCoreUserCharacterId();
                 if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
                     if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
@@ -262,7 +245,7 @@ namespace VorpInventory.Scripts
                         if (cuantity > 0)
                         {
                             ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
-                            SaveInventoryItemsSupport(player);
+                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                         }
                     }
                     else
@@ -271,7 +254,7 @@ namespace VorpInventory.Scripts
                         {
                             ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
                                 ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
-                            SaveInventoryItemsSupport(player);
+                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                         }
                     }
                 }
@@ -283,7 +266,7 @@ namespace VorpInventory.Scripts
                     {
                         ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
                             ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
-                        SaveInventoryItemsSupport(player);
+                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                     }
                 }
             }
@@ -293,7 +276,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void addWeapon(int source, int weapId)
+        private async void addWeapon(int source, int weapId)
         {
             Player player = PlayerList[source];
 
@@ -323,7 +306,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void subWeapon(int source, int weapId)
+        private async void subWeapon(int source, int weapId)
         {
 
             Player player = PlayerList[source];
@@ -354,7 +337,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void onPickup([FromSource] Player player, int obj)
+        private async void onPickup([FromSource] Player player, int obj)
         {
             string identifier = "steam:" + player.Identifiers["steam"];
             int source = int.Parse(player.Handle);
@@ -394,7 +377,7 @@ namespace VorpInventory.Scripts
 
                         if (Config.MaxItems != 0)
                         {
-                            int totalcount = VorpCoreInvenoryAPI.GetTotalAmountOfItems(identifier);
+                            int totalcount = VorpCoreInventoryAPI.GetTotalAmountOfItems(identifier);
                             totalcount += Pickups[obj]["amount"];
                             if (totalcount <= Config.MaxItems)
                             {
@@ -430,7 +413,7 @@ namespace VorpInventory.Scripts
                 {
                     if (Config.MaxWeapons != 0)
                     {
-                        int totalcount = VorpCoreInvenoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
+                        int totalcount = VorpCoreInventoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
                         totalcount += 1;
                         if (totalcount <= Config.MaxWeapons)
                         {
@@ -567,7 +550,7 @@ namespace VorpInventory.Scripts
                         }
 
                     }
-                    int totalcount = VorpCoreInvenoryAPI.GetTotalAmountOfItems(targetIdentifier);
+                    int totalcount = VorpCoreInventoryAPI.GetTotalAmountOfItems(targetIdentifier);
                     totalcount += amount;
                     if (totalcount > Config.MaxItems)
 
@@ -619,7 +602,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void getInventory([FromSource] Player player)
+        private async void getInventory([FromSource] Player player)
         {
             try
             {

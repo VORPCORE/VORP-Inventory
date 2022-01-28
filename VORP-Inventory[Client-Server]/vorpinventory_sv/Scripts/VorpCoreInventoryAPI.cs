@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Text;
 using System.Threading.Tasks;
 using VorpInventory.Database;
 using VorpInventory.Diagnostics;
@@ -43,57 +44,46 @@ namespace VorpInventory.Scripts
             Exports.Add("CanCarryWeapon", UserCanCarryWeapon);
         }
 
-        public async Task SaveInventoryItemsSupport(Player player)
+        public async Task<bool> SaveInventoryItemsSupport(string steamIdendifier, int coreCharacterId)
         {
             try
             {
-                await Delay(1000);
-                string identifier = "steam:" + player.Identifiers["steam"];
+                await Delay(0);
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
-                int charIdentifier = 0;
+                if (string.IsNullOrEmpty(steamIdendifier)) return false; // no steamId provided
 
-                if (PluginManager.ActiveCharacters.ContainsKey(player.Handle))
-                    charIdentifier = PluginManager.ActiveCharacters[player.Handle];
+                if (coreCharacterId == -1) return false; // no characterId provided
 
-                if (coreUserCharacter != null && Common.HasProperty(coreUserCharacter, "charIdentifier"))
-                    charIdentifier = coreUserCharacter?.charIdentifier;
-
-                if (charIdentifier > 0)
-                    Logger.Debug($"Saving inventory for '{charIdentifier}'.");
-
-                if (charIdentifier == 0)
-                {
-                    Logger.Error($"Core didn't return character for player '{player.Handle}', inventory has not been saved.");
-                    return;
-                }
-
+                Dictionary<string, ItemClass> itemClasses = ItemDatabase.GetInventory(steamIdendifier);
                 Dictionary<string, int> items = new Dictionary<string, int>();
-                if (ItemDatabase.UserInventory.ContainsKey(identifier))
+
+                if (itemClasses is not null)
                 {
-                    foreach (var item in ItemDatabase.UserInventory[identifier])
+                    foreach (KeyValuePair<string, ItemClass> item in itemClasses)
                     {
                         items.Add(item.Key, item.Value.getCount());
                     }
-
-                    if (items.Count > 0)
-                    {
-                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                        Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, identifier, charIdentifier });
-                    }
                 }
+
+                string json = JsonConvert.SerializeObject(items);
+                if (items.Count == 0) json = "{}"; // empty object if items is empty
+
+                // why?! is the steamID required? when the Character ID is unique?! why?!
+                Exports["ghmattimysql"].execute($"UPDATE characters SET `inventory` = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
+                return true;
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, "SaveInventoryItemsSupport");
+                return false;
             }
         }
 
-        private void canCarryAmountWeapons(int source, int quantity, CallbackDelegate cb)
+        private async void canCarryAmountWeapons(int source, int quantity, CallbackDelegate cb)
         {
             try
             {
-                bool result = UserCanCarryWeapon(source, quantity);
+                bool result = await UserCanCarryWeapon(source, quantity);
                 cb.Invoke(result);
             }
             catch (Exception ex)
@@ -102,7 +92,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private bool UserCanCarryWeapon(int playerServerId, int quantity)
+        private async Task<bool> UserCanCarryWeapon(int playerServerId, int quantity)
         {
             Player player = PlayerList[playerServerId];
 
@@ -445,7 +435,7 @@ namespace VorpInventory.Scripts
             function.Invoke(weapons);
         }
 
-        private void getUserWeapons(int source, CallbackDelegate function)
+        private async void getUserWeapons(int source, CallbackDelegate function)
         {
             Player player = PlayerList[source];
 
@@ -628,7 +618,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void addItem(int player, string name, int cuantity)
+        private async void addItem(int source, string name, int cuantity)
         {
             try
             {
@@ -638,16 +628,17 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                Player p = PlayerList[player];
+                Player player = PlayerList[source];
 
-                if (p == null)
+                if (player == null)
                 {
-                    Logger.Error($"addItem: Player '{player}' does not exist.");
+                    Logger.Error($"addItem: Player '{source}' does not exist.");
                     return;
                 }
 
                 bool added = false;
-                string identifier = "steam:" + p.Identifiers["steam"];
+                string identifier = "steam:" + player.Identifiers["steam"];
+                int coreUserCharacterId = player.GetCoreUserCharacterId();
 
                 if (!ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
@@ -758,12 +749,23 @@ namespace VorpInventory.Scripts
                         string type = ItemDatabase.UserInventory[identifier][name].getType();
                         bool usable = ItemDatabase.UserInventory[identifier][name].getUsable();
                         bool canRemove = ItemDatabase.UserInventory[identifier][name].getCanRemove();
-                        p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
-                        SaveInventoryItemsSupport(p);
+                        player.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
+                        bool result = await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                        if (!result)
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            sb.Append("Method: AddItem\n");
+                            sb.Append("Message: Player inventory not saved\n");
+                            sb.Append($"Player SteamID: {identifier}\n");
+                            sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
+                            sb.Append($"If CharacterId = -1, then the Core did not return the character.\n");
+                            sb.Append($"Inventory: {JsonConvert.SerializeObject(ItemDatabase.UserInventory[identifier])}");
+                            Logger.Warn($"{sb}");
+                        }
                     }
                     else
                     {
-                        TriggerClientEvent(p, "vorp:Tip", Config.lang["fullInventory"], 2000);
+                        TriggerClientEvent(player, "vorp:Tip", Config.lang["fullInventory"], 2000);
                     }
                 }
             }
@@ -773,7 +775,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void SubtractItem(int player, string itemName, int quantity)
+        private async void SubtractItem(int source, string itemName, int quantity)
         {
             try
             {
@@ -783,20 +785,21 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                Player p = PlayerList[player];
+                Player player = PlayerList[source];
 
-                if (p == null)
+                if (player == null)
                 {
-                    Logger.Error($"subItem: Player '{player}' does not exist.");
+                    Logger.Error($"subItem: Player '{source}' does not exist.");
                     return;
                 }
 
-                string identifier = "steam:" + p.Identifiers["steam"];
+                string identifier = "steam:" + player.Identifiers["steam"];
+                int coreUserCharacterId = player.GetCoreUserCharacterId();
 
                 Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
                 if (userInventory == null)
                 {
-                    Logger.Error($"subItem: Player '{player}' inventory does not exist.");
+                    Logger.Error($"subItem: Player '{source}' inventory does not exist.");
                     return;
                 }
 
@@ -815,8 +818,19 @@ namespace VorpInventory.Scripts
                         userInventory.Remove(itemName);
                     }
 
-                    p.TriggerEvent("vorpCoreClient:subItem", itemName, itemCount);
-                    SaveInventoryItemsSupport(p);
+                    player.TriggerEvent("vorpCoreClient:subItem", itemName, itemCount);
+                    bool result = await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                    if (!result)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append("Method: SubtractItem\n");
+                        sb.Append("Message: Player inventory not saved\n");
+                        sb.Append($"Player SteamID: {identifier}\n");
+                        sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
+                        sb.Append($"If CharacterId = -1, then the Core did not return the character.\n");
+                        sb.Append($"Inventory: {JsonConvert.SerializeObject(userInventory)}");
+                        Logger.Warn($"{sb}");
+                    }
                 }
             }
             catch (Exception ex)
@@ -825,7 +839,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void registerWeapon(int target, string name, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
+        private async void registerWeapon(int target, string name, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
         {
             Player targetPlayer = null;
             bool targetIsPlayer = false;
@@ -905,7 +919,7 @@ namespace VorpInventory.Scripts
             }));
         }
 
-        private void giveWeapon(int source, int weapId, int target)
+        private async void giveWeapon(int source, int weapId, int target)
         {
             try
             {
@@ -982,7 +996,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void subWeapon(int source, int weapId)
+        private async void subWeapon(int source, int weapId)
         {
             Player player = PlayerList[source];
 

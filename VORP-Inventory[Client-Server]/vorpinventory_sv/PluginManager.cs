@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VorpInventory.Diagnostics;
 using VorpInventory.Models;
 using VorpInventory.Scripts;
+using VorpInventory.Extensions;
 
 namespace VorpInventory
 {
@@ -23,9 +24,9 @@ namespace VorpInventory
         // Database
         public static Database.ItemDatabase ItemsDB = new();
         // private scripts
-        Config _scriptConfig = new Config();
-        VorpCoreInvenoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInvenoryAPI();
-        VorpPlayerInventory _scriptVorpPlayerInventory = new VorpPlayerInventory();
+        public static Config _scriptConfig = new Config();
+        public static VorpCoreInventoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInventoryAPI();
+        public static VorpPlayerInventory _scriptVorpPlayerInventory = new VorpPlayerInventory();
 
         public static Dictionary<string, int> ActiveCharacters = new();
 
@@ -76,11 +77,7 @@ namespace VorpInventory
         {
             await VendorReady(); // wait till ghmattimysql resource has started
 
-            TriggerEvent("getCore", new Action<dynamic>((dic) =>
-            {
-                Logger.Success($"VORP Core Setup");
-                CORE = dic;
-            }));
+            GetCore();
 
             RegisterScript(ItemsDB);
             RegisterScript(_scriptConfig);
@@ -88,6 +85,15 @@ namespace VorpInventory
             RegisterScript(_scriptVorpPlayerInventory);
 
             AddEvents();
+        }
+
+        void GetCore()
+        {
+            TriggerEvent("getCore", new Action<dynamic>((getCoreResult) =>
+            {
+                Logger.Success($"VORP Core Setup");
+                CORE = getCoreResult;
+            }));
         }
 
         void AddEvents()
@@ -100,12 +106,23 @@ namespace VorpInventory
 
             EventRegistry.Add("playerDropped", new Action<Player, string>(async ([FromSource] player, reason) =>
             {
-                string steamIdent = $"steam:{player.Identifiers["steam"]}";
-                if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
+                try
                 {
-                    ActiveCharacters.Remove(player.Handle);
-                    await _scriptVorpPlayerInventory.SaveInventoryItemsSupport(player);
-                    Database.ItemDatabase.UserInventory.Remove(steamIdent);
+                    string steamIdent = $"steam:{player.Identifiers["steam"]}";
+
+                    //int coreUserCharacterId = await player?.GetCoreUserCharacterId();
+                    //if (coreUserCharacterId != -1)
+                    //    await _scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(steamIdent, coreUserCharacterId);
+
+                    if (Database.ItemDatabase.UserInventory.ContainsKey(steamIdent))
+                        Database.ItemDatabase.UserInventory.Remove(steamIdent);
+
+                    if (ActiveCharacters.ContainsKey(player.Handle))
+                            ActiveCharacters.Remove(player.Handle);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, $"playerDropped: So, they don't exist?!");
                 }
             }));
 

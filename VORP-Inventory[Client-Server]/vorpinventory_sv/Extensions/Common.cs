@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Threading.Tasks;
 using VorpInventory.Diagnostics;
 
 namespace VorpInventory.Extensions
@@ -24,10 +25,28 @@ namespace VorpInventory.Extensions
             dynamic coreUser = player.GetCoreUser();
             if (coreUser == null)
             {
-                Logger.Error($"GetCoreUser: Player '{player.Handle}' does not exist.");
-                return null;
+                Logger.Warn($"GetCoreUser: Player '{player.Handle}' does not exist.");
             }
             return coreUser.getUsedCharacter;
+        }
+
+        public static int GetCoreUserCharacterId(this Player player)
+        {
+            dynamic character = player.GetCoreUserCharacter();
+
+            if (character == null)
+            {
+                if (!PluginManager.ActiveCharacters.ContainsKey(player.Handle)) return -1;
+                return PluginManager.ActiveCharacters[player.Handle];
+            }
+
+            if (!Common.HasProperty(character, "charIdentifier"))
+            {
+                if (!PluginManager.ActiveCharacters.ContainsKey(player.Handle)) return -1;
+                return PluginManager.ActiveCharacters[player.Handle];
+            }
+
+            return character?.charIdentifier;
         }
 
         public static bool HasProperty(ExpandoObject obj, string propertyName)
