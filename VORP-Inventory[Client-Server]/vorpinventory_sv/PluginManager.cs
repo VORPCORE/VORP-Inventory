@@ -25,7 +25,7 @@ namespace VorpInventory
         public static Database.ItemDatabase ItemsDB = new();
         // private scripts
         public static Config _scriptConfig = new Config();
-        public static VorpCoreInvenoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInvenoryAPI();
+        public static VorpCoreInventoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInventoryAPI();
         public static VorpPlayerInventory _scriptVorpPlayerInventory = new VorpPlayerInventory();
 
         public static Dictionary<string, int> ActiveCharacters = new();

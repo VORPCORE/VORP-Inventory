@@ -377,7 +377,7 @@ namespace VorpInventory.Scripts
 
                         if (Config.MaxItems != 0)
                         {
-                            int totalcount = VorpCoreInvenoryAPI.GetTotalAmountOfItems(identifier);
+                            int totalcount = VorpCoreInventoryAPI.GetTotalAmountOfItems(identifier);
                             totalcount += Pickups[obj]["amount"];
                             if (totalcount <= Config.MaxItems)
                             {
@@ -413,7 +413,7 @@ namespace VorpInventory.Scripts
                 {
                     if (Config.MaxWeapons != 0)
                     {
-                        int totalcount = VorpCoreInvenoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
+                        int totalcount = VorpCoreInventoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
                         totalcount += 1;
                         if (totalcount <= Config.MaxWeapons)
                         {
@@ -550,7 +550,7 @@ namespace VorpInventory.Scripts
                         }
 
                     }
-                    int totalcount = VorpCoreInvenoryAPI.GetTotalAmountOfItems(targetIdentifier);
+                    int totalcount = VorpCoreInventoryAPI.GetTotalAmountOfItems(targetIdentifier);
                     totalcount += amount;
                     if (totalcount > Config.MaxItems)
 
