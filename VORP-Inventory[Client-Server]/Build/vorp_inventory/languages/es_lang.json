@@ -5,5 +5,7 @@
     "TakeFromFloor": "Pickup",
     "NotEnoughMoney": "No tienes tanto dinero",
     "YouPaid": "Has pagado {0}$ a {1}",
-    "YouReceived": "Has recibido {0}$ de {1}"
+    "YouReceived": "Has recibido {0}$ de {1}",
+    "yougaveitem": "You have gave an item ",
+    "itemerror": "Invalid "
 }
