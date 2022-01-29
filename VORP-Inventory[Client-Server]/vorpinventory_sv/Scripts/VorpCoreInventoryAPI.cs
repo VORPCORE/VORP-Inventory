@@ -46,6 +46,8 @@ namespace VorpInventory.Scripts
 
         public async Task<bool> SaveInventoryItemsSupport(string steamIdendifier, int coreCharacterId)
         {
+            Dictionary<string, int> items = new Dictionary<string, int>();
+            string json = "{}";
             try
             {
                 await Delay(0);
@@ -55,7 +57,6 @@ namespace VorpInventory.Scripts
                 if (coreCharacterId == -1) return false; // no characterId provided
 
                 Dictionary<string, ItemClass> itemClasses = ItemDatabase.GetInventory(steamIdendifier);
-                Dictionary<string, int> items = new Dictionary<string, int>();
 
                 if (itemClasses is not null)
                 {
@@ -65,8 +66,8 @@ namespace VorpInventory.Scripts
                     }
                 }
 
-                string json = JsonConvert.SerializeObject(items);
-                if (items.Count == 0) json = "{}"; // empty object if items is empty
+                if (items.Count > 0)
+                    json = JsonConvert.SerializeObject(items);
 
                 // why?! is the steamID required? when the Character ID is unique?! why?!
                 Exports["ghmattimysql"].execute($"UPDATE characters SET `inventory` = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
@@ -74,6 +75,11 @@ namespace VorpInventory.Scripts
             }
             catch (Exception ex)
             {
+                Logger.Error("SaveInventoryItemsSupport");
+                Logger.Error($"SteamID: {steamIdendifier}");
+                Logger.Error($"CharacterId: {coreCharacterId}");
+                Logger.Error($"Items: '{json}'");
+                Logger.Error("SaveInventoryItemsSupport");
                 Logger.Error(ex, "SaveInventoryItemsSupport");
                 return false;
             }
