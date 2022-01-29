@@ -1004,33 +1004,40 @@ namespace VorpInventory.Scripts
 
         private async void subWeapon(int source, int weapId)
         {
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"subWeapon: Player '{source}' does not exist.");
-                return;
-            }
+                Player player = PlayerList[source];
 
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
+                if (player == null)
+                {
+                    Logger.Error($"subWeapon: Player '{source}' does not exist.");
+                    return;
+                }
+
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                if (coreUserCharacter == null)
+                {
+                    Logger.Error($"subWeapon: Player '{source}' CORE User does not exist.");
+                    return;
+                }
+
+                int charIdentifier = coreUserCharacter.charIdentifier;
+
+                string identifier = "steam:" + player.Identifiers["steam"];
+                if (ItemDatabase.UserWeapons.ContainsKey(weapId))
+                {
+                    ItemDatabase.UserWeapons[weapId].setPropietary("");
+                    Exports["ghmattimysql"]
+                        .execute(
+                            $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}' , charidentifier = '{charIdentifier}' WHERE id=?",
+                            new[] { weapId });
+                }
+                player.TriggerEvent("vorpCoreClient:subWeapon", weapId);
+            }
+            catch (Exception ex)
             {
-                Logger.Error($"subWeapon: Player '{source}' CORE User does not exist.");
-                return;
+                Logger.Error(ex, $"subWeapon");
             }
-
-            int charIdentifier = coreUserCharacter.charIdentifier;
-
-            string identifier = "steam:" + player.Identifiers["steam"];
-            if (ItemDatabase.UserWeapons.ContainsKey(weapId))
-            {
-                ItemDatabase.UserWeapons[weapId].setPropietary("");
-                Exports["ghmattimysql"]
-                    .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}' , charidentifier = '{charIdentifier}' WHERE id=?",
-                        new[] { weapId });
-            }
-            player.TriggerEvent("vorpCoreClient:subWeapon", weapId);
         }
 
 
