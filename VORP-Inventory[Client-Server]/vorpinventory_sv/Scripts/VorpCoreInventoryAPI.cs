@@ -1014,14 +1014,12 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
-                if (coreUserCharacter == null)
-                {
-                    Logger.Error($"subWeapon: Player '{source}' CORE User does not exist.");
-                    return;
-                }
+                dynamic charIdentifier = player.GetCoreUserCharacterId();
 
-                int charIdentifier = coreUserCharacter.charIdentifier;
+                if (charIdentifier == -1)
+                {
+                    Logger.Error($"subWeapon: Player '{source}' Core Character does not exist.");
+                }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
                 if (ItemDatabase.UserWeapons.ContainsKey(weapId))
