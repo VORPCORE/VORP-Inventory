@@ -46,6 +46,8 @@ namespace VorpInventory.Scripts
 
         public async Task<bool> SaveInventoryItemsSupport(string steamIdendifier, int coreCharacterId)
         {
+            Dictionary<string, int> items = new Dictionary<string, int>();
+            string json = "{}";
             try
             {
                 await Delay(0);
@@ -55,7 +57,6 @@ namespace VorpInventory.Scripts
                 if (coreCharacterId == -1) return false; // no characterId provided
 
                 Dictionary<string, ItemClass> itemClasses = ItemDatabase.GetInventory(steamIdendifier);
-                Dictionary<string, int> items = new Dictionary<string, int>();
 
                 if (itemClasses is not null)
                 {
@@ -65,8 +66,8 @@ namespace VorpInventory.Scripts
                     }
                 }
 
-                string json = JsonConvert.SerializeObject(items);
-                if (items.Count == 0) json = "{}"; // empty object if items is empty
+                if (items.Count > 0)
+                    json = JsonConvert.SerializeObject(items);
 
                 // why?! is the steamID required? when the Character ID is unique?! why?!
                 Exports["ghmattimysql"].execute($"UPDATE characters SET `inventory` = ? WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { json, steamIdendifier, coreCharacterId });
@@ -74,6 +75,11 @@ namespace VorpInventory.Scripts
             }
             catch (Exception ex)
             {
+                Logger.Error("SaveInventoryItemsSupport");
+                Logger.Error($"SteamID: {steamIdendifier}");
+                Logger.Error($"CharacterId: {coreCharacterId}");
+                Logger.Error($"Items: '{json}'");
+                Logger.Error("SaveInventoryItemsSupport");
                 Logger.Error(ex, "SaveInventoryItemsSupport");
                 return false;
             }
@@ -94,34 +100,42 @@ namespace VorpInventory.Scripts
 
         private async Task<bool> UserCanCarryWeapon(int playerServerId, int quantity)
         {
-            Player player = PlayerList[playerServerId];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"canCarryAmountWeapons: Player '{playerServerId}' does not exist.");
-                return false;
-            }
+                Player player = PlayerList[playerServerId];
 
-            string identifier = "steam:" + player.Identifiers["steam"];
-
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null) return false;
-
-            int charIdentifier = coreUserCharacter.charIdentifier;
-            int totalcount = getUserTotalCountWeapons(identifier, charIdentifier) + quantity;
-            if (Config.MaxWeapons != -1)
-            {
-                if (totalcount <= Config.MaxWeapons)
+                if (player == null)
                 {
-                    return true;
+                    Logger.Error($"canCarryAmountWeapons: Player '{playerServerId}' does not exist.");
+                    return false;
+                }
+
+                string identifier = "steam:" + player.Identifiers["steam"];
+
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                if (coreUserCharacter == null) return false;
+
+                int charIdentifier = coreUserCharacter.charIdentifier;
+                int totalcount = getUserTotalCountWeapons(identifier, charIdentifier) + quantity;
+                if (Config.MaxWeapons != -1)
+                {
+                    if (totalcount <= Config.MaxWeapons)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
                     return false;
                 }
             }
-            else
+            catch (Exception ex)
             {
+                Logger.Error(ex, $"UserCanCarryWeapon");
                 return false;
             }
         }
@@ -270,7 +284,9 @@ namespace VorpInventory.Scripts
                     if (itemsDBO == null)
                     {
                         Logger.Error($"getInventory: Player '{player.Name}' has no items.");
-                        cb.Invoke(useritems);
+
+                        if (!string.IsNullOrEmpty(player?.EndPoint ?? ""))
+                            cb.Invoke(useritems);
                     }
 
                     foreach (KeyValuePair<string, ItemClass> items in itemsDBO)
@@ -291,7 +307,8 @@ namespace VorpInventory.Scripts
                         useritems.Add(item);
                     }
 
-                    cb.Invoke(useritems);
+                    if (!string.IsNullOrEmpty(player?.EndPoint ?? ""))
+                        cb.Invoke(useritems);
                 }
             }
             catch (Exception ex)
@@ -344,236 +361,292 @@ namespace VorpInventory.Scripts
 
         private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
         {
-            Player p = PlayerList[player];
-
-            if (p == null)
+            try
             {
-                Logger.Error($"subComponent: Player '{player}' does not exist.");
-                return;
+                Player p = PlayerList[player];
+
+                if (p == null)
+                {
+                    Logger.Error($"subComponent: Player '{player}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                    {
+                        ItemDatabase.UserWeapons[weaponId].quitComponent(component);
+                        Exports["ghmattimysql"]
+                            .execute(
+                                $"UPDATE loadout SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.UserWeapons[weaponId].getAllComponents())}' WHERE id=?",
+                                new[] { weaponId });
+                        function.Invoke(true);
+                        p.TriggerEvent("vorpCoreClient:subComponent", weaponId, component);
+                    }
+                    else
+                    {
+                        function.Invoke(false);
+                    }
+                }
             }
-
-            string identifier = "steam:" + p.Identifiers["steam"];
-
-            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+            catch (Exception ex)
             {
-                if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
-                {
-                    ItemDatabase.UserWeapons[weaponId].quitComponent(component);
-                    Exports["ghmattimysql"]
-                        .execute(
-                            $"UPDATE loadout SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.UserWeapons[weaponId].getAllComponents())}' WHERE id=?",
-                            new[] { weaponId });
-                    function.Invoke(true);
-                    p.TriggerEvent("vorpCoreClient:subComponent", weaponId, component);
-                }
-                else
-                {
-                    function.Invoke(false);
-                }
+                Logger.Error(ex, $"subComponent");
             }
         }
 
         private void addComponent(int player, int weaponId, string component, CallbackDelegate function)
         {
-            Player p = PlayerList[player];
-
-            if (p == null)
+            try
             {
-                Logger.Error($"addComponent: Player '{player}' does not exist.");
-                return;
+                Player p = PlayerList[player];
+
+                if (p == null)
+                {
+                    Logger.Error($"addComponent: Player '{player}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                    {
+                        ItemDatabase.UserWeapons[weaponId].setComponent(component);
+
+                        Exports["ghmattimysql"]
+                            .execute(
+                                $"UPDATE loadout SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.UserWeapons[weaponId].getAllComponents())}' WHERE id=?",
+                                new[] { weaponId });
+                        function.Invoke(true);
+                        p.TriggerEvent("vorpCoreClient:addComponent", weaponId, component);
+                    }
+                    else
+                    {
+                        function.Invoke(false);
+                    }
+                }
             }
-
-            string identifier = "steam:" + p.Identifiers["steam"];
-
-            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+            catch (Exception ex)
             {
-                if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
-                {
-                    ItemDatabase.UserWeapons[weaponId].setComponent(component);
-
-                    Exports["ghmattimysql"]
-                        .execute(
-                            $"UPDATE loadout SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.UserWeapons[weaponId].getAllComponents())}' WHERE id=?",
-                            new[] { weaponId });
-                    function.Invoke(true);
-                    p.TriggerEvent("vorpCoreClient:addComponent", weaponId, component);
-                }
-                else
-                {
-                    function.Invoke(false);
-                }
+                Logger.Error(ex, $"addComponent");
             }
         }
 
         private void getUserWeapon(int player, CallbackDelegate function, int weapId)
         {
-            Player p = PlayerList[player];
-
-            if (p == null)
+            try
             {
-                Logger.Error($"getUserWeapon: Player '{player}' does not exist.");
-                return;
-            }
+                Player p = PlayerList[player];
 
-            string identifier = "steam:" + p.Identifiers["steam"];
-
-            Dictionary<string, dynamic> weapons = new Dictionary<string, dynamic>();
-            bool found = false;
-            foreach (KeyValuePair<int, WeaponClass> weapon in ItemDatabase.UserWeapons)
-            {
-                if (weapon.Value.getId() == weapId && !found)
+                if (p == null)
                 {
-                    weapons.Add("name", weapon.Value.getName());
-                    weapons.Add("id", weapon.Value.getId());
-                    weapons.Add("propietary", weapon.Value.getPropietary());
-                    weapons.Add("used", weapon.Value.getUsed());
-                    weapons.Add("ammo", weapon.Value.getAllAmmo());
-                    weapons.Add("components", weapon.Value.getAllComponents());
-                    found = true;
+                    Logger.Error($"getUserWeapon: Player '{player}' does not exist.");
+                    return;
                 }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                Dictionary<string, dynamic> weapons = new Dictionary<string, dynamic>();
+                bool found = false;
+                foreach (KeyValuePair<int, WeaponClass> weapon in ItemDatabase.UserWeapons)
+                {
+                    if (weapon.Value.getId() == weapId && !found)
+                    {
+                        weapons.Add("name", weapon.Value.getName());
+                        weapons.Add("id", weapon.Value.getId());
+                        weapons.Add("propietary", weapon.Value.getPropietary());
+                        weapons.Add("used", weapon.Value.getUsed());
+                        weapons.Add("ammo", weapon.Value.getAllAmmo());
+                        weapons.Add("components", weapon.Value.getAllComponents());
+                        found = true;
+                    }
+                }
+                function.Invoke(weapons);
             }
-            function.Invoke(weapons);
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"getUserWeapon");
+            }
         }
 
         private async void getUserWeapons(int source, CallbackDelegate function)
         {
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"getUserWeapons: Player '{source}' does not exist.");
-                return;
-            }
+                Player player = PlayerList[source];
 
-            string identifier = "steam:" + player.Identifiers["steam"];
-            int charIdentifier;
-
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
-            {
-                Logger.Error($"getUserWeapons: Player '{source}' CORE User does not exist.");
-                return;
-            }
-
-            charIdentifier = coreUserCharacter.charIdentifier;
-
-            Dictionary<string, dynamic> weapons;
-            List<Dictionary<string, dynamic>> userWeapons = new List<Dictionary<string, dynamic>>();
-
-            foreach (KeyValuePair<int, WeaponClass> weapon in ItemDatabase.UserWeapons)
-            {
-                if (weapon.Value.getPropietary() == identifier)
+                if (player == null)
                 {
+                    Logger.Error($"getUserWeapons: Player '{source}' does not exist.");
+                    return;
+                }
 
-                    if (weapon.Value.getCharId() == charIdentifier)
+                string identifier = "steam:" + player.Identifiers["steam"];
+                int charIdentifier;
+
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                if (coreUserCharacter == null)
+                {
+                    Logger.Error($"getUserWeapons: Player '{source}' CORE User does not exist.");
+                    return;
+                }
+
+                charIdentifier = coreUserCharacter.charIdentifier;
+
+                Dictionary<string, dynamic> weapons;
+                List<Dictionary<string, dynamic>> userWeapons = new List<Dictionary<string, dynamic>>();
+
+                foreach (KeyValuePair<int, WeaponClass> weapon in ItemDatabase.UserWeapons)
+                {
+                    if (weapon.Value.getPropietary() == identifier)
                     {
-                        weapons = new Dictionary<string, dynamic>
+
+                        if (weapon.Value.getCharId() == charIdentifier)
                         {
-                            ["name"] = weapon.Value.getName(),
-                            ["id"] = weapon.Value.getId(),
-                            ["propietary"] = weapon.Value.getPropietary(),
-                            ["used"] = weapon.Value.getUsed(),
-                            ["ammo"] = weapon.Value.getAllAmmo(),
-                            ["components"] = weapon.Value.getAllComponents()
-                        };
-                        userWeapons.Add(weapons);
+                            weapons = new Dictionary<string, dynamic>
+                            {
+                                ["name"] = weapon.Value.getName(),
+                                ["id"] = weapon.Value.getId(),
+                                ["propietary"] = weapon.Value.getPropietary(),
+                                ["used"] = weapon.Value.getUsed(),
+                                ["ammo"] = weapon.Value.getAllAmmo(),
+                                ["components"] = weapon.Value.getAllComponents()
+                            };
+                            userWeapons.Add(weapons);
+                        }
                     }
                 }
+                function.Invoke(userWeapons);
             }
-            function.Invoke(userWeapons);
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"getUserWeapons");
+            }
         }
 
         private void getWeaponBullets(int player, CallbackDelegate function, int weaponId)
         {
-            Player p = PlayerList[player];
-
-            if (p == null)
+            try
             {
-                Logger.Error($"getWeaponBullets: Player '{player}' does not exist.");
-                return;
-            }
+                Player p = PlayerList[player];
 
-            string identifier = "steam:" + p.Identifiers["steam"];
-
-            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
-            {
-                if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                if (p == null)
                 {
-                    function.Invoke(ItemDatabase.UserWeapons[weaponId].getAllAmmo());
+                    Logger.Error($"getWeaponBullets: Player '{player}' does not exist.");
+                    return;
                 }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                    {
+                        function.Invoke(ItemDatabase.UserWeapons[weaponId].getAllAmmo());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"getWeaponBullets");
             }
         }
 
         private void getWeaponComponents(int player, CallbackDelegate function, int weaponId)
         {
-            Player p = PlayerList[player];
-
-            if (p == null)
+            try
             {
-                Logger.Error($"getWeaponComponents: Player '{player}' does not exist.");
-                return;
-            }
+                Player p = PlayerList[player];
 
-            string identifier = "steam:" + p.Identifiers["steam"];
-
-            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
-            {
-                if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                if (p == null)
                 {
-                    function.Invoke(ItemDatabase.UserWeapons[weaponId].getAllComponents());
+                    Logger.Error($"getWeaponComponents: Player '{player}' does not exist.");
+                    return;
                 }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                    {
+                        function.Invoke(ItemDatabase.UserWeapons[weaponId].getAllComponents());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"getWeaponComponents");
             }
         }
 
         private void addBullets(int player, int weaponId, string bulletType, int cuantity)
         {
-            Player p = PlayerList[player];
-
-            if (p == null)
+            try
             {
-                Logger.Error($"addBullets: Player '{player}' does not exist.");
-                return;
-            }
+                Player p = PlayerList[player];
 
-            string identifier = "steam:" + p.Identifiers["steam"];
-
-            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
-            {
-                if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                if (p == null)
                 {
-                    ItemDatabase.UserWeapons[weaponId].addAmmo(cuantity, bulletType);
-                    p.TriggerEvent("vorpCoreClient:addBullets", weaponId, bulletType, cuantity);
+                    Logger.Error($"addBullets: Player '{player}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                    {
+                        ItemDatabase.UserWeapons[weaponId].addAmmo(cuantity, bulletType);
+                        p.TriggerEvent("vorpCoreClient:addBullets", weaponId, bulletType, cuantity);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("Weapon not found in DBa");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Debug.WriteLine("Weapon not found in DBa");
+                Logger.Error(ex, $"addBullets");
             }
         }
 
         private void subBullets(int player, int weaponId, string bulletType, int cuantity)
         {
-            Player p = PlayerList[player];
-
-            if (p == null)
+            try
             {
-                Logger.Error($"subBullets: Player '{player}' does not exist.");
-                return;
-            }
+                Player p = PlayerList[player];
 
-            string identifier = "steam:" + p.Identifiers["steam"];
-
-            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
-            {
-                if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                if (p == null)
                 {
-                    ItemDatabase.UserWeapons[weaponId].subAmmo(cuantity, bulletType);
-                    p.TriggerEvent("vorpCoreClient:subBullets", weaponId, bulletType, cuantity);
+                    Logger.Error($"subBullets: Player '{player}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    if (ItemDatabase.UserWeapons[weaponId].getPropietary() == identifier)
+                    {
+                        ItemDatabase.UserWeapons[weaponId].subAmmo(cuantity, bulletType);
+                        p.TriggerEvent("vorpCoreClient:subBullets", weaponId, bulletType, cuantity);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("Weapon not found in DB");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Debug.WriteLine("Weapon not found in DB");
+                Logger.Error(ex, $"subBullets");
             }
         }
 
@@ -841,82 +914,89 @@ namespace VorpInventory.Scripts
 
         private async void registerWeapon(int target, string name, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
         {
-            Player targetPlayer = null;
-            bool targetIsPlayer = false;
-            foreach (Player pla in PlayerList)
+            try
             {
-                if (int.Parse(pla.Handle) == target)
+                Player targetPlayer = null;
+                bool targetIsPlayer = false;
+                foreach (Player pla in PlayerList)
                 {
-                    targetPlayer = PlayerList[target];
-                    targetIsPlayer = true;
-                }
-            }
-
-            if (targetPlayer == null)
-            {
-                Logger.Error($"registerWeapon: Target Player '{target}' does not exist.");
-                return;
-            }
-
-            string identifier;
-
-            dynamic coreUserCharacter = targetPlayer.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
-            {
-                Logger.Error($"registerWeapon: Player '{target}' CORE User does not exist.");
-                return;
-            }
-            int charIdentifier = coreUserCharacter.charIdentifier;
-
-            if (targetIsPlayer)
-            {
-                identifier = "steam:" + targetPlayer.Identifiers["steam"];
-                if (Config.MaxWeapons != 0)
-                {
-                    int totalcount = getUserTotalCountWeapons(identifier, charIdentifier);
-                    totalcount += 1;
-                    if (totalcount > Config.MaxWeapons)
+                    if (int.Parse(pla.Handle) == target)
                     {
-                        Debug.WriteLine($"{targetPlayer.Name} Can't carry more weapons");
-                        return;
+                        targetPlayer = PlayerList[target];
+                        targetIsPlayer = true;
                     }
                 }
-            }
-            else
-            {
-                identifier = target.ToString();
-            }
 
-            Dictionary<string, int> ammoaux = new Dictionary<string, int>();
-            if (ammos != null)
-            {
-                foreach (KeyValuePair<string, object> ammo in ammos)
+                if (targetPlayer == null)
                 {
-                    ammoaux.Add(ammo.Key, int.Parse(ammo.Value.ToString()));
+                    Logger.Error($"registerWeapon: Target Player '{target}' does not exist.");
+                    return;
                 }
-            }
 
-            List<string> auxcomponents = new List<string>();
-            if (components != null)
-            {
-                foreach (KeyValuePair<string, object> component in components)
+                string identifier;
+
+                dynamic coreUserCharacter = targetPlayer.GetCoreUserCharacter();
+                if (coreUserCharacter == null)
                 {
-                    auxcomponents.Add(component.Key);
+                    Logger.Error($"registerWeapon: Player '{target}' CORE User does not exist.");
+                    return;
                 }
-            }
+                int charIdentifier = coreUserCharacter.charIdentifier;
 
-            Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, name, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) =>
-            {
-                int weaponId = result.insertId;
-                WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false, false, charIdentifier);
-                ItemDatabase.UserWeapons.Add(weaponId, auxWeapon);
                 if (targetIsPlayer)
                 {
-                    TriggerEvent("syn_weapons:registerWeapon", weaponId);
-                    targetPlayer.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
-                        ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
+                    identifier = "steam:" + targetPlayer.Identifiers["steam"];
+                    if (Config.MaxWeapons != 0)
+                    {
+                        int totalcount = getUserTotalCountWeapons(identifier, charIdentifier);
+                        totalcount += 1;
+                        if (totalcount > Config.MaxWeapons)
+                        {
+                            Debug.WriteLine($"{targetPlayer.Name} Can't carry more weapons");
+                            return;
+                        }
+                    }
                 }
-            }));
+                else
+                {
+                    identifier = target.ToString();
+                }
+
+                Dictionary<string, int> ammoaux = new Dictionary<string, int>();
+                if (ammos != null)
+                {
+                    foreach (KeyValuePair<string, object> ammo in ammos)
+                    {
+                        ammoaux.Add(ammo.Key, int.Parse(ammo.Value.ToString()));
+                    }
+                }
+
+                List<string> auxcomponents = new List<string>();
+                if (components != null)
+                {
+                    foreach (KeyValuePair<string, object> component in components)
+                    {
+                        auxcomponents.Add(component.Key);
+                    }
+                }
+
+                Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, name, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) =>
+                {
+                    int weaponId = result.insertId;
+                    WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false, false, charIdentifier);
+                    ItemDatabase.UserWeapons.Add(weaponId, auxWeapon);
+                    if (targetIsPlayer)
+                    {
+                        TriggerEvent("syn_weapons:registerWeapon", weaponId);
+                        targetPlayer.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
+                            ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
+                    }
+                }));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"registerWeapon");
+            }
         }
 
         private async void giveWeapon(int source, int weapId, int target)
@@ -998,33 +1078,38 @@ namespace VorpInventory.Scripts
 
         private async void subWeapon(int source, int weapId)
         {
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"subWeapon: Player '{source}' does not exist.");
-                return;
-            }
+                Player player = PlayerList[source];
 
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
+                if (player == null)
+                {
+                    Logger.Error($"subWeapon: Player '{source}' does not exist.");
+                    return;
+                }
+
+                dynamic charIdentifier = player.GetCoreUserCharacterId();
+
+                if (charIdentifier == -1)
+                {
+                    Logger.Error($"subWeapon: Player '{source}' Core Character does not exist.");
+                }
+
+                string identifier = "steam:" + player.Identifiers["steam"];
+                if (ItemDatabase.UserWeapons.ContainsKey(weapId))
+                {
+                    ItemDatabase.UserWeapons[weapId].setPropietary("");
+                    Exports["ghmattimysql"]
+                        .execute(
+                            $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}' , charidentifier = '{charIdentifier}' WHERE id=?",
+                            new[] { weapId });
+                }
+                player.TriggerEvent("vorpCoreClient:subWeapon", weapId);
+            }
+            catch (Exception ex)
             {
-                Logger.Error($"subWeapon: Player '{source}' CORE User does not exist.");
-                return;
+                Logger.Error(ex, $"subWeapon");
             }
-
-            int charIdentifier = coreUserCharacter.charIdentifier;
-
-            string identifier = "steam:" + player.Identifiers["steam"];
-            if (ItemDatabase.UserWeapons.ContainsKey(weapId))
-            {
-                ItemDatabase.UserWeapons[weapId].setPropietary("");
-                Exports["ghmattimysql"]
-                    .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}' , charidentifier = '{charIdentifier}' WHERE id=?",
-                        new[] { weapId });
-            }
-            player.TriggerEvent("vorpCoreClient:subWeapon", weapId);
         }
 
 
