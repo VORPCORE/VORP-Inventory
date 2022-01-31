@@ -276,7 +276,9 @@ namespace VorpInventory.Scripts
                     if (itemsDBO == null)
                     {
                         Logger.Error($"getInventory: Player '{player.Name}' has no items.");
-                        cb.Invoke(useritems);
+
+                        if (!string.IsNullOrEmpty(player.EndPoint))
+                            cb.Invoke(useritems);
                     }
 
                     foreach (KeyValuePair<string, ItemClass> items in itemsDBO)
@@ -297,7 +299,8 @@ namespace VorpInventory.Scripts
                         useritems.Add(item);
                     }
 
-                    cb.Invoke(useritems);
+                    if (!string.IsNullOrEmpty(player.EndPoint))
+                        cb.Invoke(useritems);
                 }
             }
             catch (Exception ex)
