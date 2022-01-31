@@ -277,7 +277,7 @@ namespace VorpInventory.Scripts
                     {
                         Logger.Error($"getInventory: Player '{player.Name}' has no items.");
 
-                        if (!string.IsNullOrEmpty(player.EndPoint))
+                        if (!string.IsNullOrEmpty(player?.EndPoint ?? ""))
                             cb.Invoke(useritems);
                     }
 
@@ -299,7 +299,7 @@ namespace VorpInventory.Scripts
                         useritems.Add(item);
                     }
 
-                    if (!string.IsNullOrEmpty(player.EndPoint))
+                    if (!string.IsNullOrEmpty(player?.EndPoint ?? ""))
                         cb.Invoke(useritems);
                 }
             }
