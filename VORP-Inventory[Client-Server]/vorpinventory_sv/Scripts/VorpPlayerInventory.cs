@@ -36,53 +36,64 @@ namespace VorpInventory.Scripts
         }
 
         private async void serverDropMoney([FromSource] Player player, double amount)
-        {
-            int _source = int.Parse(player.Handle);
-
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
+        {try
             {
-                Logger.Error($"serverDropMoney: Player '{player}' CORE User does not exist.");
-                return;
-            }
+                int _source = int.Parse(player.Handle);
 
-            double sourceMoney = coreUserCharacter.money;
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                if (coreUserCharacter == null)
+                {
+                    Logger.Error($"serverDropMoney: Player '{player}' CORE User does not exist.");
+                    return;
+                }
 
-            if (amount <= 0)
-            {
-                player.TriggerEvent("vorp:TipRight", Config.lang["TryExploits"], 3000);
-            }
-            else if (sourceMoney < amount)
-            {
-                player.TriggerEvent("vorp:TipRight", Config.lang["NotEnoughMoney"], 3000);
-            }
-            else
-            {
-                coreUserCharacter.removeCurrency(0, amount);
-                player.TriggerEvent("vorpInventory:createMoneyPickup", amount);
-            }
+                double sourceMoney = coreUserCharacter.money;
 
+                if (amount <= 0)
+                {
+                    player.TriggerEvent("vorp:TipRight", Config.lang["TryExploits"], 3000);
+                }
+                else if (sourceMoney < amount)
+                {
+                    player.TriggerEvent("vorp:TipRight", Config.lang["NotEnoughMoney"], 3000);
+                }
+                else
+                {
+                    coreUserCharacter.removeCurrency(0, amount);
+                    player.TriggerEvent("vorpInventory:createMoneyPickup", amount);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"serverDropMoney");
+            }
         }
 
         private async void serverDropAllMoney([FromSource] Player player)
         {
-            int _source = int.Parse(player.Handle);
-
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
+            try
             {
-                Logger.Error($"serverDropAllMoney: Player '{player.Handle}' CORE User does not exist.");
-                return;
+                int _source = int.Parse(player.Handle);
+
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                if (coreUserCharacter == null)
+                {
+                    Logger.Error($"serverDropAllMoney: Player '{player.Handle}' CORE User does not exist.");
+                    return;
+                }
+
+                double sourceMoney = coreUserCharacter.money;
+
+                if (sourceMoney > 0)
+                {
+                    coreUserCharacter.removeCurrency(0, sourceMoney);
+                    player.TriggerEvent("vorpInventory:createMoneyPickup", sourceMoney);
+                }
             }
-
-            double sourceMoney = coreUserCharacter.money;
-
-            if (sourceMoney > 0)
+            catch (Exception ex)
             {
-                coreUserCharacter.removeCurrency(0, sourceMoney);
-                player.TriggerEvent("vorpInventory:createMoneyPickup", sourceMoney);
+                Logger.Error(ex, $"serverDropAllMoney");
             }
-
         }
 
         private async void giveMoneyToPlayer([FromSource] Player player, int target, double amount)
@@ -156,70 +167,98 @@ namespace VorpInventory.Scripts
 
         private void setWeaponBullets([FromSource] Player player, int weaponId, string type, int bullet)
         {
-            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+            try
             {
-                ItemDatabase.UserWeapons[weaponId].setAmmo(bullet, type);
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    ItemDatabase.UserWeapons[weaponId].setAmmo(bullet, type);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"setWeaponBullets");
             }
         }
 
         public async Task SaveInventoryItemsSupport(string identifier, int coreUserCharacterId)
         {
-            await Delay(0);
-
-            bool result = await PluginManager._scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(identifier, coreUserCharacterId);
-            
-            if (!result)
+            try
             {
-                StringBuilder sb = new StringBuilder();
-                sb.Append("Method: SaveInventoryItemsSupport\n");
-                sb.Append("Message: Player inventory not saved\n");
-                sb.Append($"Player SteamID: {identifier}\n");
-                sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
-                sb.Append($"If CharacterId = -1, then the Core did not return the character.\n");
-                sb.Append($"Inventory: {JsonConvert.SerializeObject(ItemDatabase.UserInventory[identifier])}");
-                Logger.Warn($"{sb}");
+                await Delay(0);
+
+                bool result = await PluginManager._scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+
+                if (!result)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("Method: SaveInventoryItemsSupport\n");
+                    sb.Append("Message: Player inventory not saved\n");
+                    sb.Append($"Player SteamID: {identifier}\n");
+                    sb.Append($"Player CharacterId: {coreUserCharacterId}\n");
+                    sb.Append($"If CharacterId = -1, then the Core did not return the character.\n");
+                    sb.Append($"Inventory: {JsonConvert.SerializeObject(ItemDatabase.UserInventory[identifier])}");
+                    Logger.Warn($"{sb}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"SaveInventoryItemsSupport");
             }
         }
 
         private void usedWeapon([FromSource] Player source, int id, bool used, bool used2)
         {
-            int Used = used ? 1 : 0;
-            int Used2 = used2 ? 1 : 0;
-            Exports["ghmattimysql"]
-                .execute(
-                    $"UPDATE loadout SET used = ? , used2 = ? WHERE id=?",
-                    new[] { Used, Used2, id });
+            try
+            {
+                int Used = used ? 1 : 0;
+                int Used2 = used2 ? 1 : 0;
+                Exports["ghmattimysql"]
+                    .execute(
+                        $"UPDATE loadout SET used = ? , used2 = ? WHERE id=?",
+                        new[] { Used, Used2, id });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"usedWeapon");
+            }
         }
 
         //Sub items for other scripts
         private async void subItem(int source, string name, int cuantity)
         {
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"Player '{source}' does not exist.");
-                return;
-            }
+                Player player = PlayerList[source];
 
-            string identifier = "steam:" + player.Identifiers["steam"];
-            int coreUserCharacterId = player.GetCoreUserCharacterId();
-            if (ItemDatabase.UserInventory.ContainsKey(identifier))
-            {
-                if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
+                if (player == null)
                 {
-                    if (cuantity <= ItemDatabase.UserInventory[identifier][name].getCount())
-                    {
-                        ItemDatabase.UserInventory[identifier][name].Subtract(cuantity);
-                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
-                    }
+                    Logger.Error($"Player '{source}' does not exist.");
+                    return;
+                }
 
-                    if (ItemDatabase.UserInventory[identifier][name].getCount() == 0)
+                string identifier = "steam:" + player.Identifiers["steam"];
+                int coreUserCharacterId = player.GetCoreUserCharacterId();
+                if (ItemDatabase.UserInventory.ContainsKey(identifier))
+                {
+                    if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
                     {
-                        ItemDatabase.UserInventory[identifier].Remove(name);
-                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                        if (cuantity <= ItemDatabase.UserInventory[identifier][name].getCount())
+                        {
+                            ItemDatabase.UserInventory[identifier][name].Subtract(cuantity);
+                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                        }
+
+                        if (ItemDatabase.UserInventory[identifier][name].getCount() == 0)
+                        {
+                            ItemDatabase.UserInventory[identifier].Remove(name);
+                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"subItem");
             }
         }
 
@@ -278,108 +317,139 @@ namespace VorpInventory.Scripts
 
         private async void addWeapon(int source, int weapId)
         {
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"Player '{source}' does not exist.");
-                return;
-            }
+                Player player = PlayerList[source];
 
-            string identifier = "steam:" + player.Identifiers["steam"];
-            if (ItemDatabase.UserWeapons.ContainsKey(weapId))
-            {
-                ItemDatabase.UserWeapons[weapId].setPropietary(identifier);
-
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
-                if (coreUserCharacter == null)
+                if (player == null)
                 {
-                    Logger.Error($"addWeapon: Player '{player.Handle}' CORE User does not exist.");
+                    Logger.Error($"Player '{source}' does not exist.");
                     return;
                 }
 
-                int charIdentifier = coreUserCharacter.charIdentifier;
-                Exports["ghmattimysql"]
-                    .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
-                        new[] { weapId });
+                string identifier = "steam:" + player.Identifiers["steam"];
+                if (ItemDatabase.UserWeapons.ContainsKey(weapId))
+                {
+                    ItemDatabase.UserWeapons[weapId].setPropietary(identifier);
+
+                    dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                    if (coreUserCharacter == null)
+                    {
+                        Logger.Error($"addWeapon: Player '{player.Handle}' CORE User does not exist.");
+                        return;
+                    }
+
+                    int charIdentifier = coreUserCharacter.charIdentifier;
+                    Exports["ghmattimysql"]
+                        .execute(
+                            $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
+                            new[] { weapId });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"addWeapon");
             }
         }
 
         private async void subWeapon(int source, int weapId)
         {
-
-            Player player = PlayerList[source];
-
-            if (player == null)
+            try
             {
-                Logger.Error($"Player '{source}' does not exist.");
-                return;
-            }
+                Player player = PlayerList[source];
 
-            string identifier = "steam:" + player.Identifiers["steam"];
-            if (ItemDatabase.UserWeapons.ContainsKey(weapId))
-            {
-                ItemDatabase.UserWeapons[weapId].setPropietary("");
-
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
-                if (coreUserCharacter == null)
+                if (player == null)
                 {
-                    Logger.Error($"subWeapon: Player '{player.Handle}' CORE User does not exist.");
+                    Logger.Error($"Player '{source}' does not exist.");
                     return;
                 }
 
-                int charIdentifier = coreUserCharacter.charIdentifier;
-                Exports["ghmattimysql"]
-                    .execute(
-                        $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
-                        new[] { weapId });
+                string identifier = "steam:" + player.Identifiers["steam"];
+                if (ItemDatabase.UserWeapons.ContainsKey(weapId))
+                {
+                    ItemDatabase.UserWeapons[weapId].setPropietary("");
+
+                    dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                    if (coreUserCharacter == null)
+                    {
+                        Logger.Error($"subWeapon: Player '{player.Handle}' CORE User does not exist.");
+                        return;
+                    }
+
+                    int charIdentifier = coreUserCharacter.charIdentifier;
+                    Exports["ghmattimysql"]
+                        .execute(
+                            $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
+                            new[] { weapId });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"subWeapon");
             }
         }
 
         private async void onPickup([FromSource] Player player, int obj)
         {
-            string identifier = "steam:" + player.Identifiers["steam"];
-            int source = int.Parse(player.Handle);
-
-            dynamic coreUserCharacter = player.GetCoreUserCharacter();
-            if (coreUserCharacter == null)
+            try
             {
-                Logger.Error($"onPickup: Player '{player.Handle}' CORE User does not exist.");
-                return;
-            }
+                string identifier = "steam:" + player.Identifiers["steam"];
+                int source = int.Parse(player.Handle);
 
-            int charIdentifier = coreUserCharacter.charIdentifier;
-            if (Pickups.ContainsKey(obj))
-            {
-                if (Pickups[obj]["weaponid"] == 1)
+                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                if (coreUserCharacter == null)
                 {
-                    if (ItemDatabase.UserInventory.ContainsKey(identifier))
+                    Logger.Error($"onPickup: Player '{player.Handle}' CORE User does not exist.");
+                    return;
+                }
+
+                int charIdentifier = coreUserCharacter.charIdentifier;
+                if (Pickups.ContainsKey(obj))
+                {
+                    if (Pickups[obj]["weaponid"] == 1)
                     {
-
-                        if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() != -1)
+                        if (ItemDatabase.UserInventory.ContainsKey(identifier))
                         {
-                            if (ItemDatabase.UserInventory[identifier].ContainsKey(Pickups[obj]["name"]))
-                            {
-                                int totalcount = Pickups[obj]["amount"] + ItemDatabase.UserInventory[identifier][Pickups[obj]["name"]].getCount();
 
-                                if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() < totalcount)
+                            if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() != -1)
+                            {
+                                if (ItemDatabase.UserInventory[identifier].ContainsKey(Pickups[obj]["name"]))
+                                {
+                                    int totalcount = Pickups[obj]["amount"] + ItemDatabase.UserInventory[identifier][Pickups[obj]["name"]].getCount();
+
+                                    if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() < totalcount)
+                                    {
+                                        TriggerClientEvent(player, "vorp:TipRight", Config.lang["fullInventory"], 2000);
+                                        return;
+                                    }
+                                }
+                                //int totalcount = Pickups[obj]["amount"] ItemDatabase.usersInventory[identifier];
+                                //totalcount += Pickups[obj]["amount"];
+                                //ItemDatabase.svItems[Pickups[obj]["name"]].getCount();
+
+                            }
+
+                            if (Config.MaxItems != 0)
+                            {
+                                int totalcount = VorpCoreInventoryAPI.GetTotalAmountOfItems(identifier);
+                                totalcount += Pickups[obj]["amount"];
+                                if (totalcount <= Config.MaxItems)
+                                {
+                                    addItem(source, Pickups[obj]["name"], Pickups[obj]["amount"]);
+                                    Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
+                                    TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
+                                        Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
+                                    TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
+                                    player.TriggerEvent("vorpinventory:receiveItem", Pickups[obj]["name"], Pickups[obj]["amount"]);
+                                    player.TriggerEvent("vorpInventory:playerAnim", obj);
+                                    Pickups.Remove(obj);
+                                }
+                                else
                                 {
                                     TriggerClientEvent(player, "vorp:TipRight", Config.lang["fullInventory"], 2000);
-                                    return;
                                 }
                             }
-                            //int totalcount = Pickups[obj]["amount"] ItemDatabase.usersInventory[identifier];
-                            //totalcount += Pickups[obj]["amount"];
-                            //ItemDatabase.svItems[Pickups[obj]["name"]].getCount();
-
-                        }
-
-                        if (Config.MaxItems != 0)
-                        {
-                            int totalcount = VorpCoreInventoryAPI.GetTotalAmountOfItems(identifier);
-                            totalcount += Pickups[obj]["amount"];
-                            if (totalcount <= Config.MaxItems)
+                            else
                             {
                                 addItem(source, Pickups[obj]["name"], Pickups[obj]["amount"]);
                                 Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
@@ -390,136 +460,164 @@ namespace VorpInventory.Scripts
                                 player.TriggerEvent("vorpInventory:playerAnim", obj);
                                 Pickups.Remove(obj);
                             }
-                            else
+
+                        }
+                    }
+                    else
+                    {
+                        if (Config.MaxWeapons != 0)
+                        {
+                            int totalcount = VorpCoreInventoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
+                            totalcount += 1;
+                            if (totalcount <= Config.MaxWeapons)
                             {
-                                TriggerClientEvent(player, "vorp:TipRight", Config.lang["fullInventory"], 2000);
+                                int weaponId = Pickups[obj]["weaponid"];
+                                addWeapon(source, Pickups[obj]["weaponid"]);
+                                TriggerEvent("syn_weapons:onpickup", Pickups[obj]["weaponid"]);
+                                //Debug.WriteLine($"añado {ItemDatabase.userWeapons[Pickups[obj]["weaponid"].ToString()].getPropietary()}");
+                                TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
+                                    Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
+                                TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
+                                player.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
+                                    ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
+                                player.TriggerEvent("vorpInventory:playerAnim", obj);
+                                Pickups.Remove(obj);
                             }
                         }
-                        else
-                        {
-                            addItem(source, Pickups[obj]["name"], Pickups[obj]["amount"]);
-                            Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
-                            TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
-                                Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
-                            TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
-                            player.TriggerEvent("vorpinventory:receiveItem", Pickups[obj]["name"], Pickups[obj]["amount"]);
-                            player.TriggerEvent("vorpInventory:playerAnim", obj);
-                            Pickups.Remove(obj);
-                        }
 
                     }
-                }
-                else
-                {
-                    if (Config.MaxWeapons != 0)
-                    {
-                        int totalcount = VorpCoreInventoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
-                        totalcount += 1;
-                        if (totalcount <= Config.MaxWeapons)
-                        {
-                            int weaponId = Pickups[obj]["weaponid"];
-                            addWeapon(source, Pickups[obj]["weaponid"]);
-                            TriggerEvent("syn_weapons:onpickup", Pickups[obj]["weaponid"]);
-                            //Debug.WriteLine($"añado {ItemDatabase.userWeapons[Pickups[obj]["weaponid"].ToString()].getPropietary()}");
-                            TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
-                                Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
-                            TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
-                            player.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
-                                ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
-                            player.TriggerEvent("vorpInventory:playerAnim", obj);
-                            Pickups.Remove(obj);
-                        }
-                    }
-
                 }
             }
-
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"onPickup");
+            }
         }
 
         private void onPickupMoney([FromSource] Player player, int obj)
         {
-            string identifier = "steam:" + player.Identifiers["steam"];
-            int source = int.Parse(player.Handle);
-            if (PickupsMoney.ContainsKey(obj))
+            try
             {
-                TriggerClientEvent("vorpInventory:shareMoneyPickupClient", PickupsMoney[obj]["obj"],
-                PickupsMoney[obj]["amount"], PickupsMoney[obj]["coords"], 2);
-                TriggerClientEvent("vorpInventory:removePickupClient", PickupsMoney[obj]["obj"]);
-                player.TriggerEvent("vorpInventory:playerAnim", obj);
-                TriggerEvent("vorp:addMoney", source, 0, PickupsMoney[obj]["amount"]);
-                
-                if (!PickupsMoney.ContainsKey(obj)) return;
-                PickupsMoney.Remove(obj);
+                string identifier = "steam:" + player.Identifiers["steam"];
+                int source = int.Parse(player.Handle);
+                if (PickupsMoney.ContainsKey(obj))
+                {
+                    TriggerClientEvent("vorpInventory:shareMoneyPickupClient", PickupsMoney[obj]["obj"],
+                    PickupsMoney[obj]["amount"], PickupsMoney[obj]["coords"], 2);
+                    TriggerClientEvent("vorpInventory:removePickupClient", PickupsMoney[obj]["obj"]);
+                    player.TriggerEvent("vorpInventory:playerAnim", obj);
+                    TriggerEvent("vorp:addMoney", source, 0, PickupsMoney[obj]["amount"]);
+
+                    if (!PickupsMoney.ContainsKey(obj)) return;
+                    PickupsMoney.Remove(obj);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"onPickupMoney");
             }
         }
 
         private void sharePickupServer(string name, int obj, int amount, Vector3 position, int weaponId)
         {
-            TriggerClientEvent("vorpInventory:sharePickupClient", name, obj, amount, position, 1, weaponId);
-            Debug.WriteLine(obj.ToString());
-            Pickups.Add(obj, new Dictionary<string, dynamic>
+            try
             {
-                ["name"] = name,
-                ["obj"] = obj,
-                ["amount"] = amount,
-                ["weaponid"] = weaponId,
-                ["inRange"] = false,
-                ["coords"] = position
-            });
+                TriggerClientEvent("vorpInventory:sharePickupClient", name, obj, amount, position, 1, weaponId);
+                Debug.WriteLine(obj.ToString());
+                Pickups.Add(obj, new Dictionary<string, dynamic>
+                {
+                    ["name"] = name,
+                    ["obj"] = obj,
+                    ["amount"] = amount,
+                    ["weaponid"] = weaponId,
+                    ["inRange"] = false,
+                    ["coords"] = position
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"sharePickupServer");
+            }
         }
 
         // is obj a networkid ?
         private void shareMoneyPickupServer(int obj, double amount, Vector3 position)
         {
-            if (PickupsMoney.ContainsKey(obj)) return; // don't add or do anything, if it already exists
-
-            TriggerClientEvent("vorpInventory:shareMoneyPickupClient", obj, amount, position, 1);
-            Debug.WriteLine(obj.ToString());
-
-            PickupsMoney.Add(obj, new Dictionary<string, dynamic>
+            try
             {
-                ["name"] = "Dollars",
-                ["obj"] = obj,
-                ["amount"] = amount,
-                ["inRange"] = false,
-                ["coords"] = position
-            });
+                if (PickupsMoney.ContainsKey(obj)) return; // don't add or do anything, if it already exists
+
+                TriggerClientEvent("vorpInventory:shareMoneyPickupClient", obj, amount, position, 1);
+                Debug.WriteLine(obj.ToString());
+
+                PickupsMoney.Add(obj, new Dictionary<string, dynamic>
+                {
+                    ["name"] = "Dollars",
+                    ["obj"] = obj,
+                    ["amount"] = amount,
+                    ["inRange"] = false,
+                    ["coords"] = position
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"shareMoneyPickupServer");
+            }
         }
 
         //Weapon methods
         private void serverDropWeapon([FromSource] Player source, int weaponId)
         {
-            subWeapon(int.Parse(source.Handle), weaponId);
-            source.TriggerEvent("vorpInventory:createPickup", ItemDatabase.UserWeapons[weaponId].getName(), 1, weaponId);
+            try
+            {
+                subWeapon(int.Parse(source.Handle), weaponId);
+                source.TriggerEvent("vorpInventory:createPickup", ItemDatabase.UserWeapons[weaponId].getName(), 1, weaponId);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"serverDropWeapon");
+            }
         }
 
         //Items methods
         private void serverDropItem([FromSource] Player source, string itemname, int cuantity)
         {
-
-            subItem(int.Parse(source.Handle), itemname, cuantity);
-            source.TriggerEvent("vorpInventory:createPickup", itemname, cuantity, 1);
-
+            try
+            {
+                subItem(int.Parse(source.Handle), itemname, cuantity);
+                source.TriggerEvent("vorpInventory:createPickup", itemname, cuantity, 1);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"serverDropItem");
+            }
         }
 
         private void serverGiveWeapon([FromSource] Player player, int weaponId, int target)
         {
-            Player targetPlayer = PlayerList[target];
-
-            if (targetPlayer == null)
+            try
             {
-                Logger.Error($"Target Player '{target}' does not exist.");
-                return;
+                Player targetPlayer = PlayerList[target];
+
+                if (targetPlayer == null)
+                {
+                    Logger.Error($"Target Player '{target}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + player.Identifiers["steam"];
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    subWeapon(int.Parse(player.Handle), weaponId);
+                    addWeapon(int.Parse(targetPlayer.Handle), weaponId);
+                    targetPlayer.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
+                        ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
+                }
             }
-
-            string identifier = "steam:" + player.Identifiers["steam"];
-
-            if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+            catch (Exception ex)
             {
-                subWeapon(int.Parse(player.Handle), weaponId);
-                addWeapon(int.Parse(targetPlayer.Handle), weaponId);
-                targetPlayer.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
-                    ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
+                Logger.Error(ex, $"serverGiveWeapon");
             }
         }
         private void ServerGiveItem([FromSource] Player player, string itemname, int amount, int target)
@@ -598,15 +696,22 @@ namespace VorpInventory.Scripts
 
         private async void getItemsTable([FromSource] Player source)
         {
-            // must have a better way
-            while (PluginManager.ItemsDB.items is null)
+            try
             {
-                await BaseScript.Delay(500);
-            }
+                // must have a better way
+                while (PluginManager.ItemsDB.items is null)
+                {
+                    await BaseScript.Delay(500);
+                }
 
-            if (PluginManager.ItemsDB.items.Count != 0)
+                if (PluginManager.ItemsDB.items.Count != 0)
+                {
+                    source.TriggerEvent("vorpInventory:giveItemsTable", PluginManager.ItemsDB.items);
+                }
+            }
+            catch (Exception ex)
             {
-                source.TriggerEvent("vorpInventory:giveItemsTable", PluginManager.ItemsDB.items);
+                Logger.Error(ex, $"getItemsTable");
             }
         }
 
