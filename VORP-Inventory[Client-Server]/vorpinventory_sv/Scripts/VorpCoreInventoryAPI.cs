@@ -156,7 +156,7 @@ namespace VorpInventory.Scripts
                 if (ItemDatabase.UserInventory.ContainsKey(identifier) && Config.MaxItems != -1)
                 {
                     int totalcount = GetTotalAmountOfItems(identifier) + quantity;
-                    if ((totalcount <= Config.MaxItems))
+                    if (totalcount <= Config.MaxItems)
                     {
                         cb.Invoke(true);
                         return;
@@ -239,6 +239,7 @@ namespace VorpInventory.Scripts
 
                 static bool CheckIfUserCanHaveItem(int amountToCarry, int maxLimitItem, int maxLimitConfig, int newTotalAmountOfCurrentItems)
                 {
+                    Logger.Debug($"amountToCarry: {amountToCarry} / maxLimitItem: {maxLimitItem}, maxLimitConfig: {maxLimitConfig}, newTotalAmountOfCurrentItems: {newTotalAmountOfCurrentItems}");
                     if (maxLimitConfig != -1)
                     {
                         if (amountToCarry > maxLimitItem) return false;

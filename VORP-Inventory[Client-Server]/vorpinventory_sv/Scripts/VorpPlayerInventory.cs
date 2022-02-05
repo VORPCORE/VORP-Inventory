@@ -238,21 +238,22 @@ namespace VorpInventory.Scripts
 
                 string identifier = "steam:" + player.Identifiers["steam"];
                 int coreUserCharacterId = player.GetCoreUserCharacterId();
-                if (ItemDatabase.UserInventory.ContainsKey(identifier))
-                {
-                    if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
-                    {
-                        if (cuantity <= ItemDatabase.UserInventory[identifier][name].getCount())
-                        {
-                            ItemDatabase.UserInventory[identifier][name].Subtract(cuantity);
-                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
-                        }
 
-                        if (ItemDatabase.UserInventory[identifier][name].getCount() == 0)
-                        {
-                            ItemDatabase.UserInventory[identifier].Remove(name);
-                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
-                        }
+                Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+
+                if (userInventory.ContainsKey(name))
+                {
+                    ItemClass itemClass = userInventory[name];
+                    if (cuantity <= itemClass.getCount())
+                    {
+                        itemClass.Subtract(cuantity);
+                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                    }
+
+                    if (itemClass.getCount() == 0)
+                    {
+                        userInventory.Remove(name);
+                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
                     }
                 }
             }
