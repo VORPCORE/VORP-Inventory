@@ -1,0 +1,36 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "80729f2d-5a1f-4bfe-8c15-574b063909e1": {
+      "ProjectGuid": "80729f2d-5a1f-4bfe-8c15-574b063909e1",
+      "DisplayName": "vorpinventory_sv",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "c345e405-24bc-42b6-9bdf-9de5c520b302": {
+      "ProjectGuid": "c345e405-24bc-42b6-9bdf-9de5c520b302",
+      "DisplayName": "vorpinventory_cl",
+      "ColorIndex": 1
+    },
+    "2406f9e2-fab8-4aa5-8c16-8b044859726d": {
+      "ProjectGuid": "2406f9e2-fab8-4aa5-8c16-8b044859726d",
+      "DisplayName": "VORP.Inventory",
+      "ColorIndex": 2
+    },
+    "eb0c3324-621c-43c4-86a7-a97402105ab4": {
+      "ProjectGuid": "eb0c3324-621c-43c4-86a7-a97402105ab4",
+      "DisplayName": "VORP.Inventory",
+      "ColorIndex": 3
+    },
+    "2c05237f-c369-493b-9753-3695621924d8": {
+      "ProjectGuid": "2c05237f-c369-493b-9753-3695621924d8",
+      "DisplayName": "VORP.Inventory.Server",
+      "ColorIndex": 4
+    }
+  },
+  "NextColorIndex": 5
+}

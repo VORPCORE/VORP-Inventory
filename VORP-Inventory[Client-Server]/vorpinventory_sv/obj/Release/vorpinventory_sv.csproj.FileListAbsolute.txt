@@ -1,0 +1,8 @@
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\bin\Release\vorpinventory_sv.net.dll
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\bin\Release\vorpinventory_sv.net.pdb
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\bin\Release\Newtonsoft.Json.dll
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Release\vorpinventory_sv.csproj.AssemblyReference.cache
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Release\vorpinventory_sv.csproj.CoreCompileInputs.cache
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Release\vorpinventory_sv.csproj.CopyComplete
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Release\vorpinventory_sv.net.dll
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Release\vorpinventory_sv.net.pdb
