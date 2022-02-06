@@ -1,0 +1,7 @@
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_sv.net.dll
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_sv.net.pdb
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.csproj.AssemblyReference.cache
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.csproj.CoreCompileInputs.cache
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.csproj.CopyComplete
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.net.dll
+L:\ws\fivem\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\obj\Debug\vorpinventory_sv.net.pdb
