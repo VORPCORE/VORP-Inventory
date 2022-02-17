@@ -30,7 +30,12 @@
       "ProjectGuid": "2c05237f-c369-493b-9753-3695621924d8",
       "DisplayName": "VORP.Inventory.Server",
       "ColorIndex": 4
+    },
+    "fadb5039-ba71-4686-b6bb-46bb61619a2e": {
+      "ProjectGuid": "fadb5039-ba71-4686-b6bb-46bb61619a2e",
+      "DisplayName": "Solution Items",
+      "ColorIndex": 5
     }
   },
-  "NextColorIndex": 5
+  "NextColorIndex": 6
 }
