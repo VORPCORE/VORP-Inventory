@@ -44,9 +44,7 @@ namespace VorpInventory.Diagnostics
 
         public static void Debug(string msg)
         {
-            bool isDebugging = GetConvarInt($"vorp_debug_enable", 0) == 1;
-
-            if (isDebugging)
+            if (isDebug)
                 WriteLine("DEBUG", msg);
         }
 
