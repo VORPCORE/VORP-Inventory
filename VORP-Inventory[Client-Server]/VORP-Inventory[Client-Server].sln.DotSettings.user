@@ -1,9 +1,0 @@
-﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005Credmprueba_005Cserver_002Dfiles_005Ccitizen_005Cclr2_005Clib_005Cmono_005C4_002E5_005CCitizenFX_002ECore_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005CRedM_005CRedM_002Eapp_005Ccitizen_005Cclr2_005Clib_005Cmono_005C4_002E5_005CCitizenFX_002ECore_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005CVORP_005CVORP_002DInventory_005CVORP_002DInventory_005BClient_002DServer_005D_005CNewtonsoft_002EJson_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
-  &lt;Assembly Path="D:\VORP\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorp_inventory\Newtonsoft.Json.dll" /&gt;&#xD;
-  &lt;Assembly Path="D:\VORP\VORP-Inventory\VORP-Inventory[Client-Server]\Newtonsoft.Json.dll" /&gt;&#xD;
-  &lt;Assembly Path="D:\VORP\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\vorpinventory_cl.net.dll" /&gt;&#xD;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
