@@ -59,6 +59,12 @@ namespace VorpInventory.Scripts
             if (MaxWeapons < 0) MaxWeapons = 0;
         }
 
+        public static string GetTranslation(string key)
+        {
+            if (!lang.ContainsKey(key)) return $"Translation not found for '{key}'.";
+            return lang[key];
+        }
+
         private void OnGetConfig([FromSource] Player source)
         {
             source.TriggerEvent($"{API.GetCurrentResourceName()}:SendConfig", ConfigString, lang);
