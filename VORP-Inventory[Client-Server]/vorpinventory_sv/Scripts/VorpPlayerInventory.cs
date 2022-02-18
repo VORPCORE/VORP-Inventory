@@ -709,6 +709,11 @@ namespace VorpInventory.Scripts
                         Items serverItem = ItemDatabase.ServerItems[itemName];
                         targetInventory.Add(itemName, new ItemClass(amount, serverItem.getLimit(), serverItem.getLabel(), itemName, "item_inventory", true, serverItem.getCanRemove()));
                     }
+                    else
+                    {
+                        Logger.Error($"ServerGiveItem: Server items does not contain '{itemName}'.");
+                        return;
+                    }
                 }
 
                 await SaveInventoryItemsSupport(targetIdentifier, targetCharId);
