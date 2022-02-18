@@ -5,37 +5,41 @@ namespace VorpInventory.Diagnostics
 {
     class Logger
     {
+        static bool isWarning => GetConvarInt($"vorp_warning_enable", 0) == 1;
+        static bool isInfo => GetConvarInt($"vorp_info_enable", 0) == 1;
+        static bool isError => GetConvarInt($"vorp_error_enable", 0) == 1;
+        static bool isDebug => GetConvarInt($"vorp_debug_enable", 0) == 1;
+        static bool isSuccess => GetConvarInt($"vorp_success_enable", 0) == 1;
+
+
         public static void Info(string msg)
         {
-            WriteLine("INFO", msg);
+            if (isInfo)
+                WriteLine("INFO", msg);
         }
 
         public static void Success(string msg)
         {
-            WriteLine("SUCCESS", msg);
+            if (isSuccess)
+                WriteLine("SUCCESS", msg);
         }
 
         public static void Warn(string msg)
         {
-            bool isWarning = GetConvarInt($"vorp_warning_enable", 0) == 1;
-
             if (isWarning)
                 WriteLine("WARN", msg);
         }
 
         public static void Error(string msg)
         {
-            WriteLine("ERROR", msg);
+            if (isError)
+                WriteLine("ERROR", msg);
         }
 
         public static void Error(Exception ex, string msg = "")
         {
-            WriteLine("ERROR", $"{msg}\r\n{ex}");
-        }
-
-        public static void Verbose(string msg)
-        {
-            WriteLine("VERBOSE", msg);
+            if (isError)
+                WriteLine("ERROR", $"{msg}\r\n{ex}");
         }
 
         public static void Debug(string msg)
