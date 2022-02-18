@@ -16,6 +16,9 @@ namespace VorpInventory.Scripts
     {
         PlayerList PlayerList => PluginManager.PlayerList;
 
+        public static Dictionary<int, Dictionary<string, dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
+        public static Dictionary<int, Dictionary<string, dynamic>> PickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
+
         internal VorpPlayerInventory()
         {
             EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
@@ -160,10 +163,6 @@ namespace VorpInventory.Scripts
                 Logger.Error(ex, "giveMoneyToPlayer");
             }
         }
-
-        public static Dictionary<int, Dictionary<string, dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
-
-        public static Dictionary<int, Dictionary<string, dynamic>> PickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
 
         private void setWeaponBullets([FromSource] Player player, int weaponId, string type, int bullet)
         {
