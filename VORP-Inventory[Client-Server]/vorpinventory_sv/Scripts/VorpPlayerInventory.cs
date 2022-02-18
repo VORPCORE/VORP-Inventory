@@ -16,6 +16,9 @@ namespace VorpInventory.Scripts
     {
         PlayerList PlayerList => PluginManager.PlayerList;
 
+        public static Dictionary<int, Dictionary<string, dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
+        public static Dictionary<int, Dictionary<string, dynamic>> PickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
+
         internal VorpPlayerInventory()
         {
             EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
@@ -122,8 +125,7 @@ namespace VorpInventory.Scripts
                 }
 
                 double sourceMoney = coreUserCharacter.money;
-                Debug.WriteLine(sourceMoney.ToString());
-                Debug.WriteLine(amount.ToString());
+
                 if (amount <= 0)
                 {
                     player.TriggerEvent("vorp:TipRight", Config.lang["TryExploits"], 3000);
@@ -160,10 +162,6 @@ namespace VorpInventory.Scripts
                 Logger.Error(ex, "giveMoneyToPlayer");
             }
         }
-
-        public static Dictionary<int, Dictionary<string, dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
-
-        public static Dictionary<int, Dictionary<string, dynamic>> PickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
 
         private void setWeaponBullets([FromSource] Player player, int weaponId, string type, int bullet)
         {
@@ -437,7 +435,6 @@ namespace VorpInventory.Scripts
                                 if (totalcount <= Config.MaxItems)
                                 {
                                     addItem(source, Pickups[obj]["name"], Pickups[obj]["amount"]);
-                                    Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
                                     TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
                                         Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
                                     TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
@@ -453,7 +450,6 @@ namespace VorpInventory.Scripts
                             else
                             {
                                 addItem(source, Pickups[obj]["name"], Pickups[obj]["amount"]);
-                                Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
                                 TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
                                     Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
                                 TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
@@ -475,7 +471,6 @@ namespace VorpInventory.Scripts
                                 int weaponId = Pickups[obj]["weaponid"];
                                 addWeapon(source, Pickups[obj]["weaponid"]);
                                 TriggerEvent("syn_weapons:onpickup", Pickups[obj]["weaponid"]);
-                                //Debug.WriteLine($"añado {ItemDatabase.userWeapons[Pickups[obj]["weaponid"].ToString()].getPropietary()}");
                                 TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
                                     Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
                                 TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
@@ -524,7 +519,6 @@ namespace VorpInventory.Scripts
             try
             {
                 TriggerClientEvent("vorpInventory:sharePickupClient", name, obj, amount, position, 1, weaponId);
-                Debug.WriteLine(obj.ToString());
                 Pickups.Add(obj, new Dictionary<string, dynamic>
                 {
                     ["name"] = name,
@@ -549,8 +543,6 @@ namespace VorpInventory.Scripts
                 if (PickupsMoney.ContainsKey(obj)) return; // don't add or do anything, if it already exists
 
                 TriggerClientEvent("vorpInventory:shareMoneyPickupClient", obj, amount, position, 1);
-                Debug.WriteLine(obj.ToString());
-
                 PickupsMoney.Add(obj, new Dictionary<string, dynamic>
                 {
                     ["name"] = "Dollars",
@@ -684,7 +676,6 @@ namespace VorpInventory.Scripts
                 }
                 else
                 {
-                    Debug.WriteLine("Error Occured");
                     TriggerClientEvent(player, "vorp:TipRight", Config.lang["itemerror"], 2000);
                 }
             }
@@ -778,8 +769,7 @@ namespace VorpInventory.Scripts
                             List<string> components = new List<string>();
                             foreach (JProperty ammos in ammo.Properties())
                             {
-                            //Debug.WriteLine(ammos.Name);
-                            amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
+                                amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
                             }
                             foreach (JToken x in comp)
                             {
