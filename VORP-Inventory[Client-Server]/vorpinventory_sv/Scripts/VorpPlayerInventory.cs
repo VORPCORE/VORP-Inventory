@@ -125,8 +125,7 @@ namespace VorpInventory.Scripts
                 }
 
                 double sourceMoney = coreUserCharacter.money;
-                Debug.WriteLine(sourceMoney.ToString());
-                Debug.WriteLine(amount.ToString());
+
                 if (amount <= 0)
                 {
                     player.TriggerEvent("vorp:TipRight", Config.lang["TryExploits"], 3000);
