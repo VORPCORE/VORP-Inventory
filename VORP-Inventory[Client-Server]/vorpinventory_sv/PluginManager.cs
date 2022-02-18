@@ -1,12 +1,10 @@
 ﻿using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VorpInventory.Diagnostics;
-using VorpInventory.Models;
 using VorpInventory.Scripts;
-using VorpInventory.Extensions;
+using static CitizenFX.Core.Native.API;
 
 namespace VorpInventory
 {
@@ -15,8 +13,6 @@ namespace VorpInventory
         public static PluginManager Instance { get; private set; }
         public static PlayerList PlayerList;
         public static dynamic CORE;
-
-        public static Dictionary<int, PlayerInventory> PlayerInventories = new();
 
         public EventHandlerDictionary EventRegistry => EventHandlers;
         public ExportDictionary ExportRegistry => Exports;

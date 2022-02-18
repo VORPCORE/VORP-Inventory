@@ -613,71 +613,117 @@ namespace VorpInventory.Scripts
                 Logger.Error(ex, $"serverGiveWeapon");
             }
         }
-        private void ServerGiveItem([FromSource] Player player, string itemname, int amount, int target)
+        private async void ServerGiveItem([FromSource] Player player, string itemName, int amount, int targetHandle)
         {
             try
             {
-                bool give = true;
-
-                Player targetPlayer = PlayerList[target];
+                Player targetPlayer = PlayerList[targetHandle];
 
                 if (targetPlayer == null)
                 {
-                    Logger.Error($"Target Player '{target}' does not exist.");
+                    Logger.Error($"ServerGiveItem: Target Player '{targetHandle}' does not exist.");
                     return;
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
                 string targetIdentifier = "steam:" + targetPlayer.Identifiers["steam"];
 
-                if (ItemDatabase.UserInventory.ContainsKey(identifier) && ItemDatabase.UserInventory.ContainsKey(targetIdentifier) && ItemDatabase.UserInventory[identifier].ContainsKey(itemname))
+                int playerCharId = player.GetCoreUserCharacterId();
+
+                if (playerCharId == -1)
                 {
-                    if (ItemDatabase.UserInventory[identifier][itemname].getCount() >= amount)
-                    {
-                        if (ItemDatabase.UserInventory[targetIdentifier].ContainsKey(itemname))
-                        {
-                            if (ItemDatabase.UserInventory[targetIdentifier][itemname].getCount() + amount
-                                >= ItemDatabase.UserInventory[targetIdentifier][itemname].getLimit())
-                            {
-                                give = false;
-                            }
+                    Logger.Error($"ServerGiveItem: User '{player.Name}#{player.Handle}' character was not found.");
+                    return;
+                }
 
-                        }
-                        int totalcount = VorpCoreInventoryAPI.GetTotalAmountOfItems(targetIdentifier);
-                        totalcount += amount;
-                        if (totalcount > Config.MaxItems)
+                int targetCharId = targetPlayer.GetCoreUserCharacterId();
 
-                        {
-                            give = false;
-                        }
+                if (targetCharId == -1)
+                {
+                    Logger.Error($"ServerGiveItem: User '{targetPlayer.Name}#{targetPlayer.Handle}' character was not found.");
+                    return;
+                }
 
-                        if (give)
-                        {
-                            addItem(int.Parse(targetPlayer.Handle), itemname, amount);
-                            subItem(int.Parse(player.Handle), itemname, amount);
-                            targetPlayer.TriggerEvent("vorpinventory:receiveItem", itemname, amount);
-                            player.TriggerEvent("vorpinventory:receiveItem2", itemname, amount);
-                            TriggerClientEvent(player, "vorp:TipRight", Config.lang["yougaveitem"], 2000);
-                            TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.lang["YouReceiveditem"], 2000);
-                        }
-                        else
-                        {
+                Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
 
-                            TriggerClientEvent(player, "vorp:TipRight", Config.lang["fullInventoryGive"], 2000);
-                            TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.lang["fullInventory"], 2000);
-                        }
+                if (userInventory is null)
+                {
+                    Logger.Error($"ServerGiveItem: User '{player.Name}#{player.Handle}' inventory was not found.");
+                    return;
+                }
 
-                    }
-                    else
-                    {
-                        TriggerClientEvent(player, "vorp:TipRight", Config.lang["itemerror"], 2000);
-                        TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.lang["itemerror"], 2000);
-                    }
+                Dictionary<string, ItemClass> targetInventory = ItemDatabase.GetInventory(targetIdentifier);
+
+                if (targetInventory is null)
+                {
+                    Logger.Error($"ServerGiveItem: Target User '{targetPlayer.Name}#{targetPlayer.Handle}' inventory was not found.");
+                    return;
+                }
+
+                if (!userInventory.ContainsKey(itemName))
+                {
+                    TriggerClientEvent(player, "vorp:TipRight", Config.GetTranslation("itemerror"), 2000);
+                    Logger.Error($"ServerGiveItem: User '{player.Name}#{player.Handle}' inventory item '{itemName}' was not found.");
+                    return;
+                }
+
+                ItemClass item = userInventory[itemName];
+                int itemCount = item.getCount();
+
+                int targetTotalItems = 0;
+                int targetItemLimit = 0;
+                int targetTotalCountOfItems = VorpCoreInventoryAPI.GetTotalAmountOfItems(targetIdentifier);
+
+                bool canGiveItemToTarget = true;
+                
+                ItemClass targetItem = null;
+                if (targetInventory.ContainsKey(itemName))
+                {
+                    targetItem = targetInventory[itemName];
+                    targetTotalItems = targetItem.getCount();
+                    targetItemLimit = targetItem.getLimit();
+
+                    if (targetTotalItems + amount >= targetItemLimit)
+                        canGiveItemToTarget = false;
+                }
+
+                int newTotalAmount = targetTotalCountOfItems + amount;
+                if (newTotalAmount > Config.MaxItems)
+                    canGiveItemToTarget = false;
+
+                if (!canGiveItemToTarget)
+                {
+                    TriggerClientEvent(player, "vorp:TipRight", Config.GetTranslation("fullInventoryGive"), 2000);
+                    TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.GetTranslation("fullInventory"), 2000);
+                    return;
+                }
+
+                if (targetItem is not null)
+                {
+                    targetItem.addCount(amount);
                 }
                 else
                 {
-                    TriggerClientEvent(player, "vorp:TipRight", Config.lang["itemerror"], 2000);
+                    if (ItemDatabase.ServerItems.ContainsKey(itemName))
+                    {
+                        Items serverItem = ItemDatabase.ServerItems[itemName];
+                        targetInventory.Add(itemName, new ItemClass(amount, serverItem.getLimit(), serverItem.getLabel(), itemName, "item_inventory", true, serverItem.getCanRemove()));
+                    }
                 }
+
+                await SaveInventoryItemsSupport(targetIdentifier, targetCharId);
+
+                item.Subtract(amount);
+
+                if (item.getCount() == 0)
+                    userInventory.Remove(itemName);
+
+                await SaveInventoryItemsSupport(identifier, playerCharId);
+
+                targetPlayer.TriggerEvent("vorpinventory:receiveItem", itemName, amount);
+                player.TriggerEvent("vorpinventory:receiveItem2", itemName, amount);
+                TriggerClientEvent(player, "vorp:TipRight", Config.GetTranslation("yougaveitem"), 2000);
+                TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.GetTranslation("YouReceiveditem"), 2000);
             }
             catch (Exception ex)
             {
