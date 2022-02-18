@@ -613,7 +613,7 @@ namespace VorpInventory.Scripts
                 Logger.Error(ex, $"serverGiveWeapon");
             }
         }
-        private void ServerGiveItem([FromSource] Player player, string itemname, int amount, int targetHandle)
+        private async void ServerGiveItem([FromSource] Player player, string itemName, int amount, int targetHandle)
         {
             try
             {
@@ -627,6 +627,22 @@ namespace VorpInventory.Scripts
 
                 string identifier = "steam:" + player.Identifiers["steam"];
                 string targetIdentifier = "steam:" + targetPlayer.Identifiers["steam"];
+
+                int playerCharId = player.GetCoreUserCharacterId();
+
+                if (playerCharId == -1)
+                {
+                    Logger.Error($"ServerGiveItem: User '{player.Name}#{player.Handle}' character was not found.");
+                    return;
+                }
+
+                int targetCharId = targetPlayer.GetCoreUserCharacterId();
+
+                if (targetCharId == -1)
+                {
+                    Logger.Error($"ServerGiveItem: User '{targetPlayer.Name}#{targetPlayer.Handle}' character was not found.");
+                    return;
+                }
 
                 Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
 
@@ -644,14 +660,14 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                if (!userInventory.ContainsKey(itemname))
+                if (!userInventory.ContainsKey(itemName))
                 {
                     TriggerClientEvent(player, "vorp:TipRight", Config.GetTranslation("itemerror"), 2000);
-                    Logger.Error($"ServerGiveItem: User '{player.Name}#{player.Handle}' inventory item '{itemname}' was not found.");
+                    Logger.Error($"ServerGiveItem: User '{player.Name}#{player.Handle}' inventory item '{itemName}' was not found.");
                     return;
                 }
 
-                ItemClass item = userInventory[itemname];
+                ItemClass item = userInventory[itemName];
                 int itemCount = item.getCount();
 
                 int targetTotalItems = 0;
@@ -661,9 +677,9 @@ namespace VorpInventory.Scripts
                 bool canGiveItemToTarget = true;
                 
                 ItemClass targetItem = null;
-                if (targetInventory.ContainsKey(itemname))
+                if (targetInventory.ContainsKey(itemName))
                 {
-                    targetItem = targetInventory[itemname];
+                    targetItem = targetInventory[itemName];
                     targetTotalItems = targetItem.getCount();
                     targetItemLimit = targetItem.getLimit();
 
@@ -682,11 +698,30 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                addItem(targetHandle, itemname, amount);
-                subItem(int.Parse(player.Handle), itemname, amount);
+                if (targetItem is not null)
+                {
+                    targetItem.addCount(amount);
+                }
+                else
+                {
+                    if (ItemDatabase.ServerItems.ContainsKey(itemName))
+                    {
+                        Items serverItem = ItemDatabase.ServerItems[itemName];
+                        targetInventory.Add(itemName, new ItemClass(amount, serverItem.getLimit(), serverItem.getLabel(), itemName, "item_inventory", true, serverItem.getCanRemove()));
+                    }
+                }
 
-                targetPlayer.TriggerEvent("vorpinventory:receiveItem", itemname, amount);
-                player.TriggerEvent("vorpinventory:receiveItem2", itemname, amount);
+                await SaveInventoryItemsSupport(targetIdentifier, targetCharId);
+
+                item.Subtract(amount);
+
+                if (item.getCount() == 0)
+                    userInventory.Remove(itemName);
+
+                await SaveInventoryItemsSupport(identifier, playerCharId);
+
+                targetPlayer.TriggerEvent("vorpinventory:receiveItem", itemName, amount);
+                player.TriggerEvent("vorpinventory:receiveItem2", itemName, amount);
                 TriggerClientEvent(player, "vorp:TipRight", Config.GetTranslation("yougaveitem"), 2000);
                 TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.GetTranslation("YouReceiveditem"), 2000);
             }
