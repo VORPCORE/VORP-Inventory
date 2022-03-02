@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
+using VorpInventory.Diagnostics;
 using VorpInventory.Models;
 
 namespace VorpInventory
@@ -42,6 +43,22 @@ namespace VorpInventory
             Pickups.SetupPickPrompt();
 
             loaded = true;
+
+            try
+            {
+                foreach (var wpn in Config["Weapons"])
+                {
+                    Weapon weapon = new Weapon();
+                    weapon.Name = $"{wpn["Name"]}";
+                    weapon.Hash = $"{wpn["HashName"]}";
+                    weapon.WeaponModel = $"{wpn["WeaponModel"]}";
+                    Weapons.Add(weapon.Hash, weapon);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error when trying to create Weapons Dictionary");
+            }
         }
 
         public static uint FromHex(string value)
@@ -53,17 +70,12 @@ namespace VorpInventory
             return (uint)Int32.Parse(value, NumberStyles.HexNumber);
         }
 
-        public static string GetWeaponLabel(string weaponName)
+        public static string GetWeaponLabel(string hash)
         {
-            try
-            {
-                JToken wpc = Config["Weapons"].FirstOrDefault(x => x["HashName"].ToString().Contains(weaponName));
-                return $"{wpc["Name"]}";
-            }
-            catch
-            {
-                return weaponName;
-            }
+            if (Weapons.ContainsKey(hash))
+                return Weapons[hash].Name;
+
+            return hash;
         }
     }
 }
