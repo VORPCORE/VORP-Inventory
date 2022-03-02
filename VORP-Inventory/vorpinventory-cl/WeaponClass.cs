@@ -19,9 +19,9 @@ namespace vorpinventory_sv
         {
             get
             {
-
-                int hashKey = API.GetHashKey(name);
-                return Function.Call<string>((Hash)0x6D3AC61694A791C5, hashKey);
+                return GetConfig.GetWeaponLabel(name);
+                //int hashKey = API.GetHashKey(name);
+                //return Function.Call<string>((Hash)0x6D3AC61694A791C5, hashKey);
             }
         }
 

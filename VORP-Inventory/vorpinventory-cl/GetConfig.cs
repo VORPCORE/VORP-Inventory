@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
+using System.Linq;
 using VorpInventory.Models;
 
 namespace VorpInventory
@@ -50,6 +51,19 @@ namespace VorpInventory
                 value = value.Substring(2);
             }
             return (uint)Int32.Parse(value, NumberStyles.HexNumber);
+        }
+
+        public static string GetWeaponLabel(string weaponName)
+        {
+            try
+            {
+                JToken wpc = Config["Weapons"].FirstOrDefault(x => x["HashName"].ToString().Contains(weaponName));
+                return wpc["Name"].ToString();
+            }
+            catch
+            {
+                return weaponName;
+            }
         }
     }
 }
