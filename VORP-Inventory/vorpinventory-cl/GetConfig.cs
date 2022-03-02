@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
+using VorpInventory.Models;
 
 namespace VorpInventory
 {
@@ -15,6 +16,7 @@ namespace VorpInventory
         public static uint openKey = 0;
         public static uint pickupKey = 0;
         public static bool loaded = false;
+        public static Dictionary<string, Weapon> Weapons = new();
 
         public GetConfig()
         {
