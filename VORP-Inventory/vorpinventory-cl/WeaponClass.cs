@@ -14,6 +14,17 @@ namespace vorpinventory_sv
         private List<string> components;
         private bool used;
         private bool used2;
+
+        public string weaponLabel
+        {
+            get
+            {
+
+                int hashKey = API.GetHashKey(name);
+                return Function.Call<string>((Hash)0x6D3AC61694A791C5, hashKey);
+            }
+        }
+
         public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used, bool used2)
         {
             this.id = id;
