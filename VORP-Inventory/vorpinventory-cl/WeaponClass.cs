@@ -19,9 +19,13 @@ namespace vorpinventory_sv
         {
             get
             {
-                return GetConfig.GetWeaponLabel(name);
-                //int hashKey = API.GetHashKey(name);
-                //return Function.Call<string>((Hash)0x6D3AC61694A791C5, hashKey);
+                int hashKey = API.GetHashKey(name);
+                string rtnName = Function.Call<string>((Hash)0x6D3AC61694A791C5, hashKey);
+
+                if (rtnName == "WNS_INVALID")
+                    return name;
+
+                return GetConfig.GetWeaponLabel(rtnName);
             }
         }
 
