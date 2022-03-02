@@ -58,7 +58,7 @@ namespace VorpInventory
             try
             {
                 JToken wpc = Config["Weapons"].FirstOrDefault(x => x["HashName"].ToString().Contains(weaponName));
-                return wpc["Name"].ToString();
+                return $"{wpc["Name"]}";
             }
             catch
             {
