@@ -624,7 +624,7 @@ namespace VorpInventory
                 weapon = new Dictionary<string, dynamic>();
                 weapon.Add("count", userwp.Value.getAmmo("Hola"));
                 weapon.Add("limit", -1);
-                weapon.Add("label", Function.Call<string>((Hash)0x6D3AC61694A791C5, API.GetHashKey(userwp.Value.getName())));
+                weapon.Add("label", userwp.Value.weaponLabel);
                 weapon.Add("name", userwp.Value.getName());
                 weapon.Add("hash", API.GetHashKey(userwp.Value.getName()));
                 weapon.Add("type", "item_weapon");
