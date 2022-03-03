@@ -24,7 +24,7 @@ AddEventHandler("vorpinventory:check_slots", function()
     else
     slot_check = 0
     end
-    local itemsToCheck = tonumber(slot_check)
-    local maxCarryLimit = 200 -- max carry limit
-    TriggerClientEvent("syn:getnuistuff", _source, itemsToCheck ,maxCarryLimit)
+    local stufftosend = tonumber(slot_check)
+    local part2 = 200 -- max carry limit
+    TriggerClientEvent("syn:getnuistuff", _source, stufftosend,part2)
 end)
