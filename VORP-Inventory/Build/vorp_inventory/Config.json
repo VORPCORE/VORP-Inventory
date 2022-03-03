@@ -1,47 +1,43 @@
 {
     "defaultlang": "en_lang",
-
+                 
     "OpenKey": "0xC1989F95", //0x4CC0E2FE - [B]
-
     "PickupKey": "0xF84FA74F", // Default: RMB
 
-    "DropOnRespawn": {
+    "DropOnRespawn": {  
         "Money": false,
         "Weapons": false,
         "Items": false
     },
 
     "MaxItemsInInventory": {
-        "Weapons": 4,
-        "Items": 32
+        "Weapons": 6,
+        "Items": 200
     },
 
     "startItems": [
         //Items
         {
-            "consumable_coffee": 3,
-            "consumable_peach": 2,
-            "token": 1,
-            "flag": 1
+            "consumable_raspberrywater": 2,
+            "consumable_salmon": 2
         },
         //Weapons
         {
-            "WEAPON_REVOLVER_LEMAT": [
-                { "AMMO_REVOLVER": 100 }
+            "WEAPON_MELEE_KNIFE": [
+                { "AMMO_REVOLVER": 0 },
+                { "WEAPON_MELEE_KNIFE": 1 }
             ]
         }
     ],
 
     "Weapons": [{
-            "Name": "Lazo",
+            "Name": "Lasso",
             "HashName": "WEAPON_LASSO",
             "WeaponModel": "w_melee_lasso01",
-            "Price": 100.0,
-            "AmmoHash": [],
-            "CompsHash": []
+          
         },
         {
-            "Name": "Caña de pescar",
+            "Name": "Fishing Rod",
             "HashName": "WEAPON_FISHINGROD",
             "WeaponModel": "w_melee_fishingpole02",
             "Price": 100.0,
@@ -49,7 +45,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Cuchillo de caza",
+            "Name": "Knife",
             "HashName": "WEAPON_MELEE_KNIFE",
             "WeaponModel": "w_melee_knife02",
             "Price": 100.0,
@@ -61,7 +57,7 @@
             ]
         },
         {
-            "Name": "Cuchillo de la guerra civil",
+            "Name": "Knife Civil War",
             "HashName": "WEAPON_MELEE_KNIFE_CIVIL_WAR",
             "WeaponModel": "w_melee_knife16",
             "Price": 100.0,
@@ -69,7 +65,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Cuchillo de hueso de mandíbula",
+            "Name": "Knife Jawbone",
             "HashName": "WEAPON_MELEE_KNIFE_JAWBONE",
             "WeaponModel": "w_melee_knife03",
             "Price": 100.0,
@@ -77,7 +73,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Cuchillo de minero",
+            "Name": "Knife Miner",
             "HashName": "WEAPON_MELEE_KNIFE_MINER",
             "WeaponModel": "w_melee_knife14",
             "Price": 100.0,
@@ -85,7 +81,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Daga Ornate",
+            "Name": "Knife Vampire",
             "HashName": "WEAPON_MELEE_KNIFE_VAMPIRE",
             "WeaponModel": "w_melee_knife18",
             "Price": 100.0,
@@ -93,7 +89,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Cuchillo de carnicero",
+            "Name": "Cleaver",
             "HashName": "WEAPON_MELEE_CLEAVER",
             "WeaponModel": "w_melee_hatchet02",
             "Price": 100.0,
@@ -101,7 +97,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Hacha",
+            "Name": "Hachet",
             "HashName": "WEAPON_MELEE_HATCHET",
             "WeaponModel": "w_melee_hatchet01",
             "Price": 100.0,
@@ -109,7 +105,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Hacha de punta doble",
+            "Name": "Hachet Double Bit",
             "HashName": "WEAPON_MELEE_HATCHET_DOUBLE_BIT",
             "WeaponModel": "w_melee_hatchet06",
             "Price": 100.0,
@@ -117,7 +113,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Hacha de corte",
+            "Name": "Hachet Hewing",
             "HashName": "WEAPON_MELEE_HATCHET_HEWING",
             "WeaponModel": "w_melee_hatchet05",
             "Price": 100.0,
@@ -125,7 +121,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Hacha de cazador",
+            "Name": "Hachet Hunter",
             "HashName": "WEAPON_MELEE_HATCHET_HUNTER",
             "WeaponModel": "w_melee_hatchet07",
             "Price": 100.0,
@@ -133,7 +129,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Hacha vikinga",
+            "Name": "Hachet Viking",
             "HashName": "WEAPON_MELEE_HATCHET_VIKING",
             "WeaponModel": "w_melee_hatchet04",
             "Price": 100.0,
@@ -153,7 +149,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Cuchillos arrojadizos",
+            "Name": "Throwing Knifes",
             "HashName": "WEAPON_THROWN_THROWING_KNIVES",
             "WeaponModel": "w_melee_knife05",
             "Price": 100.0,
@@ -173,7 +169,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Arco",
+            "Name": "BOW",
             "HashName": "WEAPON_BOW",
             "WeaponModel": "w_sp_bowarrow",
             "Price": 100.0,
@@ -188,7 +184,7 @@
             "CompsHash": []
         },
         {
-            "Name": "Pistola Semi-automática",
+            "Name": "Pistol Semi-Auto",
             "HashName": "WEAPON_PISTOL_SEMIAUTO",
             "WeaponModel": "w_pistol_semiauto01",
             "Price": 100.0,
@@ -216,7 +212,7 @@
             ]
         },
         {
-            "Name": "Pistola Máuser",
+            "Name": "Pistol Mauser",
             "HashName": "WEAPON_PISTOL_MAUSER",
             "WeaponModel": "w_pistol_mauser01",
             "Price": 100.0,
@@ -244,7 +240,7 @@
             ]
         },
         {
-            "Name": "Pistola Volcánic",
+            "Name": "Pistol Volcanic",
             "HashName": "WEAPON_PISTOL_VOLCANIC",
             "WeaponModel": "w_pistol_volcanic01",
             "Price": 100.0,
@@ -271,7 +267,7 @@
             ]
         },
         {
-            "Name": "Pistola M1899",
+            "Name": "Pistol M1899",
             "HashName": "WEAPON_PISTOL_M1899",
             "WeaponModel": "w_pistol_m189902",
             "Price": 100.0,
@@ -299,7 +295,7 @@
             ]
         },
         {
-            "Name": "Revólver de Schofield",
+            "Name": "Revolver Schofield",
             "HashName": "WEAPON_REVOLVER_SCHOFIELD",
             "WeaponModel": "w_revolver_schofield01",
             "Price": 100.0,
@@ -326,7 +322,7 @@
             ]
         },
         {
-            "Name": "Revólver LeMat",
+            "Name": "Revolver Lemat",
             "HashName": "WEAPON_REVOLVER_LEMAT",
             "WeaponModel": "w_revolver_lemat01",
             "Price": 100.0,
@@ -353,7 +349,7 @@
             ]
         },
         {
-            "Name": "Revólver de doble acción",
+            "Name": "Revolver Double Action",
             "HashName": "WEAPON_REVOLVER_DOUBLEACTION",
             "WeaponModel": "w_revolver_doubleaction01",
             "Price": 100.0,
@@ -381,7 +377,7 @@
             ]
         },
         {
-            "Name": "Revólver Cattleman",
+            "Name": "Revolver Cattleman",
             "HashName": "WEAPON_REVOLVER_CATTLEMAN",
             "WeaponModel": "w_revolver_cattleman01",
             "Price": 100.0,
@@ -409,7 +405,7 @@
             ]
         },
         {
-            "Name": "Rifle Varmint",
+            "Name": " Varmint Rifle",
             "HashName": "WEAPON_RIFLE_VARMINT",
             "WeaponModel": "w_repeater_pumpaction01",
             "Price": 100.0,
@@ -433,7 +429,7 @@
             ]
         },
         {
-            "Name": "Winchester de repetición",
+            "Name": "Winchester Repeater",
             "HashName": "WEAPON_REPEATER_WINCHESTER",
             "WeaponModel": "w_repeater_winchester01",
             "Price": 100.0,
@@ -457,7 +453,7 @@
             ]
         },
         {
-            "Name": "Henry de repetición",
+            "Name": "Henry Reapeater",
             "HashName": "WEAPON_REPEATER_HENRY",
             "WeaponModel": "w_repeater_henry01",
             "Price": 100.0,
@@ -481,7 +477,7 @@
             ]
         },
         {
-            "Name": "Evans de repetición",
+            "Name": "Evans Repeater",
             "HashName": "WEAPON_REPEATER_EVANS",
             "WeaponModel": "w_repeater_evans01",
             "Price": 100.0,
@@ -505,7 +501,7 @@
             ]
         },
         {
-            "Name": "Carabina de repetición",
+            "Name": "Carabine Reapeater",
             "HashName": "WEAPON_REPEATER_CARBINE",
             "WeaponModel": "w_repeater_carbine01",
             "Price": 100.0,
@@ -530,7 +526,7 @@
             ]
         },
         {
-            "Name": "Fusil Rolling Block",
+            "Name": "Rolling Block Rifle",
             "HashName": "WEAPON_SNIPERRIFLE_ROLLINGBLOCK",
             "WeaponModel": "w_rifle_rollingblock01",
             "Price": 100.0,
@@ -560,7 +556,7 @@
             ]
         },
         {
-            "Name": "Fusil Carcano",
+            "Name": "Carcano Rifle",
             "HashName": "WEAPON_SNIPERRIFLE_CARCANO",
             "WeaponModel": "w_rifle_carcano01",
             "Price": 100.0,
@@ -592,7 +588,7 @@
             ]
         },
         {
-            "Name": "Fusil Springfield",
+            "Name": "Springfield Rifle",
             "HashName": "WEAPON_RIFLE_SPRINGFIELD",
             "WeaponModel": "w_rifle_springfield01",
             "Price": 100.0,
@@ -612,8 +608,8 @@
                     "w_rifle_springfield01_sight1": 0,
                     "w_rifle_springfield01_grip1": 0,
                     "w_rifle_springfield01_grip2": 10,
-                    "w_rifle_springfield01_grip3": 10,
-                    "w_rifle_scopeinner01": 0,
+                    "w_rifle_springfield01_grip3": 10,   
+                    "w_rifle_scopeinner01": 0,                                
                     "w_rifle_scope04": 10,
                     "w_rifle_scope03": 10,
                     "w_rifle_scope02": 10,
@@ -622,7 +618,42 @@
             ]
         },
         {
-            "Name": "Fusil de cerrojo",
+            "Name": "Elephant Rifle",
+            "HashName": "WEAPON_RIFLE_ELEPHANT",
+            "WeaponModel": "weapon_rifle_elephant",
+            "Price": 100.0,
+            "AmmoHash": [ //Máximo de balas
+                {
+                    "AMMO_RIFLE": 0.25,
+                    "AMMO_RIFLE_EXPRESS": 0.25,
+                    "AMMO_RIFLE_EXPRESS_EXPLOSIVE": 0.25,
+                    "AMMO_RIFLE_HIGH_VELOCITY": 0.25,
+                    "AMMO_RIFLE_SPLIT_POINT": 0.25
+                }
+            ],
+            "CompsHash": [ //Precio Componente 
+                {       // the only thing i have found for this weapon. 
+                       // "COMPONENT_RIFLE_ELEPHANT_BARREL_SHORT": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_BARREL_LONG": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_GRIP": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_GRIP_IRONWOOD": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_GRIP_ENGRAVED": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_GRIP_BURLED": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_MAG": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_MAG_IRONWOOD": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_MAG_ENGRAVED": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_MAG_BURLED": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_SIGHT_NARROW": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_SIGHT_WIDE": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_WRAP1": 0,
+                        //"COMPONENT_RIFLE_ELEPHANT_WRAP2": 10,
+                    
+                    
+                }
+            ]
+        },
+        {
+            "Name": "BoltAction Rifle",
             "HashName": "WEAPON_RIFLE_BOLTACTION",
             "WeaponModel": "w_rifle_boltaction01",
             "Price": 100.0,
@@ -647,7 +678,7 @@
             ]
         },
         {
-            "Name": "Escopeta Semi-automática",
+            "Name": "Semi-Auto Shotgun",
             "HashName": "WEAPON_SHOTGUN_SEMIAUTO",
             "WeaponModel": "w_shotgun_semiauto01",
             "Price": 100.0,
@@ -673,7 +704,7 @@
             ]
         },
         {
-            "Name": "Escopeta recortada",
+            "Name": "Sawedoff Shotgun",
             "HashName": "WEAPON_SHOTGUN_SAWEDOFF",
             "WeaponModel": "w_shotgun_sawed01",
             "Price": 100.0,
@@ -700,7 +731,7 @@
             ]
         },
         {
-            "Name": "Escopeta de repetición",
+            "Name": "Repeating Shotgun",
             "HashName": "WEAPON_SHOTGUN_REPEATING",
             "WeaponModel": "w_shotgun_repeating01",
             "Price": 100.0,
@@ -726,7 +757,7 @@
             ]
         },
         {
-            "Name": "Escopeta de corredera",
+            "Name": "Pump Shotgun",
             "HashName": "WEAPON_SHOTGUN_PUMP",
             "WeaponModel": "w_shotgun_pumpaction01",
             "Price": 100.0,
@@ -755,7 +786,7 @@
             ]
         },
         {
-            "Name": "Escopeta de doble cañón",
+            "Name": "Double Barrel Shotgun",
             "HashName": "WEAPON_SHOTGUN_DOUBLEBARREL",
             "WeaponModel": "w_shotgun_doublebarrel01",
             "Price": 100.0,
@@ -778,13 +809,13 @@
                     "w_shotgun_doublebarrel01_barrel1": 0,
                     "w_shotgun_doublebarrel01_barrel2": 10,
                     "w_shotgun_doublebarrel01_mag1": 0,
-                    "w_shotgun_doublebarrel01_mag2": 10,
+                    "w_shotgun_doublebarrel01_mag2": 10,                                              
                     "w_shotgun_doublebarrel01_mag3": 10
                 }
             ]
         },
         {
-            "Name": "Cámara",
+            "Name": "Camera",
             "HashName": "WEAPON_KIT_CAMERA",
             "WeaponModel": "p_camerabox01x",
             "Price": 100.0,
@@ -792,6 +823,156 @@
             "CompsHash": [{
                 "w_camera_inner01": 0
             }]
-        }
+        },
+        {
+            "Name": "Reinforced Lasso",
+            "HashName": "WEAPON_REINFORCED_LASSO",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        },
+        {
+            "Name": "Improved Binoculars",
+            "HashName": "WEAPON_KIT_BINOCULARS_IMPROVED",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        },
+        {
+            "Name": "Binoculars",
+            "HashName": "WEAPON_kIT_BINOCULARS",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+        {
+            "Name": "Advanced Camera",
+            "HashName": "WEAPON_kIT_CAMERA_ADVANCED",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+        {
+            "Name": "Lantern",
+            "HashName": "WEAPON_MELEE_LANTERN",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        },  	    
+        {
+            "Name": "Davy Lantern",
+            "HashName": "WEAPON_MELEE_DAVY_LANTERN",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+        { 
+        
+            "Name": "Poison Bottle",
+            "HashName": "WEAPON_THROWN_POISONBOTTLE",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+        {
+            "Name": "Dynamite",
+            "HashName": "WEAPON_THROWN_DYNAMITE",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        },     
+        {
+            "Name": "Molotov",
+            "HashName": "WEAPON_THROWN_MOLOTOV",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+        {
+            "Name": "Improved Bow",
+            "HashName": "WEAPON_BOW_IMPROVED",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+        {
+            "Name": "Machete Collector",
+            "HashName": "WEAPON_MELEE_MACHETE_COLLECTOR",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+        {
+            "Name": "Moonshine Jug",
+            "HashName": "WEAPON_MOONSHINEJUG_MP",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+        {
+            "Name": "Knife Rustic",
+            "HashName": "WEAPON_MELEE_KNIFE_RUSTIC",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+        {
+            "Name": "Lantern Haloween",
+            "HashName": "WEAPON_MELEE_LANTERN_HALOWEEN",
+            "WeaponModel": "",
+            "Price": 100.0,
+            "AmmoHash": [],
+            "CompsHash": [{
+                
+            }]
+        }, 
+
+       
+
+      
+            
+        
+            
+
+
     ]
 }
