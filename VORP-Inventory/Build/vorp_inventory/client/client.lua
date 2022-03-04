@@ -26,3 +26,14 @@ AddEventHandler("hud:send_money", function(_money, _gold)
     mon = _money
     gol = _gold
 end)
+
+
+RegisterNetEvent('syn:getnuistuff')
+AddEventHandler('syn:getnuistuff', function(x,y)
+	local nuistuff = x 
+	SendNUIMessage({
+		action = "changecheck",
+		check = nuistuff,
+		info = y,
+	})
+end)
