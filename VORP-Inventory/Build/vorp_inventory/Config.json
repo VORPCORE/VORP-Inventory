@@ -12,7 +12,7 @@
 
     "MaxItemsInInventory": {
         "Weapons": 6,
-        "Items": 200
+        "Items": 200    /* to change this go to the file invStuff.lua  and change there */
     },
 
     "startItems": [
