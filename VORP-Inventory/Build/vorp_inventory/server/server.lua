@@ -1,8 +1,12 @@
+
+
 local VorpCore = {}
 
 TriggerEvent("getCore",function(core)
     VorpCore = core
 end)
+
+VorpInv = exports.vorp_inventory:vorp_inventoryApi()
 
 RegisterServerEvent("hud:get_money")
 AddEventHandler("hud:get_money", function()
@@ -13,7 +17,7 @@ AddEventHandler("hud:get_money", function()
     TriggerClientEvent("hud:send_money", _source, money, gold)
 end)
 
-VorpInv = exports.vorp_inventory:vorp_inventoryApi()
+
 
 
 RegisterServerEvent("vorpinventory:check_slots")
