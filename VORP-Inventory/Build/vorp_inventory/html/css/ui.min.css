@@ -5,7 +5,7 @@
 
 body {
     width: 100%;
-    height: 100%;
+    height:100%;
     left: 10px;
     overflow: hidden;
     margin: 0;
@@ -329,4 +329,147 @@ img.emojione {
 span.emoji {
     font-size: 15px;
     line-height: 2;
+} 
+
+@media (max-width:1920px){
+
+#title {
+    margin-top: 11rem;
+}
+
+#inventoryHud {
+    min-width: 1200px;
+    min-height: 1120px;
+    background-size: 510px 800px;
+    margin-left: -100px;
+}
+
+#inventoryElement {
+    top: -100px;
+    width: 500px;
+    height: 398px;
+    margin-right: 310px;
+}
+
+#information { 
+    top: 750px;
+}
+
+.controls {
+    top: 240px;
+    left: 390px;
+}
+
+#secondInventoryHud {
+    min-width: 1200px;
+    min-height: 1120px;
+    background-size: 510px 800px;
+    margin-left: 900px;
+}
+
+#secondInventoryElement {
+    top: -100px;
+    width: 500px;
+    height: 398px;
+    margin-right: 310px;
+}
+
+#information2 {
+    top: 750px;
+  
+}
+
+#titleHorse {
+    margin-top: 11rem;
+  
+}
+
+}
+
+@media (min-width:3840px){
+
+    #title {
+        font-size: 40px;
+        margin-top: 5rem;
+    }
+    
+    #inventoryHud {
+        min-width: 1200px;
+        min-height: 1120px;
+        background-size: 710px 1000px;
+        margin-left: 10%;
+        margin-top:10%;
+    }
+    
+    #inventoryElement {
+        top: -120px;
+        width: 600px;
+        height: 498px;
+        margin-right: 290px;
+    }
+    
+    #information { 
+        top: 800px;
+        left: 10px;
+    }
+    
+    .controls {
+        top: 170px;
+        left: 390px;
+    }
+    
+    #secondInventoryHud {
+        min-width: 1200px;
+        min-height: 1120px;
+        background-size: 710px 1000px;
+        margin-left: 50%;
+        margin-top:10%; 
+    }
+    
+    #secondInventoryElement {
+        top: -120px;
+        width: 600px;
+        height: 498px;
+        margin-right: 290px;
+    }
+    
+    #information2 {
+        top: 71%;
+        left:30px;
+      
+    }
+    
+    #titleHorse {
+        font-size: 40px;
+        margin-top: 5rem;
+    }
+    
+    #cash{
+        margin-top: 72%;
+        margin-left: 370px;
+        
+    }
+    
+    #gold{
+        margin-left: 585px;
+        margin-top: 72%;
+    }
+    
+    #id{
+        margin-left: 820px;
+        margin-top: 72%; 
+    }
+    
+    .item {
+        width: 140px;
+        height: 110px;
+    }
+
+    .item .count {
+        margin-left: 98px;
+        margin-top: 70px;
+        width: 35px;
+        height: 35px;   
+    }
+    
 }
