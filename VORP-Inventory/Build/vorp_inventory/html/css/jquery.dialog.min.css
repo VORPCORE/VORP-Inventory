@@ -305,3 +305,15 @@
 	height: 1px;
 	display: block
 }
+
+@media (max-width: 1920px){
+
+
+  #dialog-holder #dialog-center td .dialog-alert {
+
+	left:160px;
+	
+  }
+
+	
+}
