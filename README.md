@@ -1,4 +1,4 @@
-# VORP-Inventory UPDATE 1.0
+# VORP-Inventory
 Inventory System for VORP Core
 
 
