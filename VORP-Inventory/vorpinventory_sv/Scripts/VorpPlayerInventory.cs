@@ -39,7 +39,8 @@ namespace VorpInventory.Scripts
         }
 
         private async void serverDropMoney([FromSource] Player player, double amount)
-        {try
+        {
+            try
             {
                 int _source = int.Parse(player.Handle);
 
