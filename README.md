@@ -1,4 +1,4 @@
-# VORP-Inventory
+
 Inventory System for VORP Core
 
 
@@ -21,8 +21,8 @@ Inventory System for VORP Core
 * When dropping or giving a weapon you give it with all the modifications and ammo.
 * It also has usaable items.
 * KLS.
-* 
-Supports lower resolutions and 4k
+
+
 ![image](https://user-images.githubusercontent.com/87246847/156600012-3901dac7-73f8-4577-a8f5-9a60d7e3150b.png)
 <img width="354" alt="image" src="https://user-images.githubusercontent.com/87246847/156600211-cc3fc70f-60bb-4884-971a-1d2ad4fdb8ad.png">
 
