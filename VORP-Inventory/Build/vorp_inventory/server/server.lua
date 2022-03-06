@@ -8,17 +8,6 @@ end)
 
 VorpInv = exports.vorp_inventory:vorp_inventoryApi()
 
-RegisterServerEvent("hud:get_money")
-AddEventHandler("hud:get_money", function()
-    local _source = source
-    local User = VorpCore.getUser(_source).getUsedCharacter
-    local money = User.money
-    local gold = User.gold
-    TriggerClientEvent("hud:send_money", _source, money, gold)
-end)
-
-
-
 
 RegisterServerEvent("vorpinventory:check_slots")
 AddEventHandler("vorpinventory:check_slots", function()
@@ -39,8 +28,11 @@ AddEventHandler("vorpinventory:check_slots", function()
     slot_check = 0
     end
     local stufftosend = tonumber(slot_check)
-    local part2 = 200 -- max carry limit
-    TriggerClientEvent("syn:getnuistuff", _source, stufftosend,part2)
+    local part2 = 200 -- max carry limit chnage me 
+    local User = VorpCore.getUser(_source).getUsedCharacter
+    local money = User.money
+    local gold = User.gold
+    TriggerClientEvent("syn:getnuistuff", _source, stufftosend,part2,money,gold)
 end)
 
 
