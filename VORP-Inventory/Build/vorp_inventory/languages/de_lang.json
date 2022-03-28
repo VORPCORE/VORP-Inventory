@@ -1,0 +1,13 @@
+{
+    "fullInventory": "Du trägst zu viel, du kannst nicht noch mehr tragen",
+    "fullInventoryGive": "Diese Person trägt zu viel, du kannst ihr nichts mehr geben",
+    "TryExploits": "Versuche NICHT, das System zu überlisten!",
+    "TakeFromFloor": "Aufheben",
+    "NotEnoughMoney": "Du hast nicht genug Geld",
+    "YouPaid": "Du hast {1} , {0}$ gegeben",
+    "YouReceived": "Du hast {0}$ erhalten von {1}",
+    "YouReceiveditem": "Du hast etwas erhalten ",
+    "yougaveitem": "Du hast etwas weitergegeben ",
+    "itemerror": "Ungültig "
+
+}
