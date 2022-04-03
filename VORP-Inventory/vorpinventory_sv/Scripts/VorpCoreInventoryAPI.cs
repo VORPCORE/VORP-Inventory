@@ -1,11 +1,14 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+
 using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Text;
 using System.Threading.Tasks;
+
 using VorpInventory.Database;
 using VorpInventory.Diagnostics;
 using VorpInventory.Extensions;
@@ -839,7 +842,7 @@ namespace VorpInventory.Scripts
                     }
                     else
                     {
-                        TriggerClientEvent(player, "vorp:Tip", Config.lang["fullInventory"], 2000);
+                        TriggerClientEvent(player, "vorp:Tip", Config.Lang["fullInventory"], 2000);
                     }
                 }
             }
@@ -913,7 +916,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void registerWeapon(int target, string name, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
+        private async void registerWeapon(int target, string hashName, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
         {
             try
             {
@@ -931,6 +934,12 @@ namespace VorpInventory.Scripts
                 if (targetPlayer == null)
                 {
                     Logger.Error($"registerWeapon: Target Player '{target}' does not exist.");
+                    return;
+                }
+
+                if (!Config.HasWeaponHashName(hashName))
+                {
+                    Logger.Error($"registerWeapon: Weapon name '{hashName}' does not exist.");
                     return;
                 }
 
@@ -981,10 +990,10 @@ namespace VorpInventory.Scripts
                     }
                 }
 
-                Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, name, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) =>
+                Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, hashName, Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) =>
                 {
                     int weaponId = result.insertId;
-                    WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false, false, charIdentifier);
+                    WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, hashName, ammoaux, auxcomponents, false, false, charIdentifier);
                     ItemDatabase.UserWeapons.Add(weaponId, auxWeapon);
                     if (targetIsPlayer)
                     {
