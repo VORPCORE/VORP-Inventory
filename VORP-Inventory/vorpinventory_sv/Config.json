@@ -1,21 +1,27 @@
 {
-  "defaultlang": "en_lang",
-  "OpenKey": "0xC1989F95",
-  "PickupKey": "0xF84FA74F",
+  "defaultlang": "en_lang", //language
+
+  "OpenKey": "0xC1989F95", //open inventory
+
+  "PickupKey": "0xF84FA74F", //to pick up items
+
   "DropOnRespawn": {
-    "Money": false,
+    "Money": false, // if set to true and you die it will drop all items to the ground and others can pick up\\
     "Weapons": false,
     "Items": false
   },
+
   "MaxItemsInInventory": {
     "Weapons": 6,
-    "Items": 200
+    "Items": 200 // this oin in the client folder then client.lua change there\\
   },
+   // start items on first join\\
   "startItems": [
     {
       "consumable_raspberrywater": 2,
       "consumable_salmon": 2
     },
+    // weapons don't seem to be working\\
     {
       "WEAPON_MELEE_KNIFE": [
         {
@@ -27,6 +33,8 @@
       ]
     }
   ],
+
+   // TRANSLATE BELLOW ONLY THE NAME: "LASSO"  NOTHING ELSE\\
   "Weapons": [
     {
       "Name": "Lasso",
@@ -34,17 +42,39 @@
       "WeaponModel": "w_melee_lasso01"
     },
     {
-      "Name": "Fishing Rod",
-      "HashName": "WEAPON_FISHINGROD",
-      "WeaponModel": "w_melee_fishingpole02",
+      "Name": "Reinforced Lasso",
+      "HashName": "WEAPON_LASSO_REINFORCED", 
+      "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": []
+      "CompsHash": [{}]
     },
     {
       "Name": "Knife",
       "HashName": "WEAPON_MELEE_KNIFE",
       "WeaponModel": "w_melee_knife02",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {
+          "w_melee_knife02_grip1": 0
+        }
+      ]
+    },
+    {
+      "Name": "Knife Rustic",
+      "HashName": "WEAPON_MELEE_KNIFE_RUSTIC",
+      "WeaponModel": "",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {}
+      ]
+    },
+    {
+      "Name": "Knife Horror",
+      "HashName": "WEAPON_MELEE_KNIFE_HORROR",
+      "WeaponModel": "w_melee_knife02",//
       "Price": 100.0,
       "AmmoHash": [],
       "CompsHash": [
@@ -148,6 +178,16 @@
       "CompsHash": []
     },
     {
+      "Name": "Tomahawk Ancient",
+      "HashName": "WEAPON_THROWN_TOMAHAWK_ANCIENT",
+      "WeaponModel": "w_melee_tomahawk02",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {}
+      ]
+    },
+    {
       "Name": "Throwing Knifes",
       "HashName": "WEAPON_THROWN_THROWING_KNIVES",
       "WeaponModel": "w_melee_knife05",
@@ -170,7 +210,7 @@
       "CompsHash": []
     },
     {
-      "Name": "BOW",
+      "Name": "Bow",
       "HashName": "WEAPON_BOW",
       "WeaponModel": "w_sp_bowarrow",
       "Price": 100.0,
@@ -325,6 +365,66 @@
       ]
     },
     {
+      "Name": "Revolver Navy",
+      "HashName": "WEAPON_REVOLVER_NAVY",
+      "WeaponModel": "w_revolver_navy",
+      "Price": 100.0,
+      "AmmoHash": [
+        {
+          "AMMO_REVOLVER": 0.25,
+          "AMMO_REVOLVER_EXPRESS": 0.25,
+          "AMMO_REVOLVER_EXPRESS_EXPLOSIVE": 0.25,
+          "AMMO_REVOLVER_HIGH_VELOCITY": 0.25,
+          "AMMO_REVOLVER_SPLIT_POINT": 0.25
+        }
+      ],
+      "CompsHash": [
+        {
+          "COMPONENT_REVOLVER_NAVY_BARREL_SHORT": 0, 
+          "COMPONENT_REVOLVER_NAVY_BARREL_LONG": 10,
+          "COMPONENT_REVOLVER_NAVY_BARREL_CROSSOVER": 0,
+          "COMPONENT_REVOLVER_NAVY_GRIP": 10,
+          "COMPONENT_REVOLVER_NAVY_GRIP_IRONWOOD": 10,
+          "COMPONENT_REVOLVER_NAVY_GRIP_PEARL": 10,
+          "COMPONENT_REVOLVER_NAVY_GRIP_EBONY": 0,
+          "COMPONENT_REVOLVER_NAVY_GRIP_CROSSOVER": 10,
+          "COMPONENT_REVOLVER_NAVY_SIGHT_NARROW": 10 ,
+          "COMPONENT_REVOLVER_NAVY_SIGHT_WIDE": 10,
+          "COMPONENT_REVOLVER_NAVY_SIGHT_CROSSOVER": 10
+        }
+      ]
+    },
+    {
+      "Name": "Revolver Navy Crossover",
+      "HashName": "WEAPON_REVOLVER_NAVY_CROSSOVER",
+      "WeaponModel": "w_revolver_navy", // check cant find it
+      "Price": 100.0,
+      "AmmoHash": [
+        {
+          "AMMO_REVOLVER": 0.25,
+          "AMMO_REVOLVER_EXPRESS": 0.25,
+          "AMMO_REVOLVER_EXPRESS_EXPLOSIVE": 0.25,
+          "AMMO_REVOLVER_HIGH_VELOCITY": 0.25,
+          "AMMO_REVOLVER_SPLIT_POINT": 0.25
+        }
+      ],
+      "CompsHash": [
+        {
+          "COMPONENT_REVOLVER_NAVY_BARREL_SHORT": 0, 
+          "COMPONENT_REVOLVER_NAVY_BARREL_LONG": 10,
+          "COMPONENT_REVOLVER_NAVY_BARREL_CROSSOVER": 0,
+          "COMPONENT_REVOLVER_NAVY_GRIP": 10,
+          "COMPONENT_REVOLVER_NAVY_GRIP_IRONWOOD": 10,
+          "COMPONENT_REVOLVER_NAVY_GRIP_PEARL": 10,
+          "COMPONENT_REVOLVER_NAVY_GRIP_EBONY": 0,
+          "COMPONENT_REVOLVER_NAVY_GRIP_CROSSOVER": 10,
+          "COMPONENT_REVOLVER_NAVY_SIGHT_NARROW": 10 ,
+          "COMPONENT_REVOLVER_NAVY_SIGHT_WIDE": 10,
+          "COMPONENT_REVOLVER_NAVY_SIGHT_CROSSOVER": 10
+        }
+      ]
+    },
+    {
       "Name": "Revolver Lemat",
       "HashName": "WEAPON_REVOLVER_LEMAT",
       "WeaponModel": "w_revolver_lemat01",
@@ -404,6 +504,26 @@
           "w_revolver_cattleman01_grip5": 10,
           "w_revolver_cattleman01_barrel01": 0,
           "w_revolver_cattleman01_barrel02": 10
+        }
+      ]
+    },
+    {
+      "Name": "Revolver Cattleman mexican",
+      "HashName": "WEAPON_REVOLVER_CATTLEMAN_MEXICAN",
+      "WeaponModel": "w_revolver_cattleman02", 
+      "Price": 100.0,
+      "AmmoHash": [
+        {
+          "AMMO_REVOLVER": 0.25,
+          "AMMO_REVOLVER_EXPRESS": 0.25,
+          "AMMO_REVOLVER_EXPRESS_EXPLOSIVE": 0.25,
+          "AMMO_REVOLVER_HIGH_VELOCITY": 0.25,
+          "AMMO_REVOLVER_SPLIT_POINT": 0.25
+        }
+      ],
+      "CompsHash": [
+        {
+         
         }
       ]
     },
@@ -743,6 +863,25 @@
       ]
     },
     {
+      "Name": "Double Barrel Exotic Shotgun",
+      "HashName": "WEAPON_SHOTGUN_DOUBLEBARREL_EXOTIC",
+      "WeaponModel": "w_shotgun_doublebarrel01", 
+      "Price": 100.0,
+      "AmmoHash": [
+        {
+          "AMMO_SHOTGUN": 0.25,
+          "AMMO_SHOTGUN_BUCKSHOT_INCENDIARY": 0.25,
+          "AMMO_SHOTGUN_EXPRESS_EXPLOSIVE": 0.25,
+          "AMMO_SHOTGUN_SLUG": 0.25
+        }
+      ],
+      "CompsHash": [
+        {
+          "COMPONENT_REVOLVER_DOUBLEACTION_GRIP_EXOTIC": 0
+        }
+      ]
+    },
+    {
       "Name": "Pump Shotgun",
       "HashName": "WEAPON_SHOTGUN_PUMP",
       "WeaponModel": "w_shotgun_pumpaction01",
@@ -813,8 +952,8 @@
       ]
     },
     {
-      "Name": "Reinforced Lasso",
-      "HashName": "WEAPON_REINFORCED_LASSO",
+      "Name": "Improved Binoculars",
+      "HashName": "WEAPON_KIT_BINOCULARS_IMPROVED",
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
@@ -823,8 +962,8 @@
       ]
     },
     {
-      "Name": "Improved Binoculars",
-      "HashName": "WEAPON_KIT_BINOCULARS_IMPROVED",
+      "Name": "Knife Trader",
+      "HashName": "WEAPON_MELEE_KNIFE_TRADER",
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
@@ -873,6 +1012,16 @@
       ]
     },
     {
+      "Name": "Halloween Lantern",
+      "HashName": "WEAPON_MELEE_LANTERN_HALLOWEEN",
+      "WeaponModel": "",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {}
+      ]
+    },
+    {
       "Name": "Poison Bottle",
       "HashName": "WEAPON_THROWN_POISONBOTTLE",
       "WeaponModel": "",
@@ -883,9 +1032,20 @@
       ]
     },
     {
+      "Name": "Metal Detector",
+      "HashName": "WEAPON_KIT_METAL_DETECTOR",
+      "WeaponModel": "",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {}
+      ]
+    },
+
+    {
       "Name": "Dynamite",
       "HashName": "WEAPON_THROWN_DYNAMITE",
-      "WeaponModel": "",
+      "WeaponModel": "w_throw_dynamite01",
       "Price": 100.0,
       "AmmoHash": [],
       "CompsHash": [
@@ -895,7 +1055,7 @@
     {
       "Name": "Molotov",
       "HashName": "WEAPON_THROWN_MOLOTOV",
-      "WeaponModel": "",
+      "WeaponModel": "w_throw_molotov01",
       "Price": 100.0,
       "AmmoHash": [],
       "CompsHash": [
@@ -923,8 +1083,38 @@
       ]
     },
     {
+      "Name": "Electric Lantern",
+      "HashName": "WEAPON_MELEE_LANTERN_ELECTRIC",
+      "WeaponModel": "s_interact_lantern03x_pickup",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {}
+      ]
+    },
+    {
+      "Name": "Torch",
+      "HashName": "WEAPON_MELEE_TORCH",
+      "WeaponModel": "s_interact_torch",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {}
+      ]
+    },
+    {
       "Name": "Moonshine Jug",
       "HashName": "WEAPON_MOONSHINEJUG_MP",
+      "WeaponModel": "s_interact_jug_pickup",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {}
+      ]
+    },
+    {
+      "Name": "Bolas",
+      "HashName": "WEAPON_THROWN_BOLAS",
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
@@ -933,14 +1123,51 @@
       ]
     },
     {
-      "Name": "Knife Rustic",
-      "HashName": "WEAPON_MELEE_KNIFE_RUSTIC",
+      "Name": "Bolas Hawkmoth",
+      "HashName": "WEAPON_THROWN_BOLAS_HAWKMOTH",
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
       "CompsHash": [
         {}
       ]
+    },
+    {
+      "Name": "Bolas Ironspiked",
+      "HashName": "WEAPON_THROWN_BOLAS_IRONSPIKED",
+      "WeaponModel": "",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {}
+      ]
+    },
+    {
+      "Name": "Bolas Intertwined",
+      "HashName": "WEAPON_THROWN_BOLAS_INTERTWINED",
+      "WeaponModel": "",
+      "Price": 100.0,
+      "AmmoHash": [],
+      "CompsHash": [
+        {}
+      ]
+    },
+ 
+    {
+      "Name": "Fishing Rod",
+      "HashName": "WEAPON_FISHINGROD",
+      "WeaponModel": "w_melee_fishingpole02",
+      "Price": 100.0, 
+      "AmmoHash": [],
+      "CompsHash": []
+    },
+    {
+      "Name": "Machete Horror",
+      "HashName": "WEAPON_MACHETE_HORROR",
+      "WeaponModel": "w_melee_fishingpole02",
+      "Price": 100.0, 
+      "AmmoHash": [],
+      "CompsHash": []
     },
     {
       "Name": "Lantern Haloween",
