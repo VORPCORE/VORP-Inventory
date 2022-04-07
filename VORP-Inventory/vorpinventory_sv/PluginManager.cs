@@ -12,7 +12,22 @@ namespace VorpInventory
     {
         public static PluginManager Instance { get; private set; }
         public static PlayerList PlayerList;
-        public static dynamic CORE;
+        public async static Task<dynamic> CORE() 
+        {
+            dynamic _CORE = null;
+
+            TriggerEvent("getCore", new Action<dynamic>((getCoreResult) =>
+            {
+                _CORE = getCoreResult;
+            }));
+
+            while (_CORE == null)
+            {
+                await BaseScript.Delay(100);
+            }
+
+            return _CORE;
+        }
 
         public EventHandlerDictionary EventRegistry => EventHandlers;
         public ExportDictionary ExportRegistry => Exports;
@@ -73,23 +88,12 @@ namespace VorpInventory
         {
             await VendorReady(); // wait till ghmattimysql resource has started
 
-            GetCore();
-
             RegisterScript(ItemsDB);
             RegisterScript(_scriptConfig);
             RegisterScript(_scriptVorpCoreInventoryApi);
             RegisterScript(_scriptVorpPlayerInventory);
 
             AddEvents();
-        }
-
-        void GetCore()
-        {
-            TriggerEvent("getCore", new Action<dynamic>((getCoreResult) =>
-            {
-                Logger.Success($"VORP Core Setup");
-                CORE = getCoreResult;
-            }));
         }
 
         void AddEvents()

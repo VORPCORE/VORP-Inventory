@@ -143,7 +143,8 @@ namespace VorpInventory.Scripts
                 else
                 {
                     coreUserCharacter.removeCurrency(0, amount);
-                    dynamic targetCoreUserCharacter = PluginManager.CORE.getUser(target).getUsedCharacter;
+                    dynamic core = await Common.GetCoreUser(target);
+                    dynamic targetCoreUserCharacter = core.getUsedCharacter;
 
                     if (targetCoreUserCharacter == null)
                     {
@@ -238,7 +239,7 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
-                int coreUserCharacterId = player.GetCoreUserCharacterId();
+                int coreUserCharacterId = await player.GetCoreUserCharacterId();
 
                 Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
 
@@ -278,7 +279,7 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
-                int coreUserCharacterId = player.GetCoreUserCharacterId();
+                int coreUserCharacterId = await player.GetCoreUserCharacterId();
                 if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
                     if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
@@ -631,7 +632,7 @@ namespace VorpInventory.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 string targetIdentifier = "steam:" + targetPlayer.Identifiers["steam"];
 
-                int playerCharId = player.GetCoreUserCharacterId();
+                int playerCharId = await player.GetCoreUserCharacterId();
 
                 if (playerCharId == -1)
                 {
@@ -639,7 +640,7 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                int targetCharId = targetPlayer.GetCoreUserCharacterId();
+                int targetCharId = await targetPlayer.GetCoreUserCharacterId();
 
                 if (targetCharId == -1)
                 {

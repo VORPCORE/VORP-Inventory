@@ -715,7 +715,7 @@ namespace VorpInventory.Scripts
 
                 bool added = false;
                 string identifier = "steam:" + player.Identifiers["steam"];
-                int coreUserCharacterId = player.GetCoreUserCharacterId();
+                int coreUserCharacterId = await player.GetCoreUserCharacterId();
 
                 if (!ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
@@ -871,7 +871,7 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
-                int coreUserCharacterId = player.GetCoreUserCharacterId();
+                int coreUserCharacterId = await player.GetCoreUserCharacterId();
 
                 Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
                 if (userInventory == null)
