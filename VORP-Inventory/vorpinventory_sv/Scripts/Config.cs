@@ -90,46 +90,69 @@ namespace VorpInventory.Scripts
             source.TriggerEvent($"{API.GetCurrentResourceName()}:SendConfig", _ConfigString, Lang);
         }
 
-        private async void OnNewCharacter(int player)
+        private async void OnNewCharacter(int playerId)
         {
             await Delay(5000);
-            Player p = PlayerList[player];
-            if (p == null)
+
+            Player player = PlayerList[playerId];
+            if (player == null)
             {
-                Logger.Error($"Player '{player}' was not found.");
+                Logger.Error($"Player '{playerId}' was not found.");
                 return;
             }
 
-            string identifier = "steam:" + p.Identifiers["steam"];
+            string identifier = "steam:" + player.Identifiers["steam"];
+
+            // Attempt to add all starter items/weapons from the Config.json
             try
             {
-                foreach (KeyValuePair<string, JToken> item in (JObject)_configJObject["startItems"][0])
+                JObject items = (JObject)_configJObject["startItems"].FirstOrDefault();
+                if (items != null)
                 {
-                    TriggerEvent("vorpCore:addItem", player, item.Key, int.Parse(item.Value.ToString()));
+                    foreach (KeyValuePair<string, JToken> item in items)
+                    {
+                        TriggerEvent("vorpCore:addItem", playerId, item.Key, int.Parse(item.Value.ToString()));
+                    }
                 }
 
-                foreach (KeyValuePair<string, JToken> weapon in (JObject)_configJObject["startItems"][1])
+                JObject weapons = (JObject)_configJObject["startWeapons"].FirstOrDefault();
+                if (weapons != null)
                 {
-                    JToken wpc = _configJObject["Weapons"].FirstOrDefault(x => x["HashName"].ToString().Contains(weapon.Key));
-                    List<string> auxbullets = new List<string>();
-                    Dictionary<string, int> givedBullets = new Dictionary<string, int>();
-                    foreach (KeyValuePair<string, JToken> bullets in (JObject)wpc["AmmoHash"][0])
+                    foreach (KeyValuePair<string, JToken> weapon in weapons)
                     {
-                        auxbullets.Add(bullets.Key);
-                    }
-                    foreach (KeyValuePair<string, JToken> bullet in (JObject)weapon.Value[0])
-                    {
-                        if (auxbullets.Contains(bullet.Key))
+                        List<string> auxbullets = new List<string>();
+                        Dictionary<string, int> receivedBullets = new Dictionary<string, int>();
+
+                        JToken wpc = _configJObject["Weapons"].FirstOrDefault(x => x["HashName"].ToString() == weapon.Key);
+
+                        JObject ammoHash = (JObject)wpc["AmmoHash"].FirstOrDefault();
+                        if (ammoHash != null)
                         {
-                            givedBullets.Add(bullet.Key, int.Parse(bullet.Value.ToString()));
+                            foreach (KeyValuePair<string, JToken> bullets in ammoHash)
+                            {
+                                auxbullets.Add(bullets.Key);
+                            }
                         }
+
+                        JObject staterAmmo = (JObject)weapon.Value.FirstOrDefault();
+                        if (staterAmmo != null)
+                        {
+                            foreach (KeyValuePair<string, JToken> bullet in staterAmmo)
+                            {
+                                if (auxbullets.Contains(bullet.Key))
+                                {
+                                    receivedBullets.Add(bullet.Key, int.Parse(bullet.Value.ToString()));
+                                }
+                            }
+                        }
+
+                        TriggerEvent("vorpCore:registerWeapon", playerId, weapon.Key, receivedBullets);
                     }
-                    TriggerEvent("vorpCore:registerWeapon", player, weapon.Key, givedBullets);
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Logger.Error($"OnNewCharacter: {ex.Message}");
             }
         }
         #endregion
