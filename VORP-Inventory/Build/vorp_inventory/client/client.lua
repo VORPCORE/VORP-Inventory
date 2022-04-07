@@ -14,4 +14,3 @@ AddEventHandler('syn:getnuistuff', function(x,y,mon,gol)
         id          = GetPlayerServerId(NetworkGetEntityOwner(PlayerPedId()))
     })
 end)
-

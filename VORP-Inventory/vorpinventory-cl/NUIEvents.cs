@@ -439,6 +439,8 @@ namespace VorpInventory
                         else
                         {
                             TriggerServerEvent("vorpinventory:serverGiveWeapon2", int.Parse(data2["id"].ToString()), target);
+                            TriggerServerEvent("vorpinventory:weaponlog", target, data2);
+
 
                             /*  if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data2["id"].ToString())))
                              {

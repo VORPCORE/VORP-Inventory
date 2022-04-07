@@ -8,10 +8,12 @@ ui_page 'html/ui.html'
 
 
 client_scripts{
+  'config.lua',
   'vorpinventory_cl.net.dll',
   'client/client.lua'
 }
 server_scripts {
+  'config.lua',
   'vorpinventory_sv.net.dll',
   'vorpInventoryAPI.lua',
   'server/server.lua'

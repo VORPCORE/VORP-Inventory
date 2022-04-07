@@ -154,8 +154,10 @@ namespace VorpInventory.Scripts
                     targetCoreUserCharacter.addCurrency(0, amount);
                     player.TriggerEvent("vorp:TipRight", string.Format(Config.Lang["YouPaid"], amount.ToString(), _target.Name), 3000);
                     _target.TriggerEvent("vorp:TipRight", string.Format(Config.Lang["YouReceived"], amount.ToString(), player.Name), 3000);
+                    TriggerEvent("vorpinventory:moneylog", player.Handle, _target.Handle, amount);
                     await Delay(3000);
                     player.TriggerEvent("vorp_inventory:ProcessingReady");
+
                 }
             }
             catch (Exception ex)
@@ -730,6 +732,8 @@ namespace VorpInventory.Scripts
                 player.TriggerEvent("vorpinventory:receiveItem2", itemName, amount);
                 TriggerClientEvent(player, "vorp:TipRight", Config.GetTranslation("yougaveitem"), 2000);
                 TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.GetTranslation("YouReceiveditem"), 2000);
+                TriggerEvent("vorpinventory:itemlog", player.Handle, targetPlayer.Handle, itemName, amount);
+
             }
             catch (Exception ex)
             {

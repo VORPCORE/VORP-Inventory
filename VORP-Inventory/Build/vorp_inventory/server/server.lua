@@ -9,6 +9,23 @@ end)
 VorpInv = exports.vorp_inventory:vorp_inventoryApi()
 
 
+-- get discord id
+function getIdentity(source, identity)
+	local num = 0
+	local num2 = GetNumPlayerIdentifiers(source)
+  
+	if GetNumPlayerIdentifiers(source) > 0 then
+	  local ident = nil
+	  while num < num2 and not ident do
+		local a = GetPlayerIdentifier(source, num)
+		if string.find(a, identity) then ident = a end
+		num = num+1
+	  end
+	  --return ident;
+	  return string.sub(ident, 9)
+	end
+end
+
 RegisterServerEvent("vorpinventory:check_slots")
 AddEventHandler("vorpinventory:check_slots", function()
     local _source = tonumber(source)
@@ -28,7 +45,7 @@ AddEventHandler("vorpinventory:check_slots", function()
     slot_check = 0
     end
     local stufftosend = tonumber(slot_check)
-    local part2 = 200 -- max carry limit chnage me 
+    local part2 = Config.maxcarry -- max carry limit chnage me 
     local User = VorpCore.getUser(_source).getUsedCharacter
     local money = User.money
     local gold = User.gold
@@ -51,3 +68,59 @@ AddEventHandler("vorpinventory:getLabelFromId",function(id, item2, cb)
 end)
 
 
+
+RegisterServerEvent("vorpinventory:itemlog")
+AddEventHandler("vorpinventory:itemlog", function(_source,targetHandle,itemName, amount)
+    local name = GetPlayerName(_source)
+    local name2 = GetPlayerName(targetHandle)
+    local description = name..Language.gave..amount.." "..itemName..Language.to..name2
+    Discord(Language.gaveitem,_source,description)
+end)
+
+RegisterServerEvent("vorpinventory:weaponlog")
+AddEventHandler("vorpinventory:weaponlog", function(targetHandle, data)
+    local _source = source
+    local name = GetPlayerName(_source)
+    local name2 = GetPlayerName(targetHandle)
+    local description = name..Language.gave..data.item..Language.to..name2..Language.withid..data.id
+    Discord(Language.gaveitem,_source,description) 
+end)
+
+RegisterServerEvent("vorpinventory:moneylog")
+AddEventHandler("vorpinventory:moneylog", function(_source,targetHandle, amount)
+    local name = GetPlayerName(_source)
+    local name2 = GetPlayerName(targetHandle)
+    local description = name..Language.gave.." $"..amount.." "..Language.to..name2
+    Discord(Language.gaveitem,_source,description)
+end)
+
+function Discord(title,_source,description)
+    local logs = {}
+    local name = GetPlayerName(_source)
+    local avatar = Config.webhookavatar
+    local color = 3447003
+    local discordid
+    if Config.discordid then 
+      discordid = getIdentity(_source, "discord")
+    else
+      discordid = nil 
+    end
+    if discordid ~= nil then 
+      logs = {
+        {
+          ["color"] = color,
+          ["title"] = name,
+          ["description"] = description.."\n".."**Discord:** <@"..discordid..">",
+        }
+      }
+    else
+      logs = {
+        {
+          ["color"] = color,
+          ["title"] = name,
+          ["description"] = description,
+        }
+      }
+    end
+    PerformHttpRequest(Config.webhook, function(err, text, headers) end, 'POST', json.encode({["username"] = title ,["avatar_url"] = avatar ,embeds = logs}), { ['Content-Type'] = 'application/json' })
+  end
