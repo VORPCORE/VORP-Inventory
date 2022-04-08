@@ -12,22 +12,6 @@ namespace VorpInventory
     {
         public static PluginManager Instance { get; private set; }
         public static PlayerList PlayerList;
-        public async static Task<dynamic> CORE() 
-        {
-            dynamic _CORE = null;
-
-            TriggerEvent("getCore", new Action<dynamic>((getCoreResult) =>
-            {
-                _CORE = getCoreResult;
-            }));
-
-            while (_CORE == null)
-            {
-                await BaseScript.Delay(100);
-            }
-
-            return _CORE;
-        }
 
         public EventHandlerDictionary EventRegistry => EventHandlers;
         public ExportDictionary ExportRegistry => Exports;
@@ -51,6 +35,23 @@ namespace VorpInventory
             Setup();
 
             Logger.Info($"VORP Inventory Loaded");
+        }
+
+        public async static Task<dynamic> GetVorpCoreAsync()
+        {
+            dynamic _CORE = null;
+
+            TriggerEvent("getCore", new Action<dynamic>((getCoreResult) =>
+            {
+                _CORE = getCoreResult;
+            }));
+
+            while (_CORE == null)
+            {
+                await BaseScript.Delay(100);
+            }
+
+            return _CORE;
         }
 
         public void AttachTickHandler(Func<Task> task)
