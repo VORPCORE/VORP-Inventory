@@ -21,24 +21,24 @@ namespace VorpInventory.Scripts
 
         internal VorpPlayerInventory()
         {
-            EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
-            EventHandlers["vorpinventory:getInventory"] += new Action<Player>(getInventory);
-            EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(ServerGiveItem);
-            EventHandlers["vorpinventory:serverGiveWeapon"] += new Action<Player, int, int>(serverGiveWeapon);
-            EventHandlers["vorpinventory:serverDropItem"] += new Action<Player, string, int>(serverDropItem);
-            EventHandlers["vorpinventory:serverDropMoney"] += new Action<Player, double>(serverDropMoney);
-            EventHandlers["vorpinventory:serverDropAllMoney"] += new Action<Player>(serverDropAllMoney);
-            EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player, int>(serverDropWeapon);
-            EventHandlers["vorpinventory:sharePickupServer"] += new Action<string, int, int, Vector3, int>(sharePickupServer);
-            EventHandlers["vorpinventory:shareMoneyPickupServer"] += new Action<int, double, Vector3>(shareMoneyPickupServer);
-            EventHandlers["vorpinventory:onPickup"] += new Action<Player, int>(onPickup);
-            EventHandlers["vorpinventory:onPickupMoney"] += new Action<Player, int>(onPickupMoney);
-            EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool, bool>(usedWeapon);
-            EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(setWeaponBullets);
-            EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(giveMoneyToPlayer);
+            EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(OnGetItemsTable);
+            EventHandlers["vorpinventory:getInventory"] += new Action<Player>(OnGetInventory);
+            EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(OnServerGiveItem);
+            EventHandlers["vorpinventory:serverGiveWeapon"] += new Action<Player, int, int>(OnServerGiveWeapon);
+            EventHandlers["vorpinventory:serverDropItem"] += new Action<Player, string, int>(OnServerDropItem);
+            EventHandlers["vorpinventory:serverDropMoney"] += new Action<Player, double>(OnServerDropMoney);
+            EventHandlers["vorpinventory:serverDropAllMoney"] += new Action<Player>(OnServerDropAllMoney);
+            EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player, int>(OnServerDropWeapon);
+            EventHandlers["vorpinventory:sharePickupServer"] += new Action<string, int, int, Vector3, int>(OnSharePickupServer);
+            EventHandlers["vorpinventory:shareMoneyPickupServer"] += new Action<int, double, Vector3>(OnShareMoneyPickupServer);
+            EventHandlers["vorpinventory:onPickup"] += new Action<Player, int>(OnPickup);
+            EventHandlers["vorpinventory:onPickupMoney"] += new Action<Player, int>(OnPickupMoney);
+            EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool, bool>(OnUsedWeapon);
+            EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(OnSetWeaponBullets);
+            EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(OnGiveMoneyToPlayer);
         }
 
-        private async void serverDropMoney([FromSource] Player player, double amount)
+        private async void OnServerDropMoney([FromSource] Player player, double amount)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void serverDropAllMoney([FromSource] Player player)
+        private async void OnServerDropAllMoney([FromSource] Player player)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void giveMoneyToPlayer([FromSource] Player player, int target, double amount)
+        private async void OnGiveMoneyToPlayer([FromSource] Player player, int target, double amount)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void setWeaponBullets([FromSource] Player player, int weaponId, string type, int bullet)
+        private void OnSetWeaponBullets([FromSource] Player player, int weaponId, string type, int bullet)
         {
             try
             {
@@ -208,7 +208,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void usedWeapon([FromSource] Player source, int id, bool used, bool used2)
+        private void OnUsedWeapon([FromSource] Player source, int id, bool used, bool used2)
         {
             try
             {
@@ -392,7 +392,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void onPickup([FromSource] Player player, int obj)
+        private async void OnPickup([FromSource] Player player, int obj)
         {
             try
             {
@@ -494,7 +494,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void onPickupMoney([FromSource] Player player, int obj)
+        private void OnPickupMoney([FromSource] Player player, int obj)
         {
             try
             {
@@ -518,7 +518,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void sharePickupServer(string name, int obj, int amount, Vector3 position, int weaponId)
+        private void OnSharePickupServer(string name, int obj, int amount, Vector3 position, int weaponId)
         {
             try
             {
@@ -540,7 +540,7 @@ namespace VorpInventory.Scripts
         }
 
         // is obj a networkid ?
-        private void shareMoneyPickupServer(int obj, double amount, Vector3 position)
+        private void OnShareMoneyPickupServer(int obj, double amount, Vector3 position)
         {
             try
             {
@@ -563,7 +563,7 @@ namespace VorpInventory.Scripts
         }
 
         //Weapon methods
-        private void serverDropWeapon([FromSource] Player source, int weaponId)
+        private void OnServerDropWeapon([FromSource] Player source, int weaponId)
         {
             try
             {
@@ -577,7 +577,7 @@ namespace VorpInventory.Scripts
         }
 
         //Items methods
-        private void serverDropItem([FromSource] Player source, string itemname, int cuantity)
+        private void OnServerDropItem([FromSource] Player source, string itemname, int cuantity)
         {
             try
             {
@@ -590,7 +590,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void serverGiveWeapon([FromSource] Player player, int weaponId, int target)
+        private void OnServerGiveWeapon([FromSource] Player player, int weaponId, int target)
         {
             try
             {
@@ -617,7 +617,7 @@ namespace VorpInventory.Scripts
                 Logger.Error(ex, $"serverGiveWeapon");
             }
         }
-        private async void ServerGiveItem([FromSource] Player player, string itemName, int amount, int targetHandle)
+        private async void OnServerGiveItem([FromSource] Player player, string itemName, int amount, int targetHandle)
         {
             try
             {
@@ -743,7 +743,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void getItemsTable([FromSource] Player source)
+        private async void OnGetItemsTable([FromSource] Player source)
         {
             try
             {
@@ -764,7 +764,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void getInventory([FromSource] Player player)
+        private async void OnGetInventory([FromSource] Player player)
         {
             try
             {
