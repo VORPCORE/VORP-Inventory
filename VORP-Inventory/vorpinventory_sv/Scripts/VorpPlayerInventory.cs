@@ -44,7 +44,7 @@ namespace VorpInventory.Scripts
             {
                 int _source = int.Parse(player.Handle);
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                 if (coreUserCharacter == null)
                 {
                     Logger.Error($"serverDropMoney: Player '{player}' CORE User does not exist.");
@@ -79,7 +79,7 @@ namespace VorpInventory.Scripts
             {
                 int _source = int.Parse(player.Handle);
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                 if (coreUserCharacter == null)
                 {
                     Logger.Error($"serverDropAllMoney: Player '{player.Handle}' CORE User does not exist.");
@@ -112,7 +112,7 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                 if (coreUserCharacter == null)
                 {
                     Logger.Error($"giveMoneyToPlayer: Player '{player.Handle}' CORE User does not exist.");
@@ -143,7 +143,7 @@ namespace VorpInventory.Scripts
                 else
                 {
                     coreUserCharacter.removeCurrency(0, amount);
-                    dynamic core = await Common.GetCoreUser(target);
+                    dynamic core = await Common.GetCoreUserAsync(target);
                     dynamic targetCoreUserCharacter = core.getUsedCharacter;
 
                     if (targetCoreUserCharacter == null)
@@ -188,7 +188,7 @@ namespace VorpInventory.Scripts
             {
                 await Delay(0);
 
-                bool result = await PluginManager._scriptVorpCoreInventoryApi.SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                bool result = await PluginManager._scriptVorpCoreInventoryApi.SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
 
                 if (!result)
                 {
@@ -239,7 +239,7 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
-                int coreUserCharacterId = await player.GetCoreUserCharacterId();
+                int coreUserCharacterId = await player.GetCoreUserCharacterIdAsync();
 
                 Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
 
@@ -279,7 +279,7 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
-                int coreUserCharacterId = await player.GetCoreUserCharacterId();
+                int coreUserCharacterId = await player.GetCoreUserCharacterIdAsync();
                 if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
                     if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
@@ -318,7 +318,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void addWeapon(int source, int weapId)
+        private async void AddWeaponAsync(int source, int weapId)
         {
             try
             {
@@ -335,7 +335,7 @@ namespace VorpInventory.Scripts
                 {
                     ItemDatabase.UserWeapons[weapId].setPropietary(identifier);
 
-                    dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                    dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                     if (coreUserCharacter == null)
                     {
                         Logger.Error($"addWeapon: Player '{player.Handle}' CORE User does not exist.");
@@ -355,7 +355,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void subWeapon(int source, int weapId)
+        private async void SubtractWeaponAsync(int source, int weapId)
         {
             try
             {
@@ -372,7 +372,7 @@ namespace VorpInventory.Scripts
                 {
                     ItemDatabase.UserWeapons[weapId].setPropietary("");
 
-                    dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                    dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                     if (coreUserCharacter == null)
                     {
                         Logger.Error($"subWeapon: Player '{player.Handle}' CORE User does not exist.");
@@ -399,7 +399,7 @@ namespace VorpInventory.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 int source = int.Parse(player.Handle);
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                 if (coreUserCharacter == null)
                 {
                     Logger.Error($"onPickup: Player '{player.Handle}' CORE User does not exist.");
@@ -473,7 +473,7 @@ namespace VorpInventory.Scripts
                             if (totalcount <= Config.MaxWeapons)
                             {
                                 int weaponId = Pickups[obj]["weaponid"];
-                                addWeapon(source, Pickups[obj]["weaponid"]);
+                                AddWeaponAsync(source, Pickups[obj]["weaponid"]);
                                 TriggerEvent("syn_weapons:onpickup", Pickups[obj]["weaponid"]);
                                 TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
                                     Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
@@ -567,7 +567,7 @@ namespace VorpInventory.Scripts
         {
             try
             {
-                subWeapon(int.Parse(source.Handle), weaponId);
+                SubtractWeaponAsync(int.Parse(source.Handle), weaponId);
                 source.TriggerEvent("vorpInventory:createPickup", ItemDatabase.UserWeapons[weaponId].getName(), 1, weaponId);
             }
             catch (Exception ex)
@@ -606,8 +606,8 @@ namespace VorpInventory.Scripts
 
                 if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
                 {
-                    subWeapon(int.Parse(player.Handle), weaponId);
-                    addWeapon(int.Parse(targetPlayer.Handle), weaponId);
+                    SubtractWeaponAsync(int.Parse(player.Handle), weaponId);
+                    AddWeaponAsync(int.Parse(targetPlayer.Handle), weaponId);
                     targetPlayer.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
                         ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
                 }
@@ -632,7 +632,7 @@ namespace VorpInventory.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 string targetIdentifier = "steam:" + targetPlayer.Identifiers["steam"];
 
-                int playerCharId = await player.GetCoreUserCharacterId();
+                int playerCharId = await player.GetCoreUserCharacterIdAsync();
 
                 if (playerCharId == -1)
                 {
@@ -640,7 +640,7 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                int targetCharId = await targetPlayer.GetCoreUserCharacterId();
+                int targetCharId = await targetPlayer.GetCoreUserCharacterIdAsync();
 
                 if (targetCharId == -1)
                 {
@@ -769,7 +769,7 @@ namespace VorpInventory.Scripts
             try
             {
                 string identifier = "steam:" + player.Identifiers["steam"];
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
 
                 if (coreUserCharacter == null)
                 {
