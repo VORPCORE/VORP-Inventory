@@ -2,14 +2,14 @@
   "_defaultlang": "language",
   "defaultlang": "en_lang",
 
-  "_openKey": "open inventory",
+  "_comment1": "open inventory",
   "OpenKey": "0xC1989F95",
 
-  "_pickupKey": "to pick up items",
+  "_comment2": "to pick up items",
   "PickupKey": "0xF84FA74F",
 
   "DropOnRespawn": {
-    "_money": "if set to true and you die, it will drop all items to the ground and others can pick up",
+    "_comment3": "if set to true and you die, it will drop all items to the ground and others can pick up",
     "Money": false,
     "Weapons": false,
     "Items": false
@@ -17,11 +17,11 @@
 
   "MaxItemsInInventory": {
     "Weapons": 6,
-    "_items": "this is in the client folder -> client.lua, change there",
+    "_comment4": "this is in the client folder -> client.lua, change there",
     "Items": 200
   },
 
-  "_startItems": "starting items for a new character (refer to items database table)",
+  "_comment5": "starting items for a new character (refer to items database table)",
   "startItems": [
     {
       "consumable_raspberrywater": 2,
@@ -30,7 +30,7 @@
     }
   ],
 
-  "_startWeapons": "starting weapons for a new character (refer to weapon hash names below)",
+  "_comment6": "starting weapons for a new character (refer to weapon hash names below)",
   "startWeapons": [
     {
       "WEAPON_MELEE_KNIFE": [ {} ]
@@ -39,7 +39,7 @@
 
   "Weapons": [
     {
-      "_name": "translate the name, Lasso",
+      "_comment7": "translate the NAME only Dont touch the rest",
       "Name": "Lasso",
       "HashName": "WEAPON_LASSO",
       "WeaponModel": "w_melee_lasso01"
