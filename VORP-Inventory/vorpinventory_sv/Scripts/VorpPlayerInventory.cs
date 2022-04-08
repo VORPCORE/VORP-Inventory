@@ -21,13 +21,13 @@ namespace VorpInventory.Scripts
 
         internal VorpPlayerInventory()
         {
-            EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(OnGetItemsTable);
-            EventHandlers["vorpinventory:getInventory"] += new Action<Player>(OnGetInventory);
-            EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(OnServerGiveItem);
+            EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(OnGetItemsTableAsync);
+            EventHandlers["vorpinventory:getInventory"] += new Action<Player>(OnGetInventoryAsync);
+            EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(OnServerGiveItemAsync);
             EventHandlers["vorpinventory:serverGiveWeapon"] += new Action<Player, int, int>(OnServerGiveWeapon);
-            EventHandlers["vorpinventory:serverDropItem"] += new Action<Player, string, int>(OnServerDropItem);
-            EventHandlers["vorpinventory:serverDropMoney"] += new Action<Player, double>(OnServerDropMoney);
-            EventHandlers["vorpinventory:serverDropAllMoney"] += new Action<Player>(OnServerDropAllMoney);
+            EventHandlers["vorpinventory:serverDropItem"] += new Action<Player, string, int>(OnServerDropItemAsync);
+            EventHandlers["vorpinventory:serverDropMoney"] += new Action<Player, double>(OnServerDropMoneyAsync);
+            EventHandlers["vorpinventory:serverDropAllMoney"] += new Action<Player>(OnServerDropAllMoneyAsync);
             EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player, int>(OnServerDropWeapon);
             EventHandlers["vorpinventory:sharePickupServer"] += new Action<string, int, int, Vector3, int>(OnSharePickupServer);
             EventHandlers["vorpinventory:shareMoneyPickupServer"] += new Action<int, double, Vector3>(OnShareMoneyPickupServer);
@@ -35,10 +35,10 @@ namespace VorpInventory.Scripts
             EventHandlers["vorpinventory:onPickupMoney"] += new Action<Player, int>(OnPickupMoney);
             EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool, bool>(OnUsedWeapon);
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(OnSetWeaponBullets);
-            EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(OnGiveMoneyToPlayer);
+            EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(OnGiveMoneyToPlayerAsync);
         }
 
-        private async void OnServerDropMoney([FromSource] Player player, double amount)
+        private async void OnServerDropMoneyAsync([FromSource] Player player, double amount)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void OnServerDropAllMoney([FromSource] Player player)
+        private async void OnServerDropAllMoneyAsync([FromSource] Player player)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void OnGiveMoneyToPlayer([FromSource] Player player, int target, double amount)
+        private async void OnGiveMoneyToPlayerAsync([FromSource] Player player, int target, double amount)
         {
             try
             {
@@ -182,7 +182,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        public async Task SaveInventoryItemsSupport(string identifier, int coreUserCharacterId)
+        public async Task SaveInventoryItemsSupportAsync(string identifier, int coreUserCharacterId)
         {
             try
             {
@@ -226,7 +226,7 @@ namespace VorpInventory.Scripts
         }
 
         //Sub items for other scripts
-        private async void subItem(int source, string name, int cuantity)
+        private async Task SubItemAsync(int source, string name, int cuantity)
         {
             try
             {
@@ -249,13 +249,13 @@ namespace VorpInventory.Scripts
                     if (cuantity <= itemClass.getCount())
                     {
                         itemClass.Subtract(cuantity);
-                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                        await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                     }
 
                     if (itemClass.getCount() == 0)
                     {
                         userInventory.Remove(name);
-                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                        await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                     }
                 }
             }
@@ -287,7 +287,7 @@ namespace VorpInventory.Scripts
                         if (cuantity > 0)
                         {
                             ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
-                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                            await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                         }
                     }
                     else
@@ -296,7 +296,7 @@ namespace VorpInventory.Scripts
                         {
                             ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
                                 ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
-                            await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                            await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                         }
                     }
                 }
@@ -308,7 +308,7 @@ namespace VorpInventory.Scripts
                     {
                         ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
                             ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
-                        await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                        await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                     }
                 }
             }
@@ -577,11 +577,11 @@ namespace VorpInventory.Scripts
         }
 
         //Items methods
-        private void OnServerDropItem([FromSource] Player source, string itemname, int cuantity)
+        private async void OnServerDropItemAsync([FromSource] Player source, string itemname, int cuantity)
         {
             try
             {
-                subItem(int.Parse(source.Handle), itemname, cuantity);
+                await SubItemAsync(int.Parse(source.Handle), itemname, cuantity);
                 source.TriggerEvent("vorpInventory:createPickup", itemname, cuantity, 1);
             }
             catch (Exception ex)
@@ -617,7 +617,7 @@ namespace VorpInventory.Scripts
                 Logger.Error(ex, $"serverGiveWeapon");
             }
         }
-        private async void OnServerGiveItem([FromSource] Player player, string itemName, int amount, int targetHandle)
+        private async void OnServerGiveItemAsync([FromSource] Player player, string itemName, int amount, int targetHandle)
         {
             try
             {
@@ -720,14 +720,14 @@ namespace VorpInventory.Scripts
                     }
                 }
 
-                await SaveInventoryItemsSupport(targetIdentifier, targetCharId);
+                await SaveInventoryItemsSupportAsync(targetIdentifier, targetCharId);
 
                 item.Subtract(amount);
 
                 if (item.getCount() == 0)
                     userInventory.Remove(itemName);
 
-                await SaveInventoryItemsSupport(identifier, playerCharId);
+                await SaveInventoryItemsSupportAsync(identifier, playerCharId);
 
                 targetPlayer.TriggerEvent("vorpinventory:receiveItem", itemName, amount);
                 player.TriggerEvent("vorpinventory:receiveItem2", itemName, amount);
@@ -743,7 +743,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void OnGetItemsTable([FromSource] Player source)
+        private async void OnGetItemsTableAsync([FromSource] Player source)
         {
             try
             {
@@ -764,7 +764,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void OnGetInventory([FromSource] Player player)
+        private async void OnGetInventoryAsync([FromSource] Player player)
         {
             try
             {
