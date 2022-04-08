@@ -37,6 +37,7 @@ namespace VorpInventory
             Logger.Info($"VORP Inventory Loaded");
         }
 
+        // This needs to become an Export on Core, as an EVENT its just adding more onto the event queue.
         public async static Task<dynamic> GetVorpCoreAsync()
         {
             dynamic _CORE = null;
