@@ -9,34 +9,21 @@ namespace VorpInventory.Extensions
 {
     static class Common
     {
-        public async static Task<dynamic> GetCoreUser(this Player player)
+        public async static Task<dynamic> GetCoreUserAsync(this Player player)
         {
-            if (PluginManager.CORE == null)
-            {
-                Logger.Error($"GetCoreUser: Core API is null");
-                return null;
-            }
-
-            dynamic core = await PluginManager.CORE();
-
+            dynamic core = await PluginManager.GetVorpCoreAsync();
             return core.getUser(int.Parse(player.Handle));
         }
-        public async static Task<dynamic> GetCoreUser(int playerHandle)
+
+        public async static Task<dynamic> GetCoreUserAsync(int playerHandle)
         {
-            if (PluginManager.CORE == null)
-            {
-                Logger.Error($"GetCoreUser: Core API is null");
-                return null;
-            }
-
-            dynamic core = await PluginManager.CORE();
-
+            dynamic core = await PluginManager.GetVorpCoreAsync();
             return core.getUser(playerHandle);
         }
 
-        public async static Task<dynamic> GetCoreUserCharacter(this Player player)
+        public async static Task<dynamic> GetCoreUserCharacterAsync(this Player player)
         {
-            dynamic coreUser = await player.GetCoreUser();
+            dynamic coreUser = await player.GetCoreUserAsync();
             if (coreUser == null)
             {
                 Logger.Warn($"GetCoreUser: Player '{player.Handle}' does not exist.");
@@ -44,9 +31,9 @@ namespace VorpInventory.Extensions
             return coreUser.getUsedCharacter;
         }
 
-        public async static Task<int> GetCoreUserCharacterId(this Player player)
+        public async static Task<int> GetCoreUserCharacterIdAsync(this Player player)
         {
-            dynamic character = await player.GetCoreUserCharacter();
+            dynamic character = await player.GetCoreUserCharacterAsync();
 
             if (character == null)
             {
