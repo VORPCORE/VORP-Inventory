@@ -16,32 +16,40 @@ namespace VorpInventory
 
         private static Config GetConfig()
         {
-            if (_config is not null) return _config;
-
-            string fileContents = LoadResourceFile(GetCurrentResourceName(), "/config.json");
-            _config = JsonConvert.DeserializeObject<Config>(fileContents);
-
-            UpdateControl(true, _config.PickupKey);
-            UpdateControl(false, _config.OpenKey);
-
-            _config.Weapons.ForEach(weapon =>
+            try
             {
-                if (!Weapons.ContainsKey(weapon.HashName))
-                    Weapons.Add(weapon.HashName, weapon);
-            });
+                if (_config is not null) return _config;
 
-            string language = _config.Defaultlanguage;
-            if (string.IsNullOrEmpty(language))
-                language = "en_lang";
+                string fileContents = LoadResourceFile(GetCurrentResourceName(), "/config.json");
+                _config = JsonConvert.DeserializeObject<Config>(fileContents);
 
-            string languageFileContents = LoadResourceFile(GetCurrentResourceName(), $"/languages/{language}.json");
+                UpdateControl(true, _config.PickupKey);
+                UpdateControl(false, _config.OpenKey);
 
-            if (!string.IsNullOrEmpty(languageFileContents))
-            {
-                _language = JsonConvert.DeserializeObject<Dictionary<string, string>>(languageFileContents);
+                _config.Weapons.ForEach(weapon =>
+                {
+                    if (!Weapons.ContainsKey(weapon.HashName))
+                        Weapons.Add(weapon.HashName, weapon);
+                });
+
+                string language = _config.Defaultlanguage;
+                if (string.IsNullOrEmpty(language))
+                    language = "en_lang";
+
+                string languageFileContents = LoadResourceFile(GetCurrentResourceName(), $"/languages/{language}.json");
+
+                if (!string.IsNullOrEmpty(languageFileContents))
+                {
+                    _language = JsonConvert.DeserializeObject<Dictionary<string, string>>(languageFileContents);
+                }
+
+                return _config;
             }
-
-            return _config;
+            catch (Exception ex)
+            {
+                Logger.CriticalError(ex, $"Configuration.GetConfig");
+                return null;
+            }
         }
 
         public static string GetTranslation(string translationKey)

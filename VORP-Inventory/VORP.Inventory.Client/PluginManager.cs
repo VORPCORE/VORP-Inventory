@@ -13,6 +13,7 @@ namespace VorpInventory
 
         public static Scripts.Pickups Pickups = new Scripts.Pickups();
         public static Scripts.NUIEvents NUIEvents = new Scripts.NUIEvents();
+        public static Scripts.InventoryAPI InventoryAPI = new Scripts.InventoryAPI();
 
         public PluginManager()
         {
@@ -22,8 +23,12 @@ namespace VorpInventory
 
             Config config = Configuration.Config;
 
+            // Control the start up order of each script
             NUIEvents.Init();
             Pickups.Init();
+            InventoryAPI.Init();
+
+            Logger.Info($"VORP INVENTORY LOADED");
         }
 
         public void AttachTickHandler(Func<Task> task)

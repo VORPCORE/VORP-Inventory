@@ -43,6 +43,16 @@ namespace VORP.Inventory.Shared.Diagnostics
                 Format($"[ERROR] {msg}");
         }
 
+        /// <summary>
+        /// Critical Error does not check the log_level metadata, this will print directly to the console.
+        /// </summary>
+        /// <param name="ex">Exception</param>
+        /// <param name="msg">Error Message to be displayed, preferably the Method being executed.</param>
+        public static void CriticalError(Exception ex, string msg)
+        {
+            Format($"[CRITICAL_ERROR] {msg}\r\n{ex}");
+        }
+
         public static void Error(Exception ex, string msg)
         {
             if (ShowOutput("error"))
