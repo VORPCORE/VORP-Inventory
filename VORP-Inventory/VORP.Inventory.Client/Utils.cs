@@ -1,8 +1,6 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using VorpInventory.Models;
 
 namespace VorpInventory
 {
