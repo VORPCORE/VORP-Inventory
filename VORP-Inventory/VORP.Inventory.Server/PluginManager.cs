@@ -18,8 +18,8 @@ namespace VorpInventory
         // Database
         public static Database.ItemDatabase ItemsDB = new();
         // private scripts
-        public static VorpCoreInventoryAPI ScriptVorpCoreInventoryApi = new VorpCoreInventoryAPI();
-        public static VorpPlayerInventory ScriptVorpPlayerInventory = new VorpPlayerInventory();
+        public static VorpCoreInventoryAPI ScriptVorpCoreInventoryApi = new();
+        public static VorpPlayerInventory ScriptVorpPlayerInventory = new();
 
         public static Dictionary<string, int> ActiveCharacters = new();
 
@@ -88,8 +88,7 @@ namespace VorpInventory
         {
             await VendorReady(); // wait till ghmattimysql resource has started
 
-            RegisterScript(ItemsDB);
-
+            ItemsDB.Init();
             ScriptVorpCoreInventoryApi.Init();
             ScriptVorpPlayerInventory.Init();
 

@@ -4,10 +4,11 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using VorpInventory.Models;
+using VorpInventory.Scripts;
 
 namespace VorpInventory.Database
 {
-    public class ItemDatabase : BaseScript
+    public class ItemDatabase : Manager
     {
         // List of items with their labels so that the client knows the label of each item
         private dynamic _items;
@@ -28,7 +29,7 @@ namespace VorpInventory.Database
         public static Dictionary<int, WeaponClass> UserWeapons = new Dictionary<int, WeaponClass>();
         public static Dictionary<string, Items> ServerItems = new Dictionary<string, Items>();
 
-        internal ItemDatabase()
+        public void Init()
         {
             SetupItems();
             SetupLoadouts();
