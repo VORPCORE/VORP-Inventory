@@ -44,7 +44,7 @@ namespace VorpInventory.Scripts
             EventHandlers["vorp_inventory:ProcessingReady"] += new Action(setProcessingPayFalse);
 
 
-            EventHandlers["vorp_inventory:CloseInv"] += new Action(CloseInventory);
+            EventHandlers["vorp_inventory:CloseInv"] += new Action(OnCloseInventory);
 
             //HorseModule
             EventHandlers["vorp_inventory:OpenHorseInventory"] += new Action<string, int>(OpenHorseInventory);
@@ -184,13 +184,6 @@ namespace VorpInventory.Scripts
         {
             JObject data = JObject.FromObject(obj);
             TriggerServerEvent("syn_Container:TakeFromContainer", data.ToString());
-        }
-
-        private void CloseInventory()
-        {
-            API.SetNuiFocus(false, false);
-            API.SendNuiMessage("{\"action\": \"hide\"}");
-            InInventory = false;
         }
 
         private void OpenHorseInventory(string horseName, int horseid)
@@ -572,7 +565,7 @@ namespace VorpInventory.Scripts
 
         private void NUIFocusOff(ExpandoObject obj)
         {
-            CloseInv();
+            OnCloseInventory();
             TriggerEvent("vorp_stables:setClosedInv", false);
             TriggerEvent("syn:closeinv");
         }
@@ -580,28 +573,23 @@ namespace VorpInventory.Scripts
         [Tick]
         private async Task OnKey()
         {
-            if (!GetConfig.loaded)
-            {
-                return;
-            }
-
-            if (API.IsControlJustReleased(1, GetConfig.openKey) && API.IsInputDisabled(0))
+            if (API.IsControlJustReleased(1, (uint)Configuration.KEY_OPEN_INVENTORY) && API.IsInputDisabled(0))
             {
                 if (InInventory)
                 {
-                    CloseInv();
+                    OnCloseInventory();
                     await Delay(1000);
                 }
                 else
                 {
-                    OpenInv();
+                    OpenInventory();
                     await Delay(1000);
                 }
             }
 
         }
 
-        public static async Task LoadInv()
+        public static void LoadInv()
         {
             Dictionary<string, dynamic> item;
             Dictionary<string, dynamic> weapon;
@@ -644,7 +632,7 @@ namespace VorpInventory.Scripts
             API.SendNuiMessage(json);
         }
 
-        private async Task OpenInv()
+        private void OpenInventory()
         {
             API.SetNuiFocus(true, true);
 
@@ -654,7 +642,7 @@ namespace VorpInventory.Scripts
             LoadInv();
         }
 
-        private async Task CloseInv()
+        private void OnCloseInventory()
         {
             API.SetNuiFocus(false, false);
             API.SendNuiMessage("{\"action\": \"hide\"}");
