@@ -24,30 +24,30 @@ namespace VorpInventory.Scripts
 
         internal VorpCoreInventoryAPI()
         {
-            EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
-            EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(giveWeapon);
-            EventHandlers["vorpCore:registerWeapon"] += new Action<int, string, ExpandoObject, ExpandoObject>(registerWeapon);
-            EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(addItem);
-            EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(SubtractItem);
-            EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
-            EventHandlers["vorpCore:getUserInventory"] += new Action<int, CallbackDelegate>(getInventory);
-            EventHandlers["vorpCore:canCarryItems"] += new Action<int, int, CallbackDelegate>(canCarryAmountItem);
-            EventHandlers["vorpCore:canCarryItem"] += new Action<int, string, int, CallbackDelegate>(UserCanCarryItem);
-            EventHandlers["vorpCore:canCarryWeapons"] += new Action<int, int, CallbackDelegate>(canCarryAmountWeapons);
-            EventHandlers["vorpCore:subBullets"] += new Action<int, int, string, int>(subBullets);
-            EventHandlers["vorpCore:addBullets"] += new Action<int, int, string, int>(addBullets);
-            EventHandlers["vorpCore:getWeaponComponents"] += new Action<int, CallbackDelegate, int>(getWeaponComponents);
-            EventHandlers["vorpCore:getWeaponBullets"] += new Action<int, CallbackDelegate, int>(getWeaponBullets);
-            EventHandlers["vorpCore:getUserWeapons"] += new Action<int, CallbackDelegate>(getUserWeapons);
-            EventHandlers["vorpCore:addComponent"] += new Action<int, int, string, CallbackDelegate>(addComponent);
-            EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
-            EventHandlers["vorpCore:registerUsableItem"] += new Action<string, CallbackDelegate>(registerUsableItem);
-            EventHandlers["vorp:use"] += new Action<Player, string, object[]>(useItem);
+            EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(OnSubtractWeaponAsync);
+            EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(OnGiveWeaponAsync);
+            EventHandlers["vorpCore:registerWeapon"] += new Action<int, string, ExpandoObject, ExpandoObject>(OnRegisterWeaponAsync);
+            EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(OnAddItemAsync);
+            EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(OnSubtractItemAsync);
+            EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(OnGetItems);
+            EventHandlers["vorpCore:getUserInventory"] += new Action<int, CallbackDelegate>(OnGetInventory);
+            EventHandlers["vorpCore:canCarryItems"] += new Action<int, int, CallbackDelegate>(OnCanCarryAmountItem);
+            EventHandlers["vorpCore:canCarryItem"] += new Action<int, string, int, CallbackDelegate>(OnUserCanCarryItem);
+            EventHandlers["vorpCore:canCarryWeapons"] += new Action<int, int, CallbackDelegate>(OnCanCarryAmountWeaponsAsync);
+            EventHandlers["vorpCore:subBullets"] += new Action<int, int, string, int>(OnSubtractBullets);
+            EventHandlers["vorpCore:addBullets"] += new Action<int, int, string, int>(OnAddBullets);
+            EventHandlers["vorpCore:getWeaponComponents"] += new Action<int, CallbackDelegate, int>(OnGetWeaponComponents);
+            EventHandlers["vorpCore:getWeaponBullets"] += new Action<int, CallbackDelegate, int>(OnGetWeaponBullets);
+            EventHandlers["vorpCore:getUserWeapons"] += new Action<int, CallbackDelegate>(OnGetUserWeaponsAsync);
+            EventHandlers["vorpCore:addComponent"] += new Action<int, int, string, CallbackDelegate>(OnAddComponent);
+            EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(OnGetUserWeapon);
+            EventHandlers["vorpCore:registerUsableItem"] += new Action<string, CallbackDelegate>(OnRegisterUsableItem);
+            EventHandlers["vorp:use"] += new Action<Player, string, object[]>(OnUseItem);
 
-            Exports.Add("CanCarryWeapon", UserCanCarryWeapon);
+            Exports.Add("CanCarryWeapon", ExportUserCanCarryWeaponAsync);
         }
 
-        public async Task<bool> SaveInventoryItemsSupport(string steamIdendifier, int coreCharacterId)
+        public async Task<bool> SaveInventoryItemsSupportAsync(string steamIdendifier, int coreCharacterId)
         {
             Dictionary<string, int> items = new Dictionary<string, int>();
             string json = "{}";
@@ -88,11 +88,11 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void canCarryAmountWeapons(int source, int quantity, CallbackDelegate cb)
+        private async void OnCanCarryAmountWeaponsAsync(int source, int quantity, CallbackDelegate cb)
         {
             try
             {
-                bool result = await UserCanCarryWeapon(source, quantity);
+                bool result = await ExportUserCanCarryWeaponAsync(source, quantity);
                 cb.Invoke(result);
             }
             catch (Exception ex)
@@ -101,7 +101,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async Task<bool> UserCanCarryWeapon(int playerServerId, int quantity)
+        private async Task<bool> ExportUserCanCarryWeaponAsync(int playerServerId, int quantity)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace VorpInventory.Scripts
 
                 string identifier = "steam:" + player.Identifiers["steam"];
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                 if (coreUserCharacter == null) return false;
 
                 int charIdentifier = coreUserCharacter.charIdentifier;
@@ -143,7 +143,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void canCarryAmountItem(int source, int quantity, CallbackDelegate cb)
+        private void OnCanCarryAmountItem(int source, int quantity, CallbackDelegate cb)
         {
             try
             {
@@ -186,7 +186,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void UserCanCarryItem(int source, string itemName, int amountToCarry, CallbackDelegate cb)
+        private void OnUserCanCarryItem(int source, string itemName, int amountToCarry, CallbackDelegate cb)
         {
             try
             {
@@ -267,7 +267,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void getInventory(int source, CallbackDelegate cb)
+        private void OnGetInventory(int source, CallbackDelegate cb)
         {
             List<object> useritems = new List<object>();
             try
@@ -326,7 +326,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void useItem([FromSource] Player source, string itemName, params object[] args)
+        private void OnUseItem([FromSource] Player source, string itemName, params object[] args)
         {
             try
             {
@@ -357,13 +357,13 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void registerUsableItem(string name, CallbackDelegate cb)
+        private void OnRegisterUsableItem(string name, CallbackDelegate cb)
         {
             usableItemsFunctions[name] = cb;
             Logger.Info($"{API.GetCurrentResourceName()}: Function callback of usable item: {name} registered!");
         }
 
-        private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
+        private void SubtractComponent(int player, int weaponId, string component, CallbackDelegate function)
         {
             try
             {
@@ -401,7 +401,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void addComponent(int player, int weaponId, string component, CallbackDelegate function)
+        private void OnAddComponent(int player, int weaponId, string component, CallbackDelegate function)
         {
             try
             {
@@ -440,7 +440,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void getUserWeapon(int player, CallbackDelegate function, int weapId)
+        private void OnGetUserWeapon(int player, CallbackDelegate function, int weapId)
         {
             try
             {
@@ -477,7 +477,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void getUserWeapons(int source, CallbackDelegate function)
+        private async void OnGetUserWeaponsAsync(int source, CallbackDelegate function)
         {
             try
             {
@@ -492,7 +492,7 @@ namespace VorpInventory.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 int charIdentifier;
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                 if (coreUserCharacter == null)
                 {
                     Logger.Error($"getUserWeapons: Player '{source}' CORE User does not exist.");
@@ -532,7 +532,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void getWeaponBullets(int player, CallbackDelegate function, int weaponId)
+        private void OnGetWeaponBullets(int player, CallbackDelegate function, int weaponId)
         {
             try
             {
@@ -560,7 +560,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void getWeaponComponents(int player, CallbackDelegate function, int weaponId)
+        private void OnGetWeaponComponents(int player, CallbackDelegate function, int weaponId)
         {
             try
             {
@@ -588,7 +588,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void addBullets(int player, int weaponId, string bulletType, int cuantity)
+        private void OnAddBullets(int player, int weaponId, string bulletType, int cuantity)
         {
             try
             {
@@ -621,7 +621,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void subBullets(int player, int weaponId, string bulletType, int cuantity)
+        private void OnSubtractBullets(int player, int weaponId, string bulletType, int cuantity)
         {
             try
             {
@@ -654,7 +654,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void getItems(int source, CallbackDelegate funcion, string item)
+        private void OnGetItems(int source, CallbackDelegate funcion, string item)
         {
             try
             {
@@ -695,7 +695,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void addItem(int source, string name, int cuantity)
+        private async void OnAddItemAsync(int source, string name, int cuantity)
         {
             try
             {
@@ -715,7 +715,7 @@ namespace VorpInventory.Scripts
 
                 bool added = false;
                 string identifier = "steam:" + player.Identifiers["steam"];
-                int coreUserCharacterId = player.GetCoreUserCharacterId();
+                int coreUserCharacterId = await player.GetCoreUserCharacterIdAsync();
 
                 if (!ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
@@ -827,7 +827,7 @@ namespace VorpInventory.Scripts
                         bool usable = ItemDatabase.UserInventory[identifier][name].getUsable();
                         bool canRemove = ItemDatabase.UserInventory[identifier][name].getCanRemove();
                         player.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
-                        bool result = await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                        bool result = await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                         if (!result)
                         {
                             StringBuilder sb = new StringBuilder();
@@ -852,7 +852,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void SubtractItem(int source, string itemName, int quantity)
+        private async void OnSubtractItemAsync(int source, string itemName, int quantity)
         {
             try
             {
@@ -871,7 +871,7 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
-                int coreUserCharacterId = player.GetCoreUserCharacterId();
+                int coreUserCharacterId = await player.GetCoreUserCharacterIdAsync();
 
                 Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
                 if (userInventory == null)
@@ -896,7 +896,7 @@ namespace VorpInventory.Scripts
                     }
 
                     player.TriggerEvent("vorpCoreClient:subItem", itemName, itemCount);
-                    bool result = await SaveInventoryItemsSupport(identifier, coreUserCharacterId);
+                    bool result = await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                     if (!result)
                     {
                         StringBuilder sb = new StringBuilder();
@@ -916,7 +916,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void registerWeapon(int target, string hashName, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
+        private async void OnRegisterWeaponAsync(int target, string hashName, ExpandoObject ammos, ExpandoObject components)//Needs dirt level
         {
             try
             {
@@ -945,7 +945,7 @@ namespace VorpInventory.Scripts
 
                 string identifier;
 
-                dynamic coreUserCharacter = targetPlayer.GetCoreUserCharacter();
+                dynamic coreUserCharacter = await targetPlayer.GetCoreUserCharacterAsync();
                 if (coreUserCharacter == null)
                 {
                     Logger.Error($"registerWeapon: Player '{target}' CORE User does not exist.");
@@ -1009,7 +1009,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void giveWeapon(int source, int weapId, int target)
+        private async void OnGiveWeaponAsync(int source, int weapId, int target)
         {
             try
             {
@@ -1044,7 +1044,7 @@ namespace VorpInventory.Scripts
 
                 string identifier = "steam:" + player.Identifiers["steam"];
 
-                dynamic coreUserCharacter = player.GetCoreUserCharacter();
+                dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                 if (coreUserCharacter == null)
                 {
                     Logger.Error($"giveWeapon: Player '{source}' CORE User does not exist.");
@@ -1086,7 +1086,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void subWeapon(int source, int weapId)
+        private async void OnSubtractWeaponAsync(int source, int weapId)
         {
             try
             {
@@ -1098,7 +1098,7 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                dynamic charIdentifier = player.GetCoreUserCharacterId();
+                dynamic charIdentifier = await player.GetCoreUserCharacterIdAsync();
 
                 if (charIdentifier == -1)
                 {
