@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Threading.Tasks;
+using VORP.Inventory.Shared;
 using VorpInventory.Models;
 
 namespace VorpInventory.Scripts

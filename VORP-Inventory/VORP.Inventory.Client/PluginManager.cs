@@ -4,6 +4,7 @@ using CitizenFX.Core;
 using System;
 using System.Threading.Tasks;
 using VORP.Inventory.Shared;
+using VORP.Inventory.Shared.Models;
 
 namespace VorpInventory
 {

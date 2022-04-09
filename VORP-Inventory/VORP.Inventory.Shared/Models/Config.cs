@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace VORP.Inventory.Shared
+namespace VORP.Inventory.Shared.Models
 {
     [DataContract]
     public class DropOnRespawn
