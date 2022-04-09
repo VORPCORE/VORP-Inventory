@@ -17,7 +17,7 @@
 
   "MaxItemsInInventory": {
     "Weapons": 6,
-    "_comment4": "this is in the client folder -> client.lua, change there",
+    "comment4": "this is in the client folder -> client.lua, change there",
     "Items": 200
   },
 
