@@ -1,6 +1,7 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace VorpInventory
 {
@@ -94,6 +95,24 @@ namespace VorpInventory
             }
 
             return closestPlayers;
+        }
+
+        // This should be replaced with prompts, solution requires designing.
+        public static async Task DrawText3DAsync(Vector3 position, string text)
+        {
+            float _x = 0.0F;
+            float _y = 0.0F;
+            //Debug.WriteLine(position.X.ToString());
+            API.GetScreenCoordFromWorldCoord(position.X, position.Y, position.Z, ref _x, ref _y);
+            API.SetTextScale(0.35F, 0.35F);
+            API.SetTextFontForCurrentCommand(1);
+            API.SetTextColor(255, 255, 255, 215);
+            long str = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", text);
+            Function.Call((Hash)0xBE5261939FBECB8C, 1);
+            Function.Call((Hash)0xD79334A4BB99BAD1, str, _x, _y);
+            float factor = text.Length / 150.0F;
+            Function.Call((Hash)0xC9884ECADE94CB34, "generic_textures", "hud_menu_4a", _x, _y + 0.0125F, 0.015F + factor,
+                0.03F, 0.1F, 100, 1, 1, 190, 0);
         }
 
     }

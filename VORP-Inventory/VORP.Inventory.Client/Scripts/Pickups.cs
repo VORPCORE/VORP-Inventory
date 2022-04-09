@@ -114,13 +114,13 @@ namespace VorpInventory.Scripts
                         {
                             name = PluginManager.citems[name]["label"];
                         }
-                        Utils.DrawText3D(pick.Value["coords"], name);
+                        Utils.DrawText3DAsync(pick.Value["coords"], name);
                     }
                     else
                     {
                         string name = Function.Call<string>((Hash)0x89CF5FF3D363311E,
                             (uint)API.GetHashKey(pick.Value["name"]));
-                        Utils.DrawText3D(pick.Value["coords"], name);
+                        Utils.DrawText3DAsync(pick.Value["coords"], name);
                     }
                 }
 
@@ -175,7 +175,7 @@ namespace VorpInventory.Scripts
                 if (distance <= 5.0F)
                 {
                     string name = pick.Value["name"];
-                    Utils.DrawText3D(pick.Value["coords"], name);
+                    Utils.DrawText3DAsync(pick.Value["coords"], name);
                 }
 
                 if (distance <= 1.2F && !pick.Value["inRange"])
