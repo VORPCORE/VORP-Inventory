@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VORP.Inventory.Shared;
-using VorpInventory.Models;
+using VORP.Inventory.Client.Models;
 
-namespace VorpInventory.Scripts
+namespace VORP.Inventory.Client.Scripts
 {
     public class Pickups : Manager
     {

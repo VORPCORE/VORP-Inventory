@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Linq;
 using VORP.Inventory.Shared;
 
-namespace VorpInventory.Interface
+namespace VORP.Inventory.Client.Interface
 {
     public class NuiManager
     {

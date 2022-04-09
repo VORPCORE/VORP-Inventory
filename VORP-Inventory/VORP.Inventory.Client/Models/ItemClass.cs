@@ -1,4 +1,4 @@
-﻿namespace VorpInventory.Models
+﻿namespace VORP.Inventory.Client.Models
 {
     public class ItemClass
     {

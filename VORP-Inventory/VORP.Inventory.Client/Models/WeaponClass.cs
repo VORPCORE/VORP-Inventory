@@ -3,7 +3,7 @@ using CitizenFX.Core.Native;
 using System.Collections.Generic;
 using VORP.Inventory.Shared;
 
-namespace VorpInventory.Models
+namespace VORP.Inventory.Client.Models
 {
     public class WeaponClass : BaseScript
     {

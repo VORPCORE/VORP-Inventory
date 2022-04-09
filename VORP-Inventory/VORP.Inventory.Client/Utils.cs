@@ -2,9 +2,9 @@
 using CitizenFX.Core.Native;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VorpInventory.Scripts;
+using VORP.Inventory.Client.Scripts;
 
-namespace VorpInventory
+namespace VORP.Inventory.Client
 {
     public class Utils
     {

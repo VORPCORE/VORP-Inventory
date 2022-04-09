@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Shared.Models;
 
-namespace VorpInventory
+namespace VORP.Inventory.Client
 {
     public class PluginManager : BaseScript
     {

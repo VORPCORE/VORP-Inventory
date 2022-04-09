@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
-using VorpInventory.Models;
+using VORP.Inventory.Client.Models;
 
-namespace VorpInventory.Scripts
+namespace VORP.Inventory.Client.Scripts
 {
     public class InventoryAPI : Manager
     {
