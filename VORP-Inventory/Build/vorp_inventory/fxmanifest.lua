@@ -10,4 +10,4 @@ server_scripts {'config.lua', 'vorpinventory_sv.net.dll', 'vorpInventoryAPI.lua'
 
 server_exports {'vorp_inventoryApi'}
 
-files {'Newtonsoft.Json.dll', 'html/**/*', 'config.json'}
+files {'Newtonsoft.Json.dll', 'html/**/*', 'config.json', 'languages/**/*'}
