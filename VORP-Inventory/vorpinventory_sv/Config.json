@@ -977,7 +977,7 @@
     },
     {
       "Name": "Binoculars",
-      "HashName": "WEAPON_kIT_BINOCULARS",
+      "HashName": "WEAPON_KIT_BINOCULARS",
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
@@ -987,7 +987,7 @@
     },
     {
       "Name": "Advanced Camera",
-      "HashName": "WEAPON_kIT_CAMERA_ADVANCED",
+      "HashName": "WEAPON_KIT_CAMERA_ADVANCED",
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
