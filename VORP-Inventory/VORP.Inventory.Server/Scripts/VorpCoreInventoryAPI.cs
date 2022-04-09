@@ -344,11 +344,11 @@ namespace VorpInventory.Scripts
                 }
 
                 Dictionary<string, object> argumentos = new()
-                    {
-                        {"source", int.Parse(source.Handle)},
-                        {"item", ItemDatabase.ServerItems[itemName].getItemDictionary()},
-                        {"args",args}
-                    };
+                {
+                    { "source", int.Parse(source.Handle) },
+                    { "item", ItemDatabase.ServerItems[itemName].getItemDictionary() },
+                    { "args", args }
+                };
                 usableItemsFunctions[itemName](argumentos);
             }
             catch (Exception ex)

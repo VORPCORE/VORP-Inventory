@@ -679,7 +679,7 @@ namespace VorpInventory.Scripts
                 int targetTotalCountOfItems = VorpCoreInventoryAPI.GetTotalAmountOfItems(targetIdentifier);
 
                 bool canGiveItemToTarget = true;
-                
+
                 ItemClass targetItem = null;
                 if (targetInventory.ContainsKey(itemName))
                 {
@@ -848,17 +848,17 @@ namespace VorpInventory.Scripts
                             ItemDatabase.UserWeapons[wp.getId()] = wp;
                         }
 
-                    // is there something wrong with returning an empty list?
-                    player.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
+                        // is there something wrong with returning an empty list?
+                        player.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
                     }
 
                 }));
             }
-            catch(NullReferenceException nEX)
+            catch (NullReferenceException nEX)
             {
                 Logger.Error(nEX, $"getInventory: Player dropped or connecting?");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Error(ex, $"getInventory");
             }

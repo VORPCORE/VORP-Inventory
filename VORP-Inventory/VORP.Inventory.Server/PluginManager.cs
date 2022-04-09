@@ -120,7 +120,7 @@ namespace VorpInventory
                         Database.ItemDatabase.UserInventory.Remove(steamIdent);
 
                     if (ActiveCharacters.ContainsKey(player.Handle))
-                            ActiveCharacters.Remove(player.Handle);
+                        ActiveCharacters.Remove(player.Handle);
                 }
                 catch (Exception ex)
                 {
@@ -138,7 +138,7 @@ namespace VorpInventory
             EventRegistry.Add("onResourceStop", new Action<string>(resourceName =>
             {
                 if (resourceName != GetCurrentResourceName()) return;
-                
+
                 Logger.Info($"Stopping VORP Inventory");
 
                 UnregisterScript(ItemsDB);

@@ -14,7 +14,8 @@ namespace VorpInventory.Database
         private dynamic _items;
         public dynamic items // hack till refactor can be complete; items is being cleared by the garbage collector
         {
-            get {
+            get
+            {
                 if (_items == null)
                     SetupItems();
 

@@ -19,7 +19,7 @@ namespace VorpInventory.Scripts
         private static string _ConfigString;
         private static JObject _configJObject = new JObject();
         private readonly static string _resourcePath = $"{API.GetResourcePath(API.GetCurrentResourceName())}";
-        
+
         public static int MaxItems = 0;
         public static int MaxWeapons = 0;
         public static Dictionary<string, string> Lang = new Dictionary<string, string>();
