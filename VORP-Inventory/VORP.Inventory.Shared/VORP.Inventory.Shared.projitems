@@ -11,5 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\Logger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GeneralExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TypeCache.cs" />
   </ItemGroup>
 </Project>

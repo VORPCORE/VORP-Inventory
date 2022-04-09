@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Interface\NuiManager.cs" />
     <Compile Include="Scripts\InventoryAPI.cs" />
     <Compile Include="Models\ItemClass.cs" />
     <Compile Include="Models\Weapon.cs" />
