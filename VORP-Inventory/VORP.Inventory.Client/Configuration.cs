@@ -26,6 +26,12 @@ namespace VorpInventory
             UpdateControl(true, _config.PickupKey);
             UpdateControl(false, _config.OpenKey);
 
+            _config.Weapons.ForEach(weapon =>
+            {
+                if (!Weapons.ContainsKey(weapon.HashName))
+                    Weapons.Add(weapon.HashName, weapon);
+            });
+
             string language = _config.Defaultlanguage;
             if (string.IsNullOrEmpty(language))
                 language = "en_lang";
