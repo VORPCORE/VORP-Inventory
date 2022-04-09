@@ -19,11 +19,32 @@ namespace VORP.Inventory.Shared.Models
     [DataContract]
     public class MaxItemsInInventory
     {
+        private int _weapons;
+        private int _items;
+
         [DataMember(Name = "weapons")]
-        public int Weapons { get; set; }
+        public int Weapons
+        {
+            get => _weapons;
+            set
+            {
+                if (value < 0)
+                    value = 0;
+                _items = value;
+            }
+        }
 
         [DataMember(Name = "items")]
-        public int Items { get; set; }
+        public int Items
+        {
+            get => _items;
+            set
+            {
+                if (value < 0)
+                    value = 0;
+                _items = value;
+            }
+        }
     }
 
     [DataContract]

@@ -3,8 +3,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VORP.Inventory.Shared;
+using VORP.Inventory.Shared.Models;
 using VorpInventory.Database;
 using VorpInventory.Extensions;
 using VorpInventory.Models;
@@ -35,6 +38,62 @@ namespace VorpInventory.Scripts
             EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool, bool>(OnUsedWeapon);
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(OnSetWeaponBullets);
             EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(OnGiveMoneyToPlayerAsync);
+            EventHandlers["vorp_NewCharacter"] += new Action<int>(OnNewCharacter);
+        }
+
+        private async void OnNewCharacter(int playerId)
+        {
+            await Delay(5000);
+
+            Player player = PlayerList[playerId];
+            if (player == null)
+            {
+                Logger.Error($"Player '{playerId}' was not found.");
+                return;
+            }
+
+            string identifier = "steam:" + player.Identifiers["steam"];
+
+            // Attempt to add all starter items/weapons from the Config.json
+            try
+            {
+                Dictionary<string, int> startItems = Configuration.Config.StartItems;
+
+                foreach (KeyValuePair<string, int> item in startItems)
+                {
+                    TriggerEvent("vorpCore:addItem", playerId, item.Key, item.Value);
+                }
+
+                Dictionary<string, Dictionary<string, int>> startWeapons = Configuration.Config.StartWeapons;
+
+                foreach (KeyValuePair<string, Dictionary<string, int>> weaponData in startWeapons)
+                {
+                    List<string> auxiliaryBullets = new List<string>();
+                    Dictionary<string, int> receivedBullets = new Dictionary<string, int>();
+
+                    Weapon weapon = Configuration.Config.Weapons.FirstOrDefault(x => x.HashName == weaponData.Key);
+
+                    Dictionary<string, int> ammoHash = weapon.AmmoHash;
+                    foreach (KeyValuePair<string, int> bullets in ammoHash)
+                    {
+                        auxiliaryBullets.Add(bullets.Key);
+                    }
+
+                    foreach (KeyValuePair<string, int> bullet in weaponData.Value)
+                    {
+                        if (auxiliaryBullets.Contains(bullet.Key))
+                        {
+                            receivedBullets.Add(bullet.Key, int.Parse(bullet.Value.ToString()));
+                        }
+                    }
+
+                    TriggerEvent("vorpCore:registerWeapon", playerId, (object)weaponData.Key, receivedBullets);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"OnNewCharacter: {ex.Message}");
+            }
         }
 
         private async void OnServerDropMoneyAsync([FromSource] Player player, double amount)
@@ -431,11 +490,11 @@ namespace VorpInventory.Scripts
 
                             }
 
-                            if (Config.MaxItems != 0)
+                            if (Configuration.INVENTORY_MAX_ITEMS != 0)
                             {
                                 int totalcount = VorpCoreInventoryAPI.GetTotalAmountOfItems(identifier);
                                 totalcount += Pickups[obj]["amount"];
-                                if (totalcount <= Config.MaxItems)
+                                if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                 {
                                     addItem(source, Pickups[obj]["name"], Pickups[obj]["amount"]);
                                     TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
@@ -465,11 +524,11 @@ namespace VorpInventory.Scripts
                     }
                     else
                     {
-                        if (Config.MaxWeapons != 0)
+                        if (Configuration.INVENTORY_MAX_WEAPONS != 0)
                         {
                             int totalcount = VorpCoreInventoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
                             totalcount += 1;
-                            if (totalcount <= Config.MaxWeapons)
+                            if (totalcount <= Configuration.INVENTORY_MAX_WEAPONS)
                             {
                                 int weaponId = Pickups[obj]["weaponid"];
                                 AddWeaponAsync(source, Pickups[obj]["weaponid"]);
@@ -691,7 +750,7 @@ namespace VorpInventory.Scripts
                 }
 
                 int newTotalAmount = targetTotalCountOfItems + amount;
-                if (newTotalAmount > Config.MaxItems)
+                if (newTotalAmount > Configuration.INVENTORY_MAX_ITEMS)
                     canGiveItemToTarget = false;
 
                 if (!canGiveItemToTarget)

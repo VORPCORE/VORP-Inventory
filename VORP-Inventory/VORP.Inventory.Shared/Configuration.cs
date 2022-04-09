@@ -11,8 +11,15 @@ namespace VORP.Inventory.Shared
         private static Dictionary<string, string> _language = new();
         public static Dictionary<string, Weapon> Weapons = new();
 
+#if CLIENT
         public static long KEY_OPEN_INVENTORY = 0xC1989F95;
         public static long KEY_PICKUP_ITEM = 0xF84FA74F;
+#endif
+
+#if SERVER
+        public static int INVENTORY_MAX_ITEMS = 0;
+        public static int INVENTORY_MAX_WEAPONS = 0;
+#endif
 
         private static Config GetConfig()
         {
@@ -23,8 +30,15 @@ namespace VORP.Inventory.Shared
                 string fileContents = LoadResourceFile(GetCurrentResourceName(), "/config.json");
                 _config = JsonConvert.DeserializeObject<Config>(fileContents);
 
+#if CLIENT
                 UpdateControl(true, _config.PickupKey);
                 UpdateControl(false, _config.OpenKey);
+#endif
+
+#if SERVER
+                INVENTORY_MAX_ITEMS = _config.MaxItemsInInventory.Items;
+                INVENTORY_MAX_WEAPONS = _config.MaxItemsInInventory.Weapons;
+#endif
 
                 _config.Weapons.ForEach(weapon =>
                 {
@@ -81,6 +95,7 @@ namespace VORP.Inventory.Shared
             }
         }
 
+#if CLIENT
         private static void UpdateControl(bool isPickupKey, string keyHex)
         {
             long keyValue = FromHex(keyHex);
@@ -92,5 +107,7 @@ namespace VORP.Inventory.Shared
                     KEY_OPEN_INVENTORY = keyValue;
             }
         }
+
+#endif
     }
 }

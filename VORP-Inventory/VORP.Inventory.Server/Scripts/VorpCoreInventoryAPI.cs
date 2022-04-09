@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Text;
 using System.Threading.Tasks;
+using VORP.Inventory.Shared;
 using VorpInventory.Database;
 using VorpInventory.Extensions;
 using VorpInventory.Models;
@@ -118,9 +119,9 @@ namespace VorpInventory.Scripts
 
                 int charIdentifier = coreUserCharacter.charIdentifier;
                 int totalcount = getUserTotalCountWeapons(identifier, charIdentifier) + quantity;
-                if (Config.MaxWeapons != -1)
+                if (Configuration.INVENTORY_MAX_WEAPONS != -1)
                 {
-                    if (totalcount <= Config.MaxWeapons)
+                    if (totalcount <= Configuration.INVENTORY_MAX_WEAPONS)
                     {
                         return true;
                     }
@@ -154,10 +155,10 @@ namespace VorpInventory.Scripts
                 }
 
                 string identifier = "steam:" + player.Identifiers["steam"];
-                if (ItemDatabase.UserInventory.ContainsKey(identifier) && Config.MaxItems != -1)
+                if (ItemDatabase.UserInventory.ContainsKey(identifier) && Configuration.INVENTORY_MAX_ITEMS != -1)
                 {
                     int totalcount = GetTotalAmountOfItems(identifier) + quantity;
-                    if (totalcount <= Config.MaxItems)
+                    if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                     {
                         cb.Invoke(true);
                         return;
@@ -208,7 +209,7 @@ namespace VorpInventory.Scripts
                 int maxLimitItem = item.getLimit();
                 Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
 
-                int maxLimitConfig = Config.MaxItems;
+                int maxLimitConfig = Configuration.INVENTORY_MAX_ITEMS;
                 int newTotalAmountOfCurrentItems = GetTotalAmountOfItems(identifier) + amountToCarry;
 
                 bool result = false;
@@ -729,11 +730,11 @@ namespace VorpInventory.Scripts
                         {
                             if (cuantity > 0)
                             {
-                                if (Config.MaxItems != 0)
+                                if (Configuration.INVENTORY_MAX_ITEMS != 0)
                                 {
                                     int totalcount = GetTotalAmountOfItems(identifier);
                                     totalcount += cuantity;
-                                    if (totalcount <= Config.MaxItems)
+                                    if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                     {
                                         added = true;
                                         ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
@@ -750,11 +751,11 @@ namespace VorpInventory.Scripts
                         {
                             if (cuantity > 0)
                             {
-                                if (Config.MaxItems != 0)
+                                if (Configuration.INVENTORY_MAX_ITEMS != 0)
                                 {
                                     int totalcount = GetTotalAmountOfItems(identifier);
                                     totalcount += cuantity;
-                                    if (totalcount <= Config.MaxItems)
+                                    if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                     {
                                         added = true;
                                         ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
@@ -774,11 +775,11 @@ namespace VorpInventory.Scripts
                         {
                             added = true;
 
-                            if (Config.MaxItems != 0)
+                            if (Configuration.INVENTORY_MAX_ITEMS != 0)
                             {
                                 int totalcount = GetTotalAmountOfItems(identifier);
                                 totalcount += cuantity;
-                                if (totalcount <= Config.MaxItems)
+                                if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                 {
                                     added = true;
                                     ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
@@ -796,11 +797,11 @@ namespace VorpInventory.Scripts
                         }
                         else if (ItemDatabase.ServerItems[name].getLimit() == -1)
                         {
-                            if (Config.MaxItems != 0)
+                            if (Configuration.INVENTORY_MAX_ITEMS != 0)
                             {
                                 int totalcount = GetTotalAmountOfItems(identifier);
                                 totalcount += cuantity;
-                                if (totalcount <= Config.MaxItems)
+                                if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                 {
                                     added = true;
                                     ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
@@ -954,11 +955,11 @@ namespace VorpInventory.Scripts
                 if (targetIsPlayer)
                 {
                     identifier = "steam:" + targetPlayer.Identifiers["steam"];
-                    if (Config.MaxWeapons != 0)
+                    if (Configuration.INVENTORY_MAX_WEAPONS != 0)
                     {
                         int totalcount = getUserTotalCountWeapons(identifier, charIdentifier);
                         totalcount += 1;
-                        if (totalcount > Config.MaxWeapons)
+                        if (totalcount > Configuration.INVENTORY_MAX_WEAPONS)
                         {
                             Debug.WriteLine($"{targetPlayer.Name} Can't carry more weapons");
                             return;
@@ -1051,11 +1052,11 @@ namespace VorpInventory.Scripts
 
                 int charIdentifier = coreUserCharacter.charIdentifier;
 
-                if (Config.MaxWeapons != 0)
+                if (Configuration.INVENTORY_MAX_WEAPONS != 0)
                 {
                     int totalcount = getUserTotalCountWeapons(identifier, charIdentifier);
                     totalcount += 1;
-                    if (totalcount > Config.MaxWeapons)
+                    if (totalcount > Configuration.INVENTORY_MAX_WEAPONS)
                     {
                         Debug.WriteLine($"{player.Name} Can't carry more weapons");
                         return;
