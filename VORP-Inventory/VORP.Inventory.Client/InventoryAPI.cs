@@ -19,17 +19,17 @@ namespace VorpInventory
 
         private void subComponent(int weaponId, string component)
         {
-            if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
+            if (PluginManager.userWeapons.ContainsKey(weaponId))
             {
-                if (!vorp_inventoryClient.userWeapons[weaponId].getAllComponents().Contains(component))
+                if (!PluginManager.userWeapons[weaponId].getAllComponents().Contains(component))
                 {
-                    vorp_inventoryClient.userWeapons[weaponId].quitComponent(component);
-                    if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
+                    PluginManager.userWeapons[weaponId].quitComponent(component);
+                    if (PluginManager.userWeapons[weaponId].getUsed())
                     {
                         Function.Call((Hash)0x4899CB088EDF59B8, API.PlayerPedId(),
-                            (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()), true, 0);
-                        vorp_inventoryClient.userWeapons[weaponId].loadAmmo();
-                        vorp_inventoryClient.userWeapons[weaponId].loadComponents();
+                            (uint)API.GetHashKey(PluginManager.userWeapons[weaponId].getName()), true, 0);
+                        PluginManager.userWeapons[weaponId].loadAmmo();
+                        PluginManager.userWeapons[weaponId].loadComponents();
                     }
                 }
             }
@@ -37,17 +37,17 @@ namespace VorpInventory
 
         private void addComponent(int weaponId, string component)
         {
-            if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
+            if (PluginManager.userWeapons.ContainsKey(weaponId))
             {
-                if (!vorp_inventoryClient.userWeapons[weaponId].getAllComponents().Contains(component))
+                if (!PluginManager.userWeapons[weaponId].getAllComponents().Contains(component))
                 {
-                    vorp_inventoryClient.userWeapons[weaponId].setComponent(component);
-                    if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
+                    PluginManager.userWeapons[weaponId].setComponent(component);
+                    if (PluginManager.userWeapons[weaponId].getUsed())
                     {
                         Function.Call((Hash)0x4899CB088EDF59B8, API.PlayerPedId(),
-                            (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()), true, 0);
-                        vorp_inventoryClient.userWeapons[weaponId].loadAmmo();
-                        vorp_inventoryClient.userWeapons[weaponId].loadComponents();
+                            (uint)API.GetHashKey(PluginManager.userWeapons[weaponId].getName()), true, 0);
+                        PluginManager.userWeapons[weaponId].loadAmmo();
+                        PluginManager.userWeapons[weaponId].loadComponents();
                     }
                 }
             }
@@ -55,12 +55,12 @@ namespace VorpInventory
 
         private void subWeaponBullets(int weaponId, string bulletType, int cuantity)
         {
-            if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
+            if (PluginManager.userWeapons.ContainsKey(weaponId))
             {
-                vorp_inventoryClient.userWeapons[weaponId].subAmmo(cuantity, bulletType);
-                if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
+                PluginManager.userWeapons[weaponId].subAmmo(cuantity, bulletType);
+                if (PluginManager.userWeapons[weaponId].getUsed())
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), vorp_inventoryClient.userWeapons[weaponId].getAmmo(bulletType));
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), PluginManager.userWeapons[weaponId].getAmmo(bulletType));
                 }
             }
             NUIEvents.LoadInv();
@@ -68,12 +68,12 @@ namespace VorpInventory
 
         private void addWeaponBullets(int weaponId, string bulletType, int cuantity)
         {
-            if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
+            if (PluginManager.userWeapons.ContainsKey(weaponId))
             {
-                vorp_inventoryClient.userWeapons[weaponId].addAmmo(cuantity, bulletType);
-                if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
+                PluginManager.userWeapons[weaponId].addAmmo(cuantity, bulletType);
+                if (PluginManager.userWeapons[weaponId].getUsed())
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), vorp_inventoryClient.userWeapons[weaponId].getAmmo(bulletType));
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), PluginManager.userWeapons[weaponId].getAmmo(bulletType));
                 }
             }
             NUIEvents.LoadInv();
@@ -82,15 +82,15 @@ namespace VorpInventory
 
         private void subWeapon(int weaponId)
         {
-            if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
+            if (PluginManager.userWeapons.ContainsKey(weaponId))
             {
-                if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
+                if (PluginManager.userWeapons[weaponId].getUsed())
                 {
                     API.RemoveWeaponFromPed(API.PlayerPedId(),
-                        (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()),
+                        (uint)API.GetHashKey(PluginManager.userWeapons[weaponId].getName()),
                         true, 0); //Falta revisar que pasa con esto
                 }
-                vorp_inventoryClient.userWeapons.Remove(weaponId);
+                PluginManager.userWeapons.Remove(weaponId);
             }
             NUIEvents.LoadInv();
         }
@@ -98,12 +98,12 @@ namespace VorpInventory
         private void subItem(string name, int cuantity)
         {
             Debug.WriteLine($"{name} = {cuantity}");
-            if (vorp_inventoryClient.useritems.ContainsKey(name))
+            if (PluginManager.useritems.ContainsKey(name))
             {
-                vorp_inventoryClient.useritems[name].setCount(cuantity);
-                if (vorp_inventoryClient.useritems[name].getCount() == 0)
+                PluginManager.useritems[name].setCount(cuantity);
+                if (PluginManager.useritems[name].getCount() == 0)
                 {
-                    vorp_inventoryClient.useritems.Remove(name);
+                    PluginManager.useritems.Remove(name);
                 }
             }
             NUIEvents.LoadInv();
@@ -111,14 +111,14 @@ namespace VorpInventory
 
         private void addItem(int count, int limit, string label, string name, string type, bool usable, bool canRemove)
         {
-            if (vorp_inventoryClient.useritems.ContainsKey(name))
+            if (PluginManager.useritems.ContainsKey(name))
             {
-                vorp_inventoryClient.useritems[name].addCount(count);
+                PluginManager.useritems[name].addCount(count);
             }
             else
             {
                 ItemClass auxitem = new ItemClass(count, limit, label, name, type, usable, canRemove);
-                vorp_inventoryClient.useritems.Add(name, auxitem);
+                PluginManager.useritems.Add(name, auxitem);
             }
             NUIEvents.LoadInv();
         }

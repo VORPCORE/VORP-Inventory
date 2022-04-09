@@ -15,10 +15,10 @@ namespace VorpInventory
 
         public static void cleanAmmo(int id)
         {
-            if (vorp_inventoryClient.userWeapons.ContainsKey(id))
+            if (PluginManager.userWeapons.ContainsKey(id))
             {
-                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0);
-                foreach (KeyValuePair<string, int> ammo in vorp_inventoryClient.userWeapons[id].getAllAmmo())
+                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(PluginManager.userWeapons[id].getName()), 0);
+                foreach (KeyValuePair<string, int> ammo in PluginManager.userWeapons[id].getAllAmmo())
                 {
                     API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammo.Key), 0);
                 }
@@ -29,12 +29,12 @@ namespace VorpInventory
         {
             //API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
 
-            if (vorp_inventoryClient.userWeapons[id].getUsed2())
+            if (PluginManager.userWeapons[id].getUsed2())
             {
-                API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, true, 3, false, 0.5f, 1.0f, 752097756, false, 0, false);
-                Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, 0, 0, 0);
-                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0);
-                foreach (KeyValuePair<string, int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
+                API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(PluginManager.userWeapons[id].getName()), 0, true, true, 3, false, 0.5f, 1.0f, 752097756, false, 0, false);
+                Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), API.GetHashKey(PluginManager.userWeapons[id].getName()), 0, 0, 0, 0);
+                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(PluginManager.userWeapons[id].getName()), 0);
+                foreach (KeyValuePair<string, int> ammos in PluginManager.userWeapons[id].getAllAmmo())
                 {
                     API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
                     Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
@@ -49,30 +49,30 @@ namespace VorpInventory
         public static void oldUseWeapon(int id)
         {
             //API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, 2);
-            API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, true, 2, false, 0.5f, 1.0f, 752097756, false, 0, false);
-            Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, 1, 0, 0);
-            API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0);
-            foreach (KeyValuePair<string, int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
+            API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(PluginManager.userWeapons[id].getName()), 0, true, true, 2, false, 0.5f, 1.0f, 752097756, false, 0, false);
+            Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), API.GetHashKey(PluginManager.userWeapons[id].getName()), 0, 1, 0, 0);
+            API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(PluginManager.userWeapons[id].getName()), 0);
+            foreach (KeyValuePair<string, int> ammos in PluginManager.userWeapons[id].getAllAmmo())
             {
                 API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
                 Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
             }
 
-            vorp_inventoryClient.userWeapons[id].setUsed(true);
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, vorp_inventoryClient.userWeapons[id].getUsed(), vorp_inventoryClient.userWeapons[id].getUsed2());
+            PluginManager.userWeapons[id].setUsed(true);
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, PluginManager.userWeapons[id].getUsed(), PluginManager.userWeapons[id].getUsed2());
         }
 
         public static void addItems(string name, int cuantity)
         {
-            if (vorp_inventoryClient.useritems.ContainsKey(name))
+            if (PluginManager.useritems.ContainsKey(name))
             {
-                vorp_inventoryClient.useritems[name].addCount(cuantity);
+                PluginManager.useritems[name].addCount(cuantity);
             }
             else
             {
-                vorp_inventoryClient.useritems.Add(name, new ItemClass(cuantity, vorp_inventoryClient.citems[name]["limit"],
-                    vorp_inventoryClient.citems[name]["label"], name,
-                    "item_standard", true, vorp_inventoryClient.citems[name]["can_remove"]));
+                PluginManager.useritems.Add(name, new ItemClass(cuantity, PluginManager.citems[name]["limit"],
+                    PluginManager.citems[name]["label"], name,
+                    "item_standard", true, PluginManager.citems[name]["can_remove"]));
             }
         }
 

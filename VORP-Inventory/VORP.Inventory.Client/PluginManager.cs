@@ -11,7 +11,7 @@ using vorpinventory_sv;
 
 namespace VorpInventory
 {
-    public class vorp_inventoryClient : BaseScript
+    public class PluginManager : BaseScript
     {
         public static Dictionary<string, Dictionary<string, dynamic>> citems =
             new Dictionary<string, Dictionary<string, dynamic>>();
@@ -19,7 +19,7 @@ namespace VorpInventory
         public static Dictionary<string, ItemClass> useritems = new Dictionary<string, ItemClass>();
         public static Dictionary<int, WeaponClass> userWeapons = new Dictionary<int, WeaponClass>();
         public static Dictionary<int, string> bulletsHash = new Dictionary<int, string>();
-        public vorp_inventoryClient()
+        public PluginManager()
         {
 
             EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
@@ -83,10 +83,10 @@ namespace VorpInventory
 
         private void receiveItem2(string name, int count)
         {
-            vorp_inventoryClient.useritems[name].quitCount(count);
-            if (vorp_inventoryClient.useritems[name].getCount() == 0)
+            PluginManager.useritems[name].quitCount(count);
+            if (PluginManager.useritems[name].getCount() == 0)
             {
-                vorp_inventoryClient.useritems.Remove(name);
+                PluginManager.useritems.Remove(name);
             }
             NUIEvents.LoadInv();
         }

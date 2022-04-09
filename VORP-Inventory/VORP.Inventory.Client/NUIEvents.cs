@@ -336,9 +336,9 @@ namespace VorpInventory
         private void NUIUnequipWeapon(ExpandoObject obj)
         {
             Dictionary<string, object> data = Utils.ProcessDynamicObject(obj);
-            if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data["id"].ToString())))
+            if (PluginManager.userWeapons.ContainsKey(int.Parse(data["id"].ToString())))
             {
-                vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].UnequipWeapon();
+                PluginManager.userWeapons[int.Parse(data["id"].ToString())].UnequipWeapon();
             }
             LoadInv();
         }
@@ -426,7 +426,7 @@ namespace VorpInventory
                         else if (int.Parse(data2["id"].ToString()) == 0)
                         {
                             int amount = int.Parse(data2["count"].ToString());
-                            if (amount > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= amount)
+                            if (amount > 0 && PluginManager.useritems[itemname].getCount() >= amount)
                             {
                                 TriggerServerEvent("vorpinventory:serverGiveItem", itemname, amount, target, 1);
                                 /*vorp_inventoryClient.useritems[itemname].quitCount(amount);
@@ -477,8 +477,8 @@ namespace VorpInventory
                 uint weaponHash = 0;
                 API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
 
-                bool isWeaponARevolver = Function.Call<bool>((Hash)0xC212F1D05A8232BB, API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()));
-                bool isWeaponAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()));
+                bool isWeaponARevolver = Function.Call<bool>((Hash)0xC212F1D05A8232BB, API.GetHashKey(PluginManager.userWeapons[int.Parse(data["id"].ToString())].getName()));
+                bool isWeaponAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, API.GetHashKey(PluginManager.userWeapons[int.Parse(data["id"].ToString())].getName()));
                 string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
 
                 // Check if the weapon used is a pistol or a revolver and ped is not unarmed.
@@ -491,22 +491,22 @@ namespace VorpInventory
                     if (isWeaponUsedARevolver || isWeaponUsedAPistol)
                     {
                         Debug.WriteLine("Equiping offhand");
-                        vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed2(true);
-                        vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
-                        vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadComponents();
-                        vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
+                        PluginManager.userWeapons[int.Parse(data["id"].ToString())].setUsed2(true);
+                        PluginManager.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
+                        PluginManager.userWeapons[int.Parse(data["id"].ToString())].loadComponents();
+                        PluginManager.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
                         TriggerServerEvent("syn_weapons:weaponused", data);
-                        Debug.WriteLine($"used 2 : {vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed2()}");
+                        Debug.WriteLine($"used 2 : {PluginManager.userWeapons[int.Parse(data["id"].ToString())].getUsed2()}");
 
                     }
                 }
-                else if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed() &&
-                   !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()), 0, true))
+                else if (!PluginManager.userWeapons[int.Parse(data["id"].ToString())].getUsed() &&
+                   !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(PluginManager.userWeapons[int.Parse(data["id"].ToString())].getName()), 0, true))
                 {
                     Debug.WriteLine("THEIR PART");
-                    vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
-                    vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadComponents();
-                    vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
+                    PluginManager.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
+                    PluginManager.userWeapons[int.Parse(data["id"].ToString())].loadComponents();
+                    PluginManager.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
                     TriggerServerEvent("syn_weapons:weaponused", data);
                 }
                 else
@@ -534,14 +534,14 @@ namespace VorpInventory
                 {
 
 
-                    if (int.Parse(aux["number"].ToString()) > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
+                    if (int.Parse(aux["number"].ToString()) > 0 && PluginManager.useritems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
                     {
                         TriggerServerEvent("vorpinventory:serverDropItem", itemname, int.Parse(aux["number"].ToString()), 1);
-                        vorp_inventoryClient.useritems[itemname].quitCount(int.Parse(aux["number"].ToString()));
+                        PluginManager.useritems[itemname].quitCount(int.Parse(aux["number"].ToString()));
                         //Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
-                        if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
+                        if (PluginManager.useritems[itemname].getCount() == 0)
                         {
-                            vorp_inventoryClient.useritems.Remove(itemname);
+                            PluginManager.useritems.Remove(itemname);
                         }
                     }
                 }
@@ -550,16 +550,16 @@ namespace VorpInventory
             {
                 //Function.Call((Hash) 0x4899CB088EDF59B8, API.PlayerPedId(), (uint) int.Parse(aux["hash"]),false,false);
                 TriggerServerEvent("vorpinventory:serverDropWeapon", int.Parse(aux["id"].ToString()));
-                if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
+                if (PluginManager.userWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
                 {
-                    WeaponClass wp = vorp_inventoryClient.userWeapons[int.Parse(aux["id"].ToString())];
+                    WeaponClass wp = PluginManager.userWeapons[int.Parse(aux["id"].ToString())];
                     if (wp.getUsed())
                     {
                         wp.setUsed(false);
                         API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()),
                             true, 0);
                     }
-                    vorp_inventoryClient.userWeapons.Remove(int.Parse(aux["id"].ToString()));
+                    PluginManager.userWeapons.Remove(int.Parse(aux["id"].ToString()));
                 }
             }
             LoadInv();
@@ -608,7 +608,7 @@ namespace VorpInventory
             items.Clear();
             gg.Clear();
             TriggerServerEvent("vorpinventory:check_slots");
-            foreach (KeyValuePair<string, ItemClass> userit in vorp_inventoryClient.useritems)
+            foreach (KeyValuePair<string, ItemClass> userit in PluginManager.useritems)
             {
                 item = new Dictionary<string, dynamic>();
                 item.Add("count", userit.Value.getCount());
@@ -621,7 +621,7 @@ namespace VorpInventory
                 gg.Add(item);
             }
 
-            foreach (KeyValuePair<int, WeaponClass> userwp in vorp_inventoryClient.userWeapons)
+            foreach (KeyValuePair<int, WeaponClass> userwp in PluginManager.userWeapons)
             {
                 weapon = new Dictionary<string, dynamic>();
                 weapon.Add("count", userwp.Value.getAmmo("Hola"));
