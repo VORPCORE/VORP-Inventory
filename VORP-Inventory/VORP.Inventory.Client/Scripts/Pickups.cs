@@ -12,16 +12,16 @@ namespace VorpInventory.Scripts
     {
         public void Init()
         {
-            AddEvent("vorpInventory:createPickup", new Action<string, int, int>(createPickup));
-            AddEvent("vorpInventory:createMoneyPickup", new Action<double>(createMoneyPickup));
-            AddEvent("vorpInventory:sharePickupClient", new Action<string, int, int, Vector3, int, int>(sharePickupClient));
-            AddEvent("vorpInventory:shareMoneyPickupClient", new Action<int, double, Vector3, int>(shareMoneyPickupClient));
-            AddEvent("vorpInventory:removePickupClient", new Action<int>(removePickupClient));
-            AddEvent("vorpInventory:playerAnim", new Action<int>(playerAnim));
-            AddEvent("vorp:PlayerForceRespawn", new Action(DeadActions));
+            AddEvent("vorpInventory:createPickup", new Action<string, int, int>(OnCreatePickupAsync));
+            AddEvent("vorpInventory:createMoneyPickup", new Action<double>(OnCreateMoneyPickupAsync));
+            AddEvent("vorpInventory:sharePickupClient", new Action<string, int, int, Vector3, int, int>(OnSharePickupClient));
+            AddEvent("vorpInventory:shareMoneyPickupClient", new Action<int, double, Vector3, int>(OnShareMoneyPickupClient));
+            AddEvent("vorpInventory:removePickupClient", new Action<int>(OnRemovePickupClientAsync));
+            AddEvent("vorpInventory:playerAnim", new Action(OnPlayerExitAnimationAsync));
+            AddEvent("vorp:PlayerForceRespawn", new Action(OnDeadActionsAsync));
 
-            PluginManager.Instance.AttachTickHandler(principalFunctionPickups);
-            PluginManager.Instance.AttachTickHandler(principalFunctionPickupsMoney);
+            PluginManager.Instance.AttachTickHandler(PrincipalFunctionPickupsAsync);
+            PluginManager.Instance.AttachTickHandler(PrincipalFunctionPickupsMoneyAsync);
         }
 
         private static int PickPrompt;
@@ -32,7 +32,7 @@ namespace VorpInventory.Scripts
         private static bool dropAll = false;
         private static Vector3 lastCoords = new Vector3();
 
-        private async void DeadActions()
+        private async void OnDeadActionsAsync()
         {
             lastCoords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, API.PlayerPedId(), true, true);
             dropAll = true;
@@ -42,10 +42,10 @@ namespace VorpInventory.Scripts
                 TriggerServerEvent("vorpinventory:serverDropAllMoney");
             }
 
-            dropallPlease();
+            await DropInventoryAsync();
         }
 
-        public async Task dropallPlease()
+        public async Task DropInventoryAsync()
         {
             await Delay(200);
             if (Configuration.Config.DropOnRespawn.Items)
@@ -88,14 +88,14 @@ namespace VorpInventory.Scripts
             dropAll = false;
         }
 
-        [Tick]
-        private async Task principalFunctionPickups()
+        private async Task PrincipalFunctionPickupsAsync()
         {
             int playerPed = API.PlayerPedId();
             Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, playerPed, true, true);
 
             if (pickups.Count == 0)
             {
+                await BaseScript.Delay(1000);
                 return;
             }
 
@@ -155,14 +155,14 @@ namespace VorpInventory.Scripts
             }
         }
 
-        [Tick]
-        private async Task principalFunctionPickupsMoney()
+        private async Task PrincipalFunctionPickupsMoneyAsync()
         {
             int playerPed = API.PlayerPedId();
             Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, playerPed, true, true);
 
             if (pickupsMoney.Count == 0)
             {
+                await BaseScript.Delay(1000);
                 return;
             }
 
@@ -209,7 +209,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void playerAnim(int obj)
+        private async void OnPlayerExitAnimationAsync()
         {
             string dict = "amb_work@world_human_box_pickup@1@male_a@stand_exit_withprop";
             Function.Call((Hash)0xA862A2AD321F94B4, dict);
@@ -225,7 +225,7 @@ namespace VorpInventory.Scripts
             Function.Call((Hash)0xE1EF3C1216AFF2CD, API.PlayerPedId());
         }
 
-        private async void removePickupClient(int obj)
+        private async void OnRemovePickupClientAsync(int obj)
         {
             Function.Call((Hash)0xDC19C288082E586E, obj, false, true);
             API.NetworkRequestControlOfEntity(obj);
@@ -235,7 +235,7 @@ namespace VorpInventory.Scripts
                 timeout += 100;
                 if (timeout == 5000)
                 {
-                    Debug.WriteLine("No se ha obtenido el control de la entidad");
+                    Logger.Error("Control of the entity has not been obtained");
                 }
 
                 await Delay(100);
@@ -244,7 +244,7 @@ namespace VorpInventory.Scripts
             API.DeleteObject(ref obj);
         }
 
-        private void sharePickupClient(string name, int obj, int amount, Vector3 position, int value, int weaponId)
+        private void OnSharePickupClient(string name, int obj, int amount, Vector3 position, int value, int weaponId)
         {
             if (value == 1)
             {
@@ -266,7 +266,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void shareMoneyPickupClient(int obj, double amount, Vector3 position, int value)
+        private void OnShareMoneyPickupClient(int obj, double amount, Vector3 position, int value)
         {
             if (value == 1)
             {
@@ -287,7 +287,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private async void createPickup(string name, int amoun, int weaponId)
+        private async void OnCreatePickupAsync(string name, int amount, int weaponId)
         {
             int ped = API.PlayerPedId();
             Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
@@ -318,11 +318,11 @@ namespace VorpInventory.Scripts
             Function.Call((Hash)0xDC19C288082E586E, obj, true, false);
             Function.Call((Hash)0x7D9EFB7AD6B19754, obj, true);
             Debug.WriteLine(obj.ToString());
-            TriggerServerEvent("vorpinventory:sharePickupServer", name, obj, amoun, position, weaponId);
+            TriggerServerEvent("vorpinventory:sharePickupServer", name, obj, amount, position, weaponId);
             Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
         }
 
-        private async void createMoneyPickup(double amoun)
+        private async void OnCreateMoneyPickupAsync(double amount)
         {
             int ped = API.PlayerPedId();
             Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
@@ -352,11 +352,11 @@ namespace VorpInventory.Scripts
             Function.Call((Hash)0xDC19C288082E586E, obj, true, false);
             Function.Call((Hash)0x7D9EFB7AD6B19754, obj, true);
             Debug.WriteLine(obj.ToString());
-            TriggerServerEvent("vorpinventory:shareMoneyPickupServer", obj, amoun, position);
+            TriggerServerEvent("vorpinventory:shareMoneyPickupServer", obj, amount, position);
             Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
         }
 
-        public static void SetupPickPrompt()
+        public static void SetupPickPrompt() // Currently not used, this should be used...
         {
             Debug.WriteLine("Prompt creado");
             PickPrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
