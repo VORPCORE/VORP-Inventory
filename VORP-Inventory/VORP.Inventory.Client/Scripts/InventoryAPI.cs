@@ -10,7 +10,7 @@ using VorpInventory.Models;
 
 namespace VorpInventory.Scripts
 {
-    public class InventoryAPI : BaseScript
+    public class InventoryAPI : Manager
     {
         public static Dictionary<string, Dictionary<string, dynamic>> citems =
     new Dictionary<string, Dictionary<string, dynamic>>();
@@ -19,29 +19,30 @@ namespace VorpInventory.Scripts
         public static Dictionary<int, WeaponClass> userWeapons = new Dictionary<int, WeaponClass>();
         public static Dictionary<int, string> bulletsHash = new Dictionary<int, string>();
 
-        public InventoryAPI()
+        public void Init()
         {
-            EventHandlers["vorpCoreClient:addItem"] += new Action<int, int, string, string, string, bool, bool>(addItem);
-            EventHandlers["vorpCoreClient:subItem"] += new Action<string, int>(subItem);
-            EventHandlers["vorpCoreClient:subWeapon"] += new Action<int>(subWeapon);
-            EventHandlers["vorpCoreClient:addBullets"] += new Action<int, string, int>(addWeaponBullets);
-            EventHandlers["vorpCoreClient:subBullets"] += new Action<int, string, int>(subWeaponBullets);
-            EventHandlers["vorpCoreClient:addComponent"] += new Action<int, string>(addComponent);
-            EventHandlers["vorpCoreClient:subComponent"] += new Action<int, string>(subComponent);
+            AddEvent("vorpCoreClient:addItem", new Action<int, int, string, string, string, bool, bool>(addItem));
+            AddEvent("vorpCoreClient:subItem", new Action<string, int>(subItem));
+            AddEvent("vorpCoreClient:subWeapon", new Action<int>(subWeapon));
+            AddEvent("vorpCoreClient:addBullets", new Action<int, string, int>(addWeaponBullets));
+            AddEvent("vorpCoreClient:subBullets", new Action<int, string, int>(subWeaponBullets));
+            AddEvent("vorpCoreClient:addComponent", new Action<int, string>(addComponent));
+            AddEvent("vorpCoreClient:subComponent", new Action<int, string>(subComponent));
 
-            EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
-            EventHandlers["vorpInventory:giveInventory"] += new Action<string>(getInventory);
-            EventHandlers["vorpInventory:giveLoadout"] += new Action<dynamic>(getLoadout);
-            EventHandlers["vorp:SelectedCharacter"] += new Action<int>(OnSelectedCharacter);
-            EventHandlers["vorpinventory:receiveItem"] += new Action<string, int>(receiveItem);
-            EventHandlers["vorpinventory:receiveItem2"] += new Action<string, int>(receiveItem2);
-            EventHandlers["vorpinventory:receiveWeapon"] +=
-                new Action<int, string, string, ExpandoObject, List<dynamic>>(receiveWeapon);
+            AddEvent("vorpInventory:giveItemsTable", new Action<dynamic>(processItems));
+            AddEvent("vorpInventory:giveInventory", new Action<string>(getInventory));
+            AddEvent("vorpInventory:giveLoadout", new Action<dynamic>(getLoadout));
+            AddEvent("vorp:SelectedCharacter", new Action<int>(OnSelectedCharacter));
+            AddEvent("vorpinventory:receiveItem", new Action<string, int>(receiveItem));
+            AddEvent("vorpinventory:receiveItem2", new Action<string, int>(receiveItem2));
+            AddEvent("vorpinventory:receiveWeapon",
+                new Action<int, string, string, ExpandoObject, List<dynamic>>(receiveWeapon));
+
+            AttachTickHandler(UpdateAmmoInWeaponAsync);
 
         }
 
-        [Tick]
-        private async Task updateAmmoInWeapon()
+        private async Task UpdateAmmoInWeaponAsync()
         {
             await Delay(500);
             uint weaponHash = 0;
