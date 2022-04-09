@@ -6,13 +6,8 @@ using VorpInventory.Models;
 
 namespace VorpInventory
 {
-    public class Utils : BaseScript
+    public class Utils
     {
-        public Utils()
-        {
-
-        }
-
         public static void cleanAmmo(int id)
         {
             if (PluginManager.userWeapons.ContainsKey(id))
@@ -59,7 +54,7 @@ namespace VorpInventory
             }
 
             PluginManager.userWeapons[id].setUsed(true);
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, PluginManager.userWeapons[id].getUsed(), PluginManager.userWeapons[id].getUsed2());
+            BaseScript.TriggerServerEvent("vorpinventory:setUsedWeapon", id, PluginManager.userWeapons[id].getUsed(), PluginManager.userWeapons[id].getUsed2());
         }
 
         public static void addItems(string name, int cuantity)
