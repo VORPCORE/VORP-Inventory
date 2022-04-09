@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace VorpInventory.Scripts
+namespace VORP.Inventory.Server.Scripts
 {
     public class Manager : BaseScript
     {

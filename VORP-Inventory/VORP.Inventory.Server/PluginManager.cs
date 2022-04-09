@@ -4,9 +4,9 @@ using CitizenFX.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VorpInventory.Scripts;
+using VORP.Inventory.Server.Scripts;
 
-namespace VorpInventory
+namespace VORP.Inventory.Server
 {
     public class PluginManager : BaseScript
     {

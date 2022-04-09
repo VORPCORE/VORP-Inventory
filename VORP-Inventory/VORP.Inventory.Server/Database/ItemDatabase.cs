@@ -3,10 +3,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using VorpInventory.Models;
-using VorpInventory.Scripts;
+using VORP.Inventory.Server.Models;
+using VORP.Inventory.Server.Scripts;
 
-namespace VorpInventory.Database
+namespace VORP.Inventory.Server.Database
 {
     public class ItemDatabase : Manager
     {

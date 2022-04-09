@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Shared.Models;
-using VorpInventory.Database;
-using VorpInventory.Extensions;
-using VorpInventory.Models;
+using VORP.Inventory.Server.Database;
+using VORP.Inventory.Server.Extensions;
+using VORP.Inventory.Server.Models;
 
-namespace VorpInventory.Scripts
+namespace VORP.Inventory.Server.Scripts
 {
     public class VorpPlayerInventory : Manager
     {

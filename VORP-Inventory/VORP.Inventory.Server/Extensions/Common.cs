@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Threading.Tasks;
 
-namespace VorpInventory.Extensions
+namespace VORP.Inventory.Server.Extensions
 {
     static class Common
     {

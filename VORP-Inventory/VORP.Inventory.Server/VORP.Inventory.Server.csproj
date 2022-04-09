@@ -7,7 +7,7 @@
     <ProjectGuid>{80729F2D-5A1F-4BFE-8C15-574B063909E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VorpInventory</RootNamespace>
+    <RootNamespace>VORP.Inventory.Server</RootNamespace>
     <AssemblyName>vorpinventory_sv.net</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
