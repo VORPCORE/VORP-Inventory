@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using VORP.Inventory.Shared;
-using VorpInventory.Diagnostics;
+using VORP.Inventory.Shared.Diagnostics;
 
 namespace VorpInventory
 {

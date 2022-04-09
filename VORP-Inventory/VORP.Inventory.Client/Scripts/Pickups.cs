@@ -50,15 +50,15 @@ namespace VorpInventory.Scripts
             await Delay(200);
             if (Configuration.Config.DropOnRespawn.Items)
             {
-                Dictionary<string, ItemClass> items = PluginManager.useritems.ToDictionary(p => p.Key, p => p.Value);
+                Dictionary<string, ItemClass> items = InventoryAPI.useritems.ToDictionary(p => p.Key, p => p.Value);
                 foreach (var item in items.Values)
                 {
                     TriggerServerEvent("vorpinventory:serverDropItem", item.getName(), item.getCount(), 1);
-                    PluginManager.useritems[item.getName()].quitCount(item.getCount());
+                    InventoryAPI.useritems[item.getName()].quitCount(item.getCount());
                     //Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
-                    if (PluginManager.useritems[item.getName()].getCount() == 0)
+                    if (InventoryAPI.useritems[item.getName()].getCount() == 0)
                     {
-                        PluginManager.useritems.Remove(item.getName());
+                        InventoryAPI.useritems.Remove(item.getName());
                     }
                     await Delay(200);
                 }
@@ -66,20 +66,20 @@ namespace VorpInventory.Scripts
 
             if (Configuration.Config.DropOnRespawn.Weapons)
             {
-                Dictionary<int, WeaponClass> weapons = PluginManager.userWeapons.ToDictionary(p => p.Key, p => p.Value);
+                Dictionary<int, WeaponClass> weapons = InventoryAPI.userWeapons.ToDictionary(p => p.Key, p => p.Value);
                 foreach (var weapon in weapons)
                 {
                     TriggerServerEvent("vorpinventory:serverDropWeapon", weapon.Key);
-                    if (PluginManager.userWeapons.ContainsKey(weapon.Key))
+                    if (InventoryAPI.userWeapons.ContainsKey(weapon.Key))
                     {
-                        WeaponClass wp = PluginManager.userWeapons[weapon.Key];
+                        WeaponClass wp = InventoryAPI.userWeapons[weapon.Key];
                         if (wp.getUsed())
                         {
                             wp.setUsed(false);
                             API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()),
                                 true, 0);
                         }
-                        PluginManager.userWeapons.Remove(weapon.Key);
+                        InventoryAPI.userWeapons.Remove(weapon.Key);
                     }
                     await Delay(200);
                 }
@@ -110,9 +110,9 @@ namespace VorpInventory.Scripts
                     if (pick.Value["weaponid"] == 1)
                     {
                         string name = pick.Value["name"];
-                        if (PluginManager.citems.ContainsKey(name))
+                        if (InventoryAPI.citems.ContainsKey(name))
                         {
-                            name = PluginManager.citems[name]["label"];
+                            name = InventoryAPI.citems[name]["label"];
                         }
                         Utils.DrawText3DAsync(pick.Value["coords"], name);
                     }

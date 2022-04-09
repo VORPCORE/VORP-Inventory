@@ -54,7 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Scripts\InventoryAPI.cs" />
     <Compile Include="Models\ItemClass.cs" />
