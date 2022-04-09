@@ -37,7 +37,7 @@ namespace VorpInventory.Scripts
             lastCoords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, API.PlayerPedId(), true, true);
             dropAll = true;
 
-            if (GetConfig.Config["DropOnRespawn"]["Money"].ToObject<bool>())
+            if (Configuration.Config.DropOnRespawn.Money)
             {
                 TriggerServerEvent("vorpinventory:serverDropAllMoney");
             }
@@ -48,7 +48,7 @@ namespace VorpInventory.Scripts
         public async Task dropallPlease()
         {
             await Delay(200);
-            if (GetConfig.Config["DropOnRespawn"]["Items"].ToObject<bool>())
+            if (Configuration.Config.DropOnRespawn.Items)
             {
                 Dictionary<string, ItemClass> items = PluginManager.useritems.ToDictionary(p => p.Key, p => p.Value);
                 foreach (var item in items.Values)
@@ -64,7 +64,7 @@ namespace VorpInventory.Scripts
                 }
             }
 
-            if (GetConfig.Config["DropOnRespawn"]["Weapons"].ToObject<bool>())
+            if (Configuration.Config.DropOnRespawn.Weapons)
             {
                 Dictionary<int, WeaponClass> weapons = PluginManager.userWeapons.ToDictionary(p => p.Key, p => p.Value);
                 foreach (var weapon in weapons)
@@ -360,9 +360,9 @@ namespace VorpInventory.Scripts
         {
             Debug.WriteLine("Prompt creado");
             PickPrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
-            long str = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", GetConfig.Langs["TakeFromFloor"]);
+            long str = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", Configuration.GetTranslation("TakeFromFloor"));
             Function.Call((Hash)0x5DD02A8318420DD7, PickPrompt, str);
-            Function.Call((Hash)0xB5352B7494A08258, PickPrompt, GetConfig.pickupKey);
+            Function.Call((Hash)0xB5352B7494A08258, PickPrompt, Configuration.KEY_PICKUP_ITEM);
             Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
             Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
             Function.Call((Hash)0x94073D5CA3F16B7B, PickPrompt, true);
