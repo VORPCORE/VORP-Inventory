@@ -14,14 +14,14 @@ using VorpInventory.Models;
 
 namespace VorpInventory.Scripts
 {
-    public class VorpPlayerInventory : BaseScript
+    public class VorpPlayerInventory : Manager
     {
         PlayerList PlayerList => PluginManager.PlayerList;
 
         public static Dictionary<int, Dictionary<string, dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
         public static Dictionary<int, Dictionary<string, dynamic>> PickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
 
-        internal VorpPlayerInventory()
+        public void Init()
         {
             EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(OnGetItemsTableAsync);
             EventHandlers["vorpinventory:getInventory"] += new Action<Player>(OnGetInventoryAsync);
@@ -246,7 +246,7 @@ namespace VorpInventory.Scripts
             {
                 await Delay(0);
 
-                bool result = await PluginManager._scriptVorpCoreInventoryApi.SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
+                bool result = await PluginManager.ScriptVorpCoreInventoryApi.SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
 
                 if (!result)
                 {

@@ -13,14 +13,13 @@ namespace VorpInventory
         public static PluginManager Instance { get; private set; }
         public static PlayerList PlayerList;
 
-        public EventHandlerDictionary EventRegistry => EventHandlers;
         public ExportDictionary ExportRegistry => Exports;
 
         // Database
         public static Database.ItemDatabase ItemsDB = new();
         // private scripts
-        public static VorpCoreInventoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInventoryAPI();
-        public static VorpPlayerInventory _scriptVorpPlayerInventory = new VorpPlayerInventory();
+        public static VorpCoreInventoryAPI ScriptVorpCoreInventoryApi = new VorpCoreInventoryAPI();
+        public static VorpPlayerInventory ScriptVorpPlayerInventory = new VorpPlayerInventory();
 
         public static Dictionary<string, int> ActiveCharacters = new();
 
@@ -90,21 +89,22 @@ namespace VorpInventory
             await VendorReady(); // wait till ghmattimysql resource has started
 
             RegisterScript(ItemsDB);
-            RegisterScript(_scriptVorpCoreInventoryApi);
-            RegisterScript(_scriptVorpPlayerInventory);
+
+            ScriptVorpCoreInventoryApi.Init();
+            ScriptVorpPlayerInventory.Init();
 
             AddEvents();
         }
 
         void AddEvents()
         {
-            EventRegistry.Add("playerJoined", new Action<Player>(([FromSource] player) =>
+            Hook("playerJoined", new Action<Player>(([FromSource] player) =>
             {
                 if (!ActiveCharacters.ContainsKey(player.Handle))
                     ActiveCharacters.Add(player.Handle, -1);
             }));
 
-            EventRegistry.Add("playerDropped", new Action<Player, string>(async ([FromSource] player, reason) =>
+            Hook("playerDropped", new Action<Player, string>(async ([FromSource] player, reason) =>
             {
                 try
                 {
@@ -126,23 +126,28 @@ namespace VorpInventory
                 }
             }));
 
-            EventRegistry.Add("onResourceStart", new Action<string>(resourceName =>
+            Hook("onResourceStart", new Action<string>(resourceName =>
             {
                 if (resourceName != GetCurrentResourceName()) return;
 
                 Logger.Info($"VORP Inventory Started");
             }));
 
-            EventRegistry.Add("onResourceStop", new Action<string>(resourceName =>
+            Hook("onResourceStop", new Action<string>(resourceName =>
             {
                 if (resourceName != GetCurrentResourceName()) return;
 
                 Logger.Info($"Stopping VORP Inventory");
 
                 UnregisterScript(ItemsDB);
-                UnregisterScript(_scriptVorpCoreInventoryApi);
-                UnregisterScript(_scriptVorpPlayerInventory);
+                UnregisterScript(ScriptVorpCoreInventoryApi);
+                UnregisterScript(ScriptVorpPlayerInventory);
             }));
+        }
+
+        public void Hook(string eventName, Delegate @delegate)
+        {
+            EventHandlers[eventName] += @delegate;
         }
     }
 }

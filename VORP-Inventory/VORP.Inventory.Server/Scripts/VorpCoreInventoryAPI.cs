@@ -15,13 +15,13 @@ using VorpInventory.Models;
 
 namespace VorpInventory.Scripts
 {
-    public class VorpCoreInventoryAPI : BaseScript
+    public class VorpCoreInventoryAPI : Manager
     {
         public static Dictionary<string, CallbackDelegate> usableItemsFunctions = new Dictionary<string, CallbackDelegate>();
 
         PlayerList PlayerList => PluginManager.PlayerList;
 
-        internal VorpCoreInventoryAPI()
+        public void Init()
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(OnSubtractWeaponAsync);
             EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(OnGiveWeaponAsync);
