@@ -8,20 +8,20 @@ using VorpInventory.Models;
 
 namespace VorpInventory.Scripts
 {
-    public class Pickups : BaseScript
+    public class Pickups : Manager
     {
-        public Pickups()
+        public void Init()
         {
-            EventHandlers["vorpInventory:createPickup"] += new Action<string, int, int>(createPickup);
-            EventHandlers["vorpInventory:createMoneyPickup"] += new Action<double>(createMoneyPickup);
-            EventHandlers["vorpInventory:sharePickupClient"] += new Action<string, int, int, Vector3, int, int>(sharePickupClient);
-            EventHandlers["vorpInventory:shareMoneyPickupClient"] += new Action<int, double, Vector3, int>(shareMoneyPickupClient);
-            EventHandlers["vorpInventory:removePickupClient"] += new Action<int>(removePickupClient);
-            EventHandlers["vorpInventory:playerAnim"] += new Action<int>(playerAnim);
-            EventHandlers["vorp:PlayerForceRespawn"] += new Action(DeadActions);
-            Tick += principalFunctionPickups;
-            Tick += principalFunctionPickupsMoney;
+            AddEvent("vorpInventory:createPickup", new Action<string, int, int>(createPickup));
+            AddEvent("vorpInventory:createMoneyPickup", new Action<double>(createMoneyPickup));
+            AddEvent("vorpInventory:sharePickupClient", new Action<string, int, int, Vector3, int, int>(sharePickupClient));
+            AddEvent("vorpInventory:shareMoneyPickupClient", new Action<int, double, Vector3, int>(shareMoneyPickupClient));
+            AddEvent("vorpInventory:removePickupClient", new Action<int>(removePickupClient));
+            AddEvent("vorpInventory:playerAnim", new Action<int>(playerAnim));
+            AddEvent("vorp:PlayerForceRespawn", new Action(DeadActions));
 
+            PluginManager.Instance.AttachTickHandler(principalFunctionPickups);
+            PluginManager.Instance.AttachTickHandler(principalFunctionPickupsMoney);
         }
 
         private static int PickPrompt;

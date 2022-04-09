@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using VORP.Inventory.Shared;
-using VORP.Inventory.Shared.Diagnostics;
 
 namespace VorpInventory
 {

@@ -1,4 +1,5 @@
-﻿global using static CitizenFX.Core.Native.API;
+﻿global using VORP.Inventory.Shared.Diagnostics;
+global using static CitizenFX.Core.Native.API;
 using CitizenFX.Core;
 using System;
 using System.Threading.Tasks;
@@ -10,11 +11,17 @@ namespace VorpInventory
     {
         public static PluginManager Instance;
 
+        public static Scripts.Pickups Pickups = new Scripts.Pickups();
+
         public PluginManager()
         {
+            Logger.Info($"VORP INVENTORY INIT");
+
             Instance = this;
 
             Config config = Configuration.Config;
+
+            Pickups.Init();
         }
 
         public void AttachTickHandler(Func<Task> task)
