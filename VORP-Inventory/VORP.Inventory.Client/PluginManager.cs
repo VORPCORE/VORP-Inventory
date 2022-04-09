@@ -1,4 +1,4 @@
-﻿
+﻿global using static CitizenFX.Core.Native.API;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using Newtonsoft.Json.Linq;
