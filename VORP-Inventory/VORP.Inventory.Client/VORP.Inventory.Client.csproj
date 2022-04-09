@@ -65,9 +65,7 @@
     <Compile Include="vorp_inventoryClient.cs" />
     <Compile Include="WeaponClass.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="config\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="..\VORP.Inventory.Shared\VORP.Inventory.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
