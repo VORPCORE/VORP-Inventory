@@ -3,16 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VORP.Inventory.Client", "vorpinventory-cl\VORP.Inventory.Client.csproj", "{C345E405-24BC-42B6-9BDF-9DE5C520B302}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VORP.Inventory.Server", "vorpinventory_sv\VORP.Inventory.Server.csproj", "{80729F2D-5A1F-4BFE-8C15-574B063909E1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FADB5039-BA71-4686-B6BB-46BB61619A2E}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 	EndProjectSection
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "VORP.Inventory.Shared", "VORP.Inventory.Shared\VORP.Inventory.Shared.shproj", "{D65EAC6F-E2A9-472F-A22B-7C8FBF3A25C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VORP.Inventory.Client", "VORP.Inventory.Client\VORP.Inventory.Client.csproj", "{C345E405-24BC-42B6-9BDF-9DE5C520B302}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VORP.Inventory.Server", "VORP.Inventory.Server\VORP.Inventory.Server.csproj", "{80729F2D-5A1F-4BFE-8C15-574B063909E1}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

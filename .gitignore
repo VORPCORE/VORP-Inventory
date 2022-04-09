@@ -1,12 +1,6 @@
 *.lock
 *.zip
 
-/VORP-Inventory/vorpinventory_sv/bin
-/VORP-Inventory/vorpinventory_sv/obj
-/VORP-Inventory/vorpinventory_cl/bin
-/VORP-Inventory/vorpinventory_cl/obj
-/VORP-Inventory/VORP.Inventory.Server
-
 ## Ignore zip files completely, shouldn't even be pushed!
 *.zip
 
