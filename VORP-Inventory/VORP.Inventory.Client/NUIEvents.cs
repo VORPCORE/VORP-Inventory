@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Threading.Tasks;
-using vorpinventory_sv;
+using VorpInventory.Models;
 
 namespace VorpInventory
 {

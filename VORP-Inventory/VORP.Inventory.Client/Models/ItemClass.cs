@@ -1,4 +1,4 @@
-﻿namespace VorpInventory
+﻿namespace VorpInventory.Models
 {
     public class ItemClass
     {
