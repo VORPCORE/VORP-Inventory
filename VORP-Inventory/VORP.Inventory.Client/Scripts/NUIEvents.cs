@@ -7,7 +7,7 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using VorpInventory.Models;
 
-namespace VorpInventory
+namespace VorpInventory.Scripts
 {
     public class NUIEvents : BaseScript
     {

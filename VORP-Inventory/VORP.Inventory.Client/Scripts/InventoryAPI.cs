@@ -3,7 +3,7 @@ using CitizenFX.Core.Native;
 using System;
 using VorpInventory.Models;
 
-namespace VorpInventory
+namespace VorpInventory.Scripts
 {
     public class InventoryAPI : BaseScript
     {
