@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using VorpInventory.Diagnostics;
+using VORP.Inventory.Shared.Diagnostics;
 using VorpInventory.Models;
 
 namespace VorpInventory.Database

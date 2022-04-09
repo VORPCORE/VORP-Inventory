@@ -9,8 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
-using VorpInventory.Diagnostics;
+using VORP.Inventory.Shared.Diagnostics;
 
 namespace VorpInventory.Scripts
 {
@@ -69,7 +68,7 @@ namespace VorpInventory.Scripts
                         Encoding.UTF8);
                     Lang = JsonConvert.DeserializeObject<Dictionary<string, string>>(langstring);
 
-                    Logger.Success($"{API.GetCurrentResourceName()}: Language {_configJObject["defaultlang"]}.json loaded!");
+                    Logger.Info($"{API.GetCurrentResourceName()}: Language {_configJObject["defaultlang"]}.json loaded!");
 
                 }
                 else

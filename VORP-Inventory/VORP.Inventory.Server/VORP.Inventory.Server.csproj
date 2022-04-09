@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,7 +54,6 @@
   <ItemGroup>
     <Compile Include="Extensions\Common.cs" />
     <Compile Include="Scripts\Config.cs" />
-    <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Scripts\VorpCoreInventoryAPI.cs" />
     <Compile Include="Models\ItemClass.cs" />
     <Compile Include="Database\ItemDatabase.cs" />

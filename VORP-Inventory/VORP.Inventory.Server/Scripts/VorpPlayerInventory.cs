@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using VORP.Inventory.Shared.Diagnostics;
 using VorpInventory.Database;
-using VorpInventory.Diagnostics;
 using VorpInventory.Extensions;
 using VorpInventory.Models;
 

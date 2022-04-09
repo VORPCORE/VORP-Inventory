@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Threading.Tasks;
-using VorpInventory.Diagnostics;
+using VORP.Inventory.Shared.Diagnostics;
 
 namespace VorpInventory.Extensions
 {
