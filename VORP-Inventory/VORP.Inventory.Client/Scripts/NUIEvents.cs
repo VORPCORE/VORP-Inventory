@@ -9,7 +9,7 @@ using VorpInventory.Models;
 
 namespace VorpInventory.Scripts
 {
-    public class NUIEvents : BaseScript
+    public class NUIEvents : Manager
     {
         public static bool InInventory = false;
 
@@ -17,7 +17,7 @@ namespace VorpInventory.Scripts
         public static Dictionary<string, object> items = new Dictionary<string, object>();
         public static bool isProcessingPay = false;
 
-        public NUIEvents()
+        public void Init()
         {
 
             API.RegisterNuiCallbackType("NUIFocusOff");

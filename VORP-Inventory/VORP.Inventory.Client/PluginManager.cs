@@ -12,6 +12,7 @@ namespace VorpInventory
         public static PluginManager Instance;
 
         public static Scripts.Pickups Pickups = new Scripts.Pickups();
+        public static Scripts.NUIEvents NUIEvents = new Scripts.NUIEvents();
 
         public PluginManager()
         {
@@ -21,6 +22,7 @@ namespace VorpInventory
 
             Config config = Configuration.Config;
 
+            NUIEvents.Init();
             Pickups.Init();
         }
 
