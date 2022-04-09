@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Diagnostics\Logger.cs" />
-    <Compile Include="GetConfig.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="Scripts\InventoryAPI.cs" />
     <Compile Include="Models\ItemClass.cs" />
     <Compile Include="Models\Weapon.cs" />
