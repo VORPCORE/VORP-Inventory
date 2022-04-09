@@ -21,22 +21,22 @@ namespace VorpInventory.Scripts
 
         public void Init()
         {
-            AddEvent("vorpCoreClient:addItem", new Action<int, int, string, string, string, bool, bool>(addItem));
-            AddEvent("vorpCoreClient:subItem", new Action<string, int>(subItem));
-            AddEvent("vorpCoreClient:subWeapon", new Action<int>(subWeapon));
-            AddEvent("vorpCoreClient:addBullets", new Action<int, string, int>(addWeaponBullets));
-            AddEvent("vorpCoreClient:subBullets", new Action<int, string, int>(subWeaponBullets));
-            AddEvent("vorpCoreClient:addComponent", new Action<int, string>(addComponent));
-            AddEvent("vorpCoreClient:subComponent", new Action<int, string>(subComponent));
+            AddEvent("vorpCoreClient:addItem", new Action<int, int, string, string, string, bool, bool>(OnAddItem));
+            AddEvent("vorpCoreClient:subItem", new Action<string, int>(OnSubtractItem));
+            AddEvent("vorpCoreClient:subWeapon", new Action<int>(OnSubtractWeapon));
+            AddEvent("vorpCoreClient:addBullets", new Action<int, string, int>(OnAddWeaponBullets));
+            AddEvent("vorpCoreClient:subBullets", new Action<int, string, int>(OnSubtractWeaponBullets));
+            AddEvent("vorpCoreClient:addComponent", new Action<int, string>(OnAddComponent));
+            AddEvent("vorpCoreClient:subComponent", new Action<int, string>(OnSubtractComponent));
 
-            AddEvent("vorpInventory:giveItemsTable", new Action<dynamic>(processItems));
-            AddEvent("vorpInventory:giveInventory", new Action<string>(getInventory));
-            AddEvent("vorpInventory:giveLoadout", new Action<dynamic>(getLoadout));
-            AddEvent("vorp:SelectedCharacter", new Action<int>(OnSelectedCharacter));
-            AddEvent("vorpinventory:receiveItem", new Action<string, int>(receiveItem));
-            AddEvent("vorpinventory:receiveItem2", new Action<string, int>(receiveItem2));
+            AddEvent("vorpInventory:giveItemsTable", new Action<dynamic>(OnProcessItems));
+            AddEvent("vorpInventory:giveInventory", new Action<string>(OnGetInventory));
+            AddEvent("vorpInventory:giveLoadout", new Action<dynamic>(OnGetLoadout));
+            AddEvent("vorp:SelectedCharacter", new Action<int>(OnSelectedCharacterAsync));
+            AddEvent("vorpinventory:receiveItem", new Action<string, int>(OnReceiveItem));
+            AddEvent("vorpinventory:receiveItem2", new Action<string, int>(OnReceiveItemTwo));
             AddEvent("vorpinventory:receiveWeapon",
-                new Action<int, string, string, ExpandoObject, List<dynamic>>(receiveWeapon));
+                new Action<int, string, string, ExpandoObject, List<dynamic>>(OnReceiveWeapon));
 
             AttachTickHandler(UpdateAmmoInWeaponAsync);
 
@@ -75,7 +75,7 @@ namespace VorpInventory.Scripts
             }
         }//Update weapon ammo
 
-        private void receiveItem(string name, int count)
+        private void OnReceiveItem(string name, int count)
         {
             if (useritems.ContainsKey(name))
             {
@@ -90,7 +90,7 @@ namespace VorpInventory.Scripts
             NUIEvents.LoadInv();
         }
 
-        private void receiveItem2(string name, int count)
+        private void OnReceiveItemTwo(string name, int count)
         {
             useritems[name].quitCount(count);
             if (useritems[name].getCount() == 0)
@@ -100,7 +100,7 @@ namespace VorpInventory.Scripts
             NUIEvents.LoadInv();
         }
 
-        private void receiveWeapon(int id, string propietary, string name, ExpandoObject ammo, List<dynamic> components)
+        private void OnReceiveWeapon(int id, string propietary, string name, ExpandoObject ammo, List<dynamic> components)
         {
             Dictionary<string, int> ammoaux = new Dictionary<string, int>();
             foreach (KeyValuePair<string, object> amo in ammo)
@@ -120,7 +120,7 @@ namespace VorpInventory.Scripts
             NUIEvents.LoadInv();
         }
 
-        private async void OnSelectedCharacter(int charId)
+        private async void OnSelectedCharacterAsync(int charId)
         {
             API.SetNuiFocus(false, false);
             API.SendNuiMessage("{\"action\": \"hide\"}");
@@ -129,7 +129,8 @@ namespace VorpInventory.Scripts
             await Delay(300);
             TriggerServerEvent("vorpinventory:getInventory");
         }
-        private void processItems(dynamic items)
+
+        private void OnProcessItems(dynamic items)
         {
             citems.Clear();
             foreach (dynamic item in items)
@@ -146,7 +147,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void getLoadout(dynamic loadout)
+        private void OnGetLoadout(dynamic loadout)
         {
             Debug.WriteLine(API.PlayerPedId().ToString());
             foreach (var row in loadout)
@@ -190,7 +191,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void getInventory(string inventory)
+        private void OnGetInventory(string inventory)
         {
             useritems.Clear();
             if (inventory != null)
@@ -215,7 +216,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void subComponent(int weaponId, string component)
+        private void OnSubtractComponent(int weaponId, string component)
         {
             if (userWeapons.ContainsKey(weaponId))
             {
@@ -233,7 +234,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void addComponent(int weaponId, string component)
+        private void OnAddComponent(int weaponId, string component)
         {
             if (userWeapons.ContainsKey(weaponId))
             {
@@ -251,7 +252,7 @@ namespace VorpInventory.Scripts
             }
         }
 
-        private void subWeaponBullets(int weaponId, string bulletType, int cuantity)
+        private void OnSubtractWeaponBullets(int weaponId, string bulletType, int cuantity)
         {
             if (userWeapons.ContainsKey(weaponId))
             {
@@ -264,7 +265,7 @@ namespace VorpInventory.Scripts
             NUIEvents.LoadInv();
         }
 
-        private void addWeaponBullets(int weaponId, string bulletType, int cuantity)
+        private void OnAddWeaponBullets(int weaponId, string bulletType, int cuantity)
         {
             if (userWeapons.ContainsKey(weaponId))
             {
@@ -278,7 +279,7 @@ namespace VorpInventory.Scripts
         }
 
 
-        private void subWeapon(int weaponId)
+        private void OnSubtractWeapon(int weaponId)
         {
             if (userWeapons.ContainsKey(weaponId))
             {
@@ -293,7 +294,7 @@ namespace VorpInventory.Scripts
             NUIEvents.LoadInv();
         }
 
-        private void subItem(string name, int cuantity)
+        private void OnSubtractItem(string name, int cuantity)
         {
             Debug.WriteLine($"{name} = {cuantity}");
             if (useritems.ContainsKey(name))
@@ -307,7 +308,7 @@ namespace VorpInventory.Scripts
             NUIEvents.LoadInv();
         }
 
-        private void addItem(int count, int limit, string label, string name, string type, bool usable, bool canRemove)
+        private void OnAddItem(int count, int limit, string label, string name, string type, bool usable, bool canRemove)
         {
             if (useritems.ContainsKey(name))
             {
