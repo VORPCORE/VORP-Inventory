@@ -12,7 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitignore = ..\.gitignore
 	EndProjectSection
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "VORP.Inventory.Shared", "VORP.Inventory.Shared\VORP.Inventory.Shared.shproj", "{D65EAC6F-E2A9-472F-A22B-7C8FBF3A25C7}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		VORP.Inventory.Shared\VORP.Inventory.Shared.projitems*{80729f2d-5a1f-4bfe-8c15-574b063909e1}*SharedItemsImports = 4
+		VORP.Inventory.Shared\VORP.Inventory.Shared.projitems*{c345e405-24bc-42b6-9bdf-9de5c520b302}*SharedItemsImports = 4
+		VORP.Inventory.Shared\VORP.Inventory.Shared.projitems*{d65eac6f-e2a9-472f-a22b-7c8fbf3a25c7}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

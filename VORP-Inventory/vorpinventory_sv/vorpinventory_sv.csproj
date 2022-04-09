@@ -69,5 +69,6 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="..\VORP.Inventory.Shared\VORP.Inventory.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
