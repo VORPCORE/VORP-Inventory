@@ -175,7 +175,7 @@ namespace VorpInventory
 
                     if (auxweapon.getUsed())
                     {
-                        Utils.useWeapon(auxweapon.getId());
+                        Utils.UseWeapon(auxweapon.getId());
                     }
                 }
             }

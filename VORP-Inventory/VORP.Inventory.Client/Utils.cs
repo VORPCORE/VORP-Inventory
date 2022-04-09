@@ -8,7 +8,7 @@ namespace VorpInventory
 {
     public class Utils
     {
-        public static void cleanAmmo(int id)
+        public static void CleanAmmo(int id)
         {
             if (PluginManager.userWeapons.ContainsKey(id))
             {
@@ -20,7 +20,7 @@ namespace VorpInventory
             }
         }
 
-        public static void useWeapon(int id)
+        public static void UseWeapon(int id)
         {
             //API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
 
@@ -37,11 +37,11 @@ namespace VorpInventory
             }
             else
             {
-                oldUseWeapon(id);
+                OldUseWeapon(id);
             }
         }
 
-        public static void oldUseWeapon(int id)
+        public static void OldUseWeapon(int id)
         {
             //API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, 2);
             API.GiveWeaponToPed_2(API.PlayerPedId(), (uint)API.GetHashKey(PluginManager.userWeapons[id].getName()), 0, true, true, 2, false, 0.5f, 1.0f, 752097756, false, 0, false);
@@ -67,7 +67,7 @@ namespace VorpInventory
             return aux;
         }
 
-        public static List<int> getNearestPlayers(float distance = 5.0f)
+        public static List<int> GetNearestPlayers(float distance = 5.0f)
         {
             float closestDistance = distance;
             int localPed = API.PlayerPedId();

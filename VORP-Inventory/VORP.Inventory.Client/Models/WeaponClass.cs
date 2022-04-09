@@ -48,7 +48,7 @@ namespace VorpInventory.Models
             TriggerServerEvent("vorpinventory:setUsedWeapon", id, getUsed(), getUsed2());
             int hash = API.GetHashKey(name);
             RemoveWeaponFromPed();
-            Utils.cleanAmmo(id);
+            Utils.CleanAmmo(id);
         }
 
         public void RemoveWeaponFromPed()

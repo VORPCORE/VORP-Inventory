@@ -346,7 +346,7 @@ namespace VorpInventory.Scripts
         private void NUIGetNearPlayers(ExpandoObject obj)
         {
             int playerPed = API.PlayerPedId();
-            List<int> players = Utils.getNearestPlayers();
+            List<int> players = Utils.GetNearestPlayers();
             bool foundPlayers = false;
             List<Dictionary<string, object>> elements = new List<Dictionary<string, object>>();
             Dictionary<string, object> nuireturn = new Dictionary<string, object>();
@@ -401,7 +401,7 @@ namespace VorpInventory.Scripts
         private void NUIGiveItem(ExpandoObject obj)
         {
             int playerPed = API.PlayerPedId();
-            List<int> players = Utils.getNearestPlayers();
+            List<int> players = Utils.GetNearestPlayers();
             Dictionary<string, object> data = Utils.ProcessDynamicObject(obj);
             Dictionary<string, object> data2 = Utils.ProcessDynamicObject(data["data"]);
             //Debug.WriteLine(data2["id"].ToString());
