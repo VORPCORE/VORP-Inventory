@@ -52,7 +52,7 @@ namespace VORP.Inventory.Shared
     public class Config
     {
         [DataMember(Name = "defaultlang")]
-        public string Defaultlang { get; set; }
+        public string Defaultlanguage { get; set; }
 
         [DataMember(Name = "openKey")]
         public string OpenKey { get; set; }
