@@ -24,7 +24,7 @@ namespace VorpInventory.Models
                 if (rtnName == "WNS_INVALID")
                     return name;
 
-                return GetConfig.GetWeaponLabel(rtnName);
+                return Configuration.GetWeaponLabel(rtnName);
             }
         }
 
