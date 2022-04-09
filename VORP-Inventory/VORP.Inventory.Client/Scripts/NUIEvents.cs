@@ -116,6 +116,8 @@ namespace VorpInventory.Scripts
 
             API.RegisterNuiCallbackType("MoveToContainer");
             EventHandlers["__cfx_nui:MoveToContainer"] += new Action<ExpandoObject>(NUIMoveToContainer);
+
+            AttachTickHandler(OnOpenInventoryKeyAsync);
         }
 
         private async void ReloadHorseInventory(string horseInventory)
@@ -571,8 +573,7 @@ namespace VorpInventory.Scripts
             TriggerEvent("syn:closeinv");
         }
 
-        [Tick]
-        private async Task OnKey()
+        private async Task OnOpenInventoryKeyAsync()
         {
             if (API.IsControlJustReleased(1, (uint)Configuration.KEY_OPEN_INVENTORY) && API.IsInputDisabled(0))
             {
