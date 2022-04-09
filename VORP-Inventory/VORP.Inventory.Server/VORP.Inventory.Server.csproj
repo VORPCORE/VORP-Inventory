@@ -53,7 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\Common.cs" />
-    <Compile Include="Scripts\Config.cs" />
     <Compile Include="Scripts\VorpCoreInventoryAPI.cs" />
     <Compile Include="Models\ItemClass.cs" />
     <Compile Include="Database\ItemDatabase.cs" />

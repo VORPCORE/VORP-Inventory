@@ -113,11 +113,11 @@ namespace VorpInventory.Scripts
 
                 if (amount <= 0)
                 {
-                    player.TriggerEvent("vorp:TipRight", Config.Lang["TryExploits"], 3000);
+                    player.TriggerEvent("vorp:TipRight", Configuration.GetTranslation("TryExploits"), 3000);
                 }
                 else if (sourceMoney < amount)
                 {
-                    player.TriggerEvent("vorp:TipRight", Config.Lang["NotEnoughMoney"], 3000);
+                    player.TriggerEvent("vorp:TipRight", Configuration.GetTranslation("NotEnoughMoney"), 3000);
                 }
                 else
                 {
@@ -187,13 +187,13 @@ namespace VorpInventory.Scripts
 
                 if (amount <= 0)
                 {
-                    player.TriggerEvent("vorp:TipRight", Config.Lang["TryExploits"], 3000);
+                    player.TriggerEvent("vorp:TipRight", Configuration.GetTranslation("TryExploits"), 3000);
                     await Delay(3000);
                     player.TriggerEvent("vorp_inventory:ProcessingReady");
                 }
                 else if (sourceMoney < amount)
                 {
-                    player.TriggerEvent("vorp:TipRight", Config.Lang["NotEnoughMoney"], 3000);
+                    player.TriggerEvent("vorp:TipRight", Configuration.GetTranslation("NotEnoughMoney"), 3000);
                     await Delay(3000);
                     player.TriggerEvent("vorp_inventory:ProcessingReady");
 
@@ -211,8 +211,8 @@ namespace VorpInventory.Scripts
                     }
 
                     targetCoreUserCharacter.addCurrency(0, amount);
-                    player.TriggerEvent("vorp:TipRight", string.Format(Config.Lang["YouPaid"], amount.ToString(), _target.Name), 3000);
-                    _target.TriggerEvent("vorp:TipRight", string.Format(Config.Lang["YouReceived"], amount.ToString(), player.Name), 3000);
+                    player.TriggerEvent("vorp:TipRight", string.Format(Configuration.GetTranslation("YouPaid"), amount.ToString(), _target.Name), 3000);
+                    _target.TriggerEvent("vorp:TipRight", string.Format(Configuration.GetTranslation("YouReceived"), amount.ToString(), player.Name), 3000);
                     TriggerEvent("vorpinventory:moneylog", player.Handle, _target.Handle, amount);
                     await Delay(3000);
                     player.TriggerEvent("vorp_inventory:ProcessingReady");
@@ -480,7 +480,7 @@ namespace VorpInventory.Scripts
 
                                     if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() < totalcount)
                                     {
-                                        TriggerClientEvent(player, "vorp:TipRight", Config.Lang["fullInventory"], 2000);
+                                        TriggerClientEvent(player, "vorp:TipRight", Configuration.GetTranslation("fullInventory"), 2000);
                                         return;
                                     }
                                 }
@@ -506,7 +506,7 @@ namespace VorpInventory.Scripts
                                 }
                                 else
                                 {
-                                    TriggerClientEvent(player, "vorp:TipRight", Config.Lang["fullInventory"], 2000);
+                                    TriggerClientEvent(player, "vorp:TipRight", Configuration.GetTranslation("fullInventory"), 2000);
                                 }
                             }
                             else
@@ -724,7 +724,7 @@ namespace VorpInventory.Scripts
 
                 if (!userInventory.ContainsKey(itemName))
                 {
-                    TriggerClientEvent(player, "vorp:TipRight", Config.GetTranslation("itemerror"), 2000);
+                    TriggerClientEvent(player, "vorp:TipRight", Configuration.GetTranslation("itemerror"), 2000);
                     Logger.Error($"ServerGiveItem: User '{player.Name}#{player.Handle}' inventory item '{itemName}' was not found.");
                     return;
                 }
@@ -755,8 +755,8 @@ namespace VorpInventory.Scripts
 
                 if (!canGiveItemToTarget)
                 {
-                    TriggerClientEvent(player, "vorp:TipRight", Config.GetTranslation("fullInventoryGive"), 2000);
-                    TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.GetTranslation("fullInventory"), 2000);
+                    TriggerClientEvent(player, "vorp:TipRight", Configuration.GetTranslation("fullInventoryGive"), 2000);
+                    TriggerClientEvent(targetPlayer, "vorp:TipRight", Configuration.GetTranslation("fullInventory"), 2000);
                     return;
                 }
 
@@ -789,8 +789,8 @@ namespace VorpInventory.Scripts
 
                 targetPlayer.TriggerEvent("vorpinventory:receiveItem", itemName, amount);
                 player.TriggerEvent("vorpinventory:receiveItem2", itemName, amount);
-                TriggerClientEvent(player, "vorp:TipRight", Config.GetTranslation("yougaveitem"), 2000);
-                TriggerClientEvent(targetPlayer, "vorp:TipRight", Config.GetTranslation("YouReceiveditem"), 2000);
+                TriggerClientEvent(player, "vorp:TipRight", Configuration.GetTranslation("yougaveitem"), 2000);
+                TriggerClientEvent(targetPlayer, "vorp:TipRight", Configuration.GetTranslation("YouReceiveditem"), 2000);
                 TriggerEvent("vorpinventory:itemlog", player.Handle, targetPlayer.Handle, itemName, amount);
 
             }

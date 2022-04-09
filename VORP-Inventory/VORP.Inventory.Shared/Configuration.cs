@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Shared
@@ -81,6 +82,8 @@ namespace VORP.Inventory.Shared
 
             return hash;
         }
+
+        public static bool HasWeaponHashName(string hashName) => Config.Weapons.Any(weapon => weapon.HashName == hashName);
 
         private static long FromHex(string value)
         {

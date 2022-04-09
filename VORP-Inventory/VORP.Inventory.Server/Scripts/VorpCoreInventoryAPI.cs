@@ -841,7 +841,7 @@ namespace VorpInventory.Scripts
                     }
                     else
                     {
-                        TriggerClientEvent(player, "vorp:Tip", Config.Lang["fullInventory"], 2000);
+                        TriggerClientEvent(player, "vorp:Tip", Configuration.GetTranslation("fullInventory"), 2000);
                     }
                 }
             }
@@ -936,7 +936,7 @@ namespace VorpInventory.Scripts
                     return;
                 }
 
-                if (!Config.HasWeaponHashName(hashName))
+                if (!Configuration.HasWeaponHashName(hashName))
                 {
                     Logger.Error($"registerWeapon: Weapon name '{hashName}' does not exist.");
                     return;

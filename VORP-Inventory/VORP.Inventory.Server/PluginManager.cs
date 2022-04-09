@@ -19,7 +19,6 @@ namespace VorpInventory
         // Database
         public static Database.ItemDatabase ItemsDB = new();
         // private scripts
-        public static Config _scriptConfig = new Config();
         public static VorpCoreInventoryAPI _scriptVorpCoreInventoryApi = new VorpCoreInventoryAPI();
         public static VorpPlayerInventory _scriptVorpPlayerInventory = new VorpPlayerInventory();
 
@@ -91,7 +90,6 @@ namespace VorpInventory
             await VendorReady(); // wait till ghmattimysql resource has started
 
             RegisterScript(ItemsDB);
-            RegisterScript(_scriptConfig);
             RegisterScript(_scriptVorpCoreInventoryApi);
             RegisterScript(_scriptVorpPlayerInventory);
 
@@ -142,7 +140,6 @@ namespace VorpInventory
                 Logger.Info($"Stopping VORP Inventory");
 
                 UnregisterScript(ItemsDB);
-                UnregisterScript(_scriptConfig);
                 UnregisterScript(_scriptVorpCoreInventoryApi);
                 UnregisterScript(_scriptVorpPlayerInventory);
             }));
