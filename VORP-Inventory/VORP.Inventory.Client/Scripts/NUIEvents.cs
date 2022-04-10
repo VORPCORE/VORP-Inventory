@@ -21,58 +21,62 @@ namespace VORP.Inventory.Client.Scripts
 
         public void Init()
         {
-            NUI.RegisterCallback("NUIFocusOff", new Action<ExpandoObject>(NUIFocusOff));
+            NUI.RegisterCallback("NUIFocusOff", new Action(NUIFocusOff));
             NUI.RegisterCallback("DropItem", new Action<ExpandoObject>(NUIDropItem));
+            NUI.RegisterCallback("UseItem", new Action<ExpandoObject>(NUIUseItem));
+            NUI.RegisterCallback("sound", new Action(NUISound));
+            NUI.RegisterCallback("GiveItem", new Action<ExpandoObject>(NUIGiveItem));
+            NUI.RegisterCallback("GetNearPlayers", new Action<ExpandoObject>(NUIGetNearPlayers));
             NUI.RegisterCallback("UnequipWeapon", new Action<ExpandoObject>(NUIUnequipWeapon));
 
-            EventHandlers["vorp_inventory:ProcessingReady"] += new Action(setProcessingPayFalse);
-            EventHandlers["vorp_inventory:CloseInv"] += new Action(OnCloseInventory);
+            AddEvent("vorp_inventory:ProcessingReady", new Action(setProcessingPayFalse));
+            AddEvent("vorp_inventory:CloseInv", new Action(OnCloseInventory));
 
             //HorseModule
-            EventHandlers["vorp_inventory:OpenHorseInventory"] += new Action<string, int>(OpenHorseInventory);
-            EventHandlers["vorp_inventory:ReloadHorseInventory"] += new Action<string>(ReloadHorseInventory);
+            AddEvent("vorp_inventory:OpenHorseInventory", new Action<string, int>(OpenHorseInventory));
+            AddEvent("vorp_inventory:ReloadHorseInventory", new Action<string>(ReloadHorseInventory));
 
             NUI.RegisterCallback("TakeFromHorse", new Action<ExpandoObject>(NUITakeFromHorse));
             NUI.RegisterCallback("MoveToHorse", new Action<ExpandoObject>(NUIMoveToHorse));
 
             //Steal
-            EventHandlers["vorp_inventory:OpenstealInventory"] += new Action<string, int>(OpenstealInventory);
-            EventHandlers["vorp_inventory:ReloadstealInventory"] += new Action<string>(ReloadstealInventory);
+            AddEvent("vorp_inventory:OpenstealInventory", new Action<string, int>(OpenstealInventory));
+            AddEvent("vorp_inventory:ReloadstealInventory", new Action<string>(ReloadstealInventory));
 
             NUI.RegisterCallback("TakeFromsteal", new Action<ExpandoObject>(NUITakeFromsteal));
             NUI.RegisterCallback("MoveTosteal", new Action<ExpandoObject>(NUIMoveTosteal));
 
             //CartModule
-            EventHandlers["vorp_inventory:OpenCartInventory"] += new Action<string, int>(OpenCartInventory);
-            EventHandlers["vorp_inventory:ReloadCartInventory"] += new Action<string>(ReloadCartInventory);
+            AddEvent("vorp_inventory:OpenCartInventory", new Action<string, int>(OpenCartInventory));
+            AddEvent("vorp_inventory:ReloadCartInventory", new Action<string>(ReloadCartInventory));
 
             NUI.RegisterCallback("TakeFromCart", new Action<ExpandoObject>(NUITakeFromCart));
             NUI.RegisterCallback("MoveToCart", new Action<ExpandoObject>(NUIMoveToCart));
 
             //HouseModule
-            EventHandlers["vorp_inventory:OpenHouseInventory"] += new Action<string, int>(OpenHouseInventory);
-            EventHandlers["vorp_inventory:ReloadHouseInventory"] += new Action<string>(ReloadHouseInventory);
+            AddEvent("vorp_inventory:OpenHouseInventory", new Action<string, int>(OpenHouseInventory));
+            AddEvent("vorp_inventory:ReloadHouseInventory", new Action<string>(ReloadHouseInventory));
 
             NUI.RegisterCallback("TakeFromHouse", new Action<ExpandoObject>(NUITakeFromHouse));
             NUI.RegisterCallback("MoveToHouse", new Action<ExpandoObject>(NUIMoveToHouse));
 
             //HideoutModule
-            EventHandlers["vorp_inventory:OpenHideoutInventory"] += new Action<string, int>(OpenHideoutInventory);
-            EventHandlers["vorp_inventory:ReloadHideoutInventory"] += new Action<string>(ReloadHideoutInventory);
+            AddEvent("vorp_inventory:OpenHideoutInventory", new Action<string, int>(OpenHideoutInventory));
+            AddEvent("vorp_inventory:ReloadHideoutInventory", new Action<string>(ReloadHideoutInventory));
 
             NUI.RegisterCallback("TakeFromHideout", new Action<ExpandoObject>(NUITakeFromHideout));
             NUI.RegisterCallback("MoveToHideout", new Action<ExpandoObject>(NUIMoveToHideout));
 
             //clan
-            EventHandlers["vorp_inventory:OpenClanInventory"] += new Action<string, int>(OpenClanInventory);
-            EventHandlers["vorp_inventory:ReloadClanInventory"] += new Action<string>(ReloadClanInventory);
+            AddEvent("vorp_inventory:OpenClanInventory", new Action<string, int>(OpenClanInventory));
+            AddEvent("vorp_inventory:ReloadClanInventory", new Action<string>(ReloadClanInventory));
 
             NUI.RegisterCallback("TakeFromClan", new Action<ExpandoObject>(NUITakeFromClan));
             NUI.RegisterCallback("MoveToClan", new Action<ExpandoObject>(NUIMoveToClan));
 
             //Container
-            EventHandlers["vorp_inventory:OpenContainerInventory"] += new Action<string, int>(OpenContainerInventory);
-            EventHandlers["vorp_inventory:ReloadContainerInventory"] += new Action<string>(ReloadContainerInventory);
+            AddEvent("vorp_inventory:OpenContainerInventory", new Action<string, int>(OpenContainerInventory));
+            AddEvent("vorp_inventory:ReloadContainerInventory", new Action<string>(ReloadContainerInventory));
 
             NUI.RegisterCallback("TakeFromContainer", new Action<ExpandoObject>(NUITakeFromContainer));
             NUI.RegisterCallback("MoveToContainer", new Action<ExpandoObject>(NUIMoveToContainer));
@@ -521,12 +525,12 @@ namespace VORP.Inventory.Client.Scripts
             LoadInv();
         }
 
-        private void NUISound(ExpandoObject obj)
+        private void NUISound()
         {
             API.PlaySoundFrontend("BACK", "RDRO_Character_Creator_Sounds", true, 0);
         }
 
-        private void NUIFocusOff(ExpandoObject obj)
+        private void NUIFocusOff()
         {
             OnCloseInventory();
             TriggerEvent("vorp_stables:setClosedInv", false);
