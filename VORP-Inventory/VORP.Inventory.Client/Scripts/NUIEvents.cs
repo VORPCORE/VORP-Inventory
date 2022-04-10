@@ -4,11 +4,10 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Threading.Tasks;
-using VORP.Inventory.Shared;
-using VORP.Inventory.Client.Models;
-using VORP.Inventory.Client.Interface;
 using System.Linq;
+using System.Threading.Tasks;
+using VORP.Inventory.Client.Models;
+using VORP.Inventory.Shared;
 using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Client.Scripts

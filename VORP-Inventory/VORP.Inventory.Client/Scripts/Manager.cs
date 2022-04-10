@@ -9,9 +9,9 @@ namespace VORP.Inventory.Client.Scripts
     {
         public PluginManager Instance = PluginManager.Instance;
 
-        public NuiManager NUI => Instance.NUI;
-        public void AddEvent(string eventName, Delegate @delegate) => Instance.Hook(eventName, @delegate);
-        public void AttachTickHandler(Func<Task> task) => Instance.AttachTickHandler(task);
-        public void DetachTickHandler(Func<Task> task) => Instance.AttachTickHandler(task);
+        public NuiManager NUI = new();
+        public void AddEvent(string eventName, Delegate @delegate) => PluginManager.Instance.Hook(eventName, @delegate);
+        public void AttachTickHandler(Func<Task> task) => PluginManager.Instance.AttachTickHandler(task);
+        public void DetachTickHandler(Func<Task> task) => PluginManager.Instance.AttachTickHandler(task);
     }
 }
