@@ -5,8 +5,10 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 
 ui_page 'html/ui.html'
 
-client_scripts {'config.lua', 'vorpinventory_cl.net.dll', 'client/client.lua'}
-server_scripts {'config.lua', 'vorpinventory_sv.net.dll', 'vorpInventoryAPI.lua', 'server/server.lua'}
+client_scripts {'*.Client.net.dll', 'client/client.lua'}
+server_scripts {'*.Server.net.dll', 'vorpInventoryAPI.lua', 'server/server.lua'}
+
+shared_script 'config.lua'
 
 server_exports {'vorp_inventoryApi'}
 
