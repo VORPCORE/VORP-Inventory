@@ -137,10 +137,6 @@ namespace VORP.Inventory.Server
                 if (resourceName != GetCurrentResourceName()) return;
 
                 Logger.Info($"Stopping VORP Inventory");
-
-                UnregisterScript(ItemsDB);
-                UnregisterScript(ScriptVorpCoreInventoryApi);
-                UnregisterScript(ScriptVorpPlayerInventory);
             }));
         }
 
