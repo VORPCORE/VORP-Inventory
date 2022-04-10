@@ -30,8 +30,8 @@ namespace VORP.Inventory.Client.Scripts
             AddEvent("vorpCoreClient:subComponent", new Action<int, string>(OnSubtractComponent));
 
             AddEvent("vorpInventory:giveItemsTable", new Action<dynamic>(OnProcessItems));
-            AddEvent("vorpInventory:giveInventory", new Action<string>(OnGetInventory));
-            AddEvent("vorpInventory:giveLoadout", new Action<dynamic>(OnGetLoadout));
+            AddEvent("vorpInventory:giveInventory", new Action<string>(OnGiveInventory));
+            AddEvent("vorpInventory:giveLoadout", new Action<dynamic>(OnGiveUserWeapons));
             AddEvent("vorp:SelectedCharacter", new Action<int>(OnSelectedCharacterAsync));
             AddEvent("vorpinventory:receiveItem", new Action<string, int>(OnReceiveItem));
             AddEvent("vorpinventory:receiveItem2", new Action<string, int>(OnReceiveItemTwo));
@@ -49,7 +49,6 @@ namespace VORP.Inventory.Client.Scripts
             if (API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false))
             {
                 string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
-                //Debug.WriteLine(weaponName);
                 if (weaponName.Contains("UNARMED")) { return; }
 
                 Dictionary<string, int> ammoDict = new Dictionary<string, int>();
@@ -73,7 +72,7 @@ namespace VORP.Inventory.Client.Scripts
                     }
                 }
             }
-        }//Update weapon ammo
+        }
 
         private void OnReceiveItem(string name, int count)
         {
@@ -122,9 +121,9 @@ namespace VORP.Inventory.Client.Scripts
 
         private async void OnSelectedCharacterAsync(int charId)
         {
-            API.SetNuiFocus(false, false);
-            API.SendNuiMessage("{\"action\": \"hide\"}");
-            Debug.WriteLine("Loading Inventory");
+            Logger.Trace($"OnSelectedCharacterAsync: {charId}");
+            Instance.NUIEvents.OnCloseInventory();
+
             TriggerServerEvent("vorpinventory:getItemsTable");
             await Delay(300);
             TriggerServerEvent("vorpinventory:getInventory");
@@ -132,22 +131,29 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnProcessItems(dynamic items)
         {
-            citems.Clear();
-            foreach (dynamic item in items)
+            try
             {
-                citems.Add(item.item, new Dictionary<string, dynamic>
+                citems.Clear();
+                foreach (dynamic item in items)
                 {
-                    ["item"] = item.item,
-                    ["label"] = item.label,
-                    ["limit"] = item.limit,
-                    ["can_remove"] = item.can_remove,
-                    ["type"] = item.type,
-                    ["usable"] = item.usable
-                });
+                    citems.Add(item.item, new Dictionary<string, dynamic>
+                    {
+                        ["item"] = item.item,
+                        ["label"] = item.label,
+                        ["limit"] = item.limit,
+                        ["can_remove"] = item.can_remove,
+                        ["type"] = item.type,
+                        ["usable"] = item.usable
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"OnProcessItems");
             }
         }
 
-        private void OnGetLoadout(dynamic loadout)
+        private void OnGiveUserWeapons(dynamic loadout)
         {
             Debug.WriteLine(API.PlayerPedId().ToString());
             foreach (var row in loadout)
@@ -191,13 +197,15 @@ namespace VORP.Inventory.Client.Scripts
             }
         }
 
-        private void OnGetInventory(string inventory)
+        private void OnGiveInventory(string inventory)
         {
             UsersItems.Clear();
             if (inventory != null)
             {
+                Logger.Trace($"OnGetInventory: {inventory}");
+
                 dynamic items = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(inventory);
-                Debug.WriteLine(items.ToString());
+                
                 foreach (KeyValuePair<string, Dictionary<string, dynamic>> fitems in citems)
                 {
                     if (items[fitems.Key] != null)
