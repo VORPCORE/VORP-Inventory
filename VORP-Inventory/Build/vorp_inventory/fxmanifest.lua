@@ -13,3 +13,5 @@ shared_script 'config.lua'
 server_exports {'vorp_inventoryApi'}
 
 files {'Newtonsoft.Json.dll', 'html/**/*', 'config.json', 'languages/**/*'}
+
+log_level 'all'
