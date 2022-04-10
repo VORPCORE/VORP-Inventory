@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VORP.Inventory.Client</RootNamespace>
-    <AssemblyName>vorpinventory_cl.net</AssemblyName>
+    <AssemblyName>VORP.Inventory.Client.net</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
