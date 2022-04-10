@@ -15,8 +15,8 @@ namespace VORP.Inventory.Client.Scripts
         public static Dictionary<string, Dictionary<string, dynamic>> citems =
     new Dictionary<string, Dictionary<string, dynamic>>();
 
-        public static Dictionary<string, ItemClass> useritems = new Dictionary<string, ItemClass>();
-        public static Dictionary<int, WeaponClass> userWeapons = new Dictionary<int, WeaponClass>();
+        public static Dictionary<string, ItemClass> UsersItems = new Dictionary<string, ItemClass>();
+        public static Dictionary<int, WeaponClass> UsersWeapons = new Dictionary<int, WeaponClass>();
         public static Dictionary<int, string> bulletsHash = new Dictionary<int, string>();
 
         public void Init()
@@ -54,7 +54,7 @@ namespace VORP.Inventory.Client.Scripts
 
                 Dictionary<string, int> ammoDict = new Dictionary<string, int>();
                 WeaponClass usedWeapon = null;
-                foreach (KeyValuePair<int, WeaponClass> weap in userWeapons.ToList())
+                foreach (KeyValuePair<int, WeaponClass> weap in UsersWeapons.ToList())
                 {
                     if (weaponName.Contains(weap.Value.getName()) && weap.Value.getUsed())
                     {
@@ -77,27 +77,27 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnReceiveItem(string name, int count)
         {
-            if (useritems.ContainsKey(name))
+            if (UsersItems.ContainsKey(name))
             {
-                useritems[name].addCount(count);
+                UsersItems[name].addCount(count);
             }
             else
             {
-                useritems.Add(name, new ItemClass(count, citems[name]["limit"], citems[name]["label"], name,
+                UsersItems.Add(name, new ItemClass(count, citems[name]["limit"], citems[name]["label"], name,
                     "item_standard", true, citems[name]["can_remove"]));
             }
 
-            NUIEvents.LoadInv();
+            Instance.NUIEvents.LoadInv();
         }
 
         private void OnReceiveItemTwo(string name, int count)
         {
-            useritems[name].quitCount(count);
-            if (useritems[name].getCount() == 0)
+            UsersItems[name].quitCount(count);
+            if (UsersItems[name].getCount() == 0)
             {
-                useritems.Remove(name);
+                UsersItems.Remove(name);
             }
-            NUIEvents.LoadInv();
+            Instance.NUIEvents.LoadInv();
         }
 
         private void OnReceiveWeapon(int id, string propietary, string name, ExpandoObject ammo, List<dynamic> components)
@@ -113,11 +113,11 @@ namespace VORP.Inventory.Client.Scripts
                 auxcomponents.Add(comp.ToString());
             }
             WeaponClass weapon = new WeaponClass(id, propietary, name, ammoaux, auxcomponents, false, false);
-            if (!userWeapons.ContainsKey(weapon.getId()))
+            if (!UsersWeapons.ContainsKey(weapon.getId()))
             {
-                userWeapons.Add(weapon.getId(), weapon);
+                UsersWeapons.Add(weapon.getId(), weapon);
             }
-            NUIEvents.LoadInv();
+            Instance.NUIEvents.LoadInv();
         }
 
         private async void OnSelectedCharacterAsync(int charId)
@@ -179,9 +179,9 @@ namespace VORP.Inventory.Client.Scripts
                 }
                 WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), ammos, components, auused, auused2);
 
-                if (!userWeapons.ContainsKey(auxweapon.getId()))
+                if (!UsersWeapons.ContainsKey(auxweapon.getId()))
                 {
-                    userWeapons.Add(auxweapon.getId(), auxweapon);
+                    UsersWeapons.Add(auxweapon.getId(), auxweapon);
 
                     if (auxweapon.getUsed())
                     {
@@ -193,7 +193,7 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnGetInventory(string inventory)
         {
-            useritems.Clear();
+            UsersItems.Clear();
             if (inventory != null)
             {
                 dynamic items = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(inventory);
@@ -210,7 +210,7 @@ namespace VORP.Inventory.Client.Scripts
                         string type = fitems.Value["type"].ToString();
                         bool usable = bool.Parse(fitems.Value["usable"].ToString());
                         ItemClass item = new ItemClass(cuantity, limit, label, fitems.Key, type, usable, can_remove);
-                        useritems.Add(fitems.Key, item);
+                        UsersItems.Add(fitems.Key, item);
                     }
                 }
             }
@@ -218,17 +218,17 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnSubtractComponent(int weaponId, string component)
         {
-            if (userWeapons.ContainsKey(weaponId))
+            if (UsersWeapons.ContainsKey(weaponId))
             {
-                if (!userWeapons[weaponId].getAllComponents().Contains(component))
+                if (!UsersWeapons[weaponId].getAllComponents().Contains(component))
                 {
-                    userWeapons[weaponId].quitComponent(component);
-                    if (userWeapons[weaponId].getUsed())
+                    UsersWeapons[weaponId].quitComponent(component);
+                    if (UsersWeapons[weaponId].getUsed())
                     {
                         Function.Call((Hash)0x4899CB088EDF59B8, API.PlayerPedId(),
-                            (uint)API.GetHashKey(userWeapons[weaponId].getName()), true, 0);
-                        userWeapons[weaponId].loadAmmo();
-                        userWeapons[weaponId].loadComponents();
+                            (uint)API.GetHashKey(UsersWeapons[weaponId].getName()), true, 0);
+                        UsersWeapons[weaponId].loadAmmo();
+                        UsersWeapons[weaponId].loadComponents();
                     }
                 }
             }
@@ -236,17 +236,17 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnAddComponent(int weaponId, string component)
         {
-            if (userWeapons.ContainsKey(weaponId))
+            if (UsersWeapons.ContainsKey(weaponId))
             {
-                if (!userWeapons[weaponId].getAllComponents().Contains(component))
+                if (!UsersWeapons[weaponId].getAllComponents().Contains(component))
                 {
-                    userWeapons[weaponId].setComponent(component);
-                    if (userWeapons[weaponId].getUsed())
+                    UsersWeapons[weaponId].setComponent(component);
+                    if (UsersWeapons[weaponId].getUsed())
                     {
                         Function.Call((Hash)0x4899CB088EDF59B8, API.PlayerPedId(),
-                            (uint)API.GetHashKey(userWeapons[weaponId].getName()), true, 0);
-                        userWeapons[weaponId].loadAmmo();
-                        userWeapons[weaponId].loadComponents();
+                            (uint)API.GetHashKey(UsersWeapons[weaponId].getName()), true, 0);
+                        UsersWeapons[weaponId].loadAmmo();
+                        UsersWeapons[weaponId].loadComponents();
                     }
                 }
             }
@@ -254,72 +254,72 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnSubtractWeaponBullets(int weaponId, string bulletType, int cuantity)
         {
-            if (userWeapons.ContainsKey(weaponId))
+            if (UsersWeapons.ContainsKey(weaponId))
             {
-                userWeapons[weaponId].subAmmo(cuantity, bulletType);
-                if (userWeapons[weaponId].getUsed())
+                UsersWeapons[weaponId].subAmmo(cuantity, bulletType);
+                if (UsersWeapons[weaponId].getUsed())
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), userWeapons[weaponId].getAmmo(bulletType));
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), UsersWeapons[weaponId].getAmmo(bulletType));
                 }
             }
-            NUIEvents.LoadInv();
+            Instance.NUIEvents.LoadInv();
         }
 
         private void OnAddWeaponBullets(int weaponId, string bulletType, int cuantity)
         {
-            if (userWeapons.ContainsKey(weaponId))
+            if (UsersWeapons.ContainsKey(weaponId))
             {
-                userWeapons[weaponId].addAmmo(cuantity, bulletType);
-                if (userWeapons[weaponId].getUsed())
+                UsersWeapons[weaponId].addAmmo(cuantity, bulletType);
+                if (UsersWeapons[weaponId].getUsed())
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), userWeapons[weaponId].getAmmo(bulletType));
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), UsersWeapons[weaponId].getAmmo(bulletType));
                 }
             }
-            NUIEvents.LoadInv();
+            Instance.NUIEvents.LoadInv();
         }
 
 
         private void OnSubtractWeapon(int weaponId)
         {
-            if (userWeapons.ContainsKey(weaponId))
+            if (UsersWeapons.ContainsKey(weaponId))
             {
-                if (userWeapons[weaponId].getUsed())
+                if (UsersWeapons[weaponId].getUsed())
                 {
                     API.RemoveWeaponFromPed(API.PlayerPedId(),
-                        (uint)API.GetHashKey(userWeapons[weaponId].getName()),
+                        (uint)API.GetHashKey(UsersWeapons[weaponId].getName()),
                         true, 0); //Falta revisar que pasa con esto
                 }
-                userWeapons.Remove(weaponId);
+                UsersWeapons.Remove(weaponId);
             }
-            NUIEvents.LoadInv();
+            Instance.NUIEvents.LoadInv();
         }
 
         private void OnSubtractItem(string name, int cuantity)
         {
             Debug.WriteLine($"{name} = {cuantity}");
-            if (useritems.ContainsKey(name))
+            if (UsersItems.ContainsKey(name))
             {
-                useritems[name].setCount(cuantity);
-                if (useritems[name].getCount() == 0)
+                UsersItems[name].setCount(cuantity);
+                if (UsersItems[name].getCount() == 0)
                 {
-                    useritems.Remove(name);
+                    UsersItems.Remove(name);
                 }
             }
-            NUIEvents.LoadInv();
+            Instance.NUIEvents.LoadInv();
         }
 
         private void OnAddItem(int count, int limit, string label, string name, string type, bool usable, bool canRemove)
         {
-            if (useritems.ContainsKey(name))
+            if (UsersItems.ContainsKey(name))
             {
-                useritems[name].addCount(count);
+                UsersItems[name].addCount(count);
             }
             else
             {
                 ItemClass auxitem = new ItemClass(count, limit, label, name, type, usable, canRemove);
-                useritems.Add(name, auxitem);
+                UsersItems.Add(name, auxitem);
             }
-            NUIEvents.LoadInv();
+            Instance.NUIEvents.LoadInv();
         }
     }
 }

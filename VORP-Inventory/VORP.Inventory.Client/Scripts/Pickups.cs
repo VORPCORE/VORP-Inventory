@@ -51,15 +51,15 @@ namespace VORP.Inventory.Client.Scripts
             await Delay(200);
             if (Configuration.Config.DropOnRespawn.Items)
             {
-                Dictionary<string, ItemClass> items = InventoryAPI.useritems.ToDictionary(p => p.Key, p => p.Value);
+                Dictionary<string, ItemClass> items = InventoryAPI.UsersItems.ToDictionary(p => p.Key, p => p.Value);
                 foreach (var item in items.Values)
                 {
                     TriggerServerEvent("vorpinventory:serverDropItem", item.getName(), item.getCount(), 1);
-                    InventoryAPI.useritems[item.getName()].quitCount(item.getCount());
+                    InventoryAPI.UsersItems[item.getName()].quitCount(item.getCount());
                     //Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
-                    if (InventoryAPI.useritems[item.getName()].getCount() == 0)
+                    if (InventoryAPI.UsersItems[item.getName()].getCount() == 0)
                     {
-                        InventoryAPI.useritems.Remove(item.getName());
+                        InventoryAPI.UsersItems.Remove(item.getName());
                     }
                     await Delay(200);
                 }
@@ -67,20 +67,20 @@ namespace VORP.Inventory.Client.Scripts
 
             if (Configuration.Config.DropOnRespawn.Weapons)
             {
-                Dictionary<int, WeaponClass> weapons = InventoryAPI.userWeapons.ToDictionary(p => p.Key, p => p.Value);
+                Dictionary<int, WeaponClass> weapons = InventoryAPI.UsersWeapons.ToDictionary(p => p.Key, p => p.Value);
                 foreach (var weapon in weapons)
                 {
                     TriggerServerEvent("vorpinventory:serverDropWeapon", weapon.Key);
-                    if (InventoryAPI.userWeapons.ContainsKey(weapon.Key))
+                    if (InventoryAPI.UsersWeapons.ContainsKey(weapon.Key))
                     {
-                        WeaponClass wp = InventoryAPI.userWeapons[weapon.Key];
+                        WeaponClass wp = InventoryAPI.UsersWeapons[weapon.Key];
                         if (wp.getUsed())
                         {
                             wp.setUsed(false);
                             API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()),
                                 true, 0);
                         }
-                        InventoryAPI.userWeapons.Remove(weapon.Key);
+                        InventoryAPI.UsersWeapons.Remove(weapon.Key);
                     }
                     await Delay(200);
                 }

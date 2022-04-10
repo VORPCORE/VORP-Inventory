@@ -8,15 +8,18 @@ using System.Threading.Tasks;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Client.Models;
 using VORP.Inventory.Client.Interface;
+using System.Linq;
+using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Client.Scripts
 {
     public class NUIEvents : Manager
     {
-        public static bool InInventory = false;
+        List<Dictionary<string, dynamic>> _userItemsCache = new();
+        List<Dictionary<string, dynamic>> _userWeaponsCache = new();
 
-        public static List<Dictionary<string, dynamic>> gg = new List<Dictionary<string, dynamic>>();
-        public static Dictionary<string, object> items = new Dictionary<string, object>();
+        public static bool IsInventoryOpen = false;
+
         public static bool isProcessingPay = false;
 
         public void Init()
@@ -90,12 +93,14 @@ namespace VORP.Inventory.Client.Scripts
             await Delay(500);
             LoadInv();
         }
+
         private async void ReloadstealInventory(string stealInventory)
         {
             API.SendNuiMessage(stealInventory);
             await Delay(500);
             LoadInv();
         }
+
         private async void ReloadClanInventory(string cartInventory)
         {
             API.SendNuiMessage(cartInventory);
@@ -109,9 +114,10 @@ namespace VORP.Inventory.Client.Scripts
             API.SetNuiFocus(true, true);
 
             API.SendNuiMessage("{\"action\": \"display\", \"type\": \"clan\", \"title\": \"" + clanName + "\", \"clanid\": " + clanid.ToString() + "}");
-            InInventory = true;
+            IsInventoryOpen = true;
             //TriggerEvent("vorp_stables:setClosedInv", true);
         }
+
         private void NUIMoveToClan(ExpandoObject obj)
         {
             JObject data = JObject.FromObject(obj);
@@ -138,7 +144,7 @@ namespace VORP.Inventory.Client.Scripts
             API.SetNuiFocus(true, true);
 
             API.SendNuiMessage("{\"action\": \"display\", \"type\": \"Container\", \"title\": \"" + ContainerName + "\", \"Containerid\": " + Containerid.ToString() + "}");
-            InInventory = true;
+            IsInventoryOpen = true;
             //TriggerEvent("vorp_stables:setClosedInv", true);
         }
         private void NUIMoveToContainer(ExpandoObject obj)
@@ -159,7 +165,7 @@ namespace VORP.Inventory.Client.Scripts
             API.SetNuiFocus(true, true);
 
             API.SendNuiMessage("{\"action\": \"display\", \"type\": \"horse\", \"title\": \"" + horseName + "\", \"horseid\": " + horseid.ToString() + "}");
-            InInventory = true;
+            IsInventoryOpen = true;
             TriggerEvent("vorp_stables:setClosedInv", true);
         }
 
@@ -175,9 +181,6 @@ namespace VORP.Inventory.Client.Scripts
             TriggerServerEvent("vorp_stables:TakeFromHorse", data.ToString());
         }
 
-
-
-
         private void OpenstealInventory(string stealName, int stealid)
         {
             //"action", "setSecondInventoryItems"
@@ -185,7 +188,7 @@ namespace VORP.Inventory.Client.Scripts
 
             API.SendNuiMessage("{\"action\": \"display\", \"type\": \"steal\", \"title\": \"" + stealName + "\", \"stealId\": " + stealid.ToString() + "}");
 
-            InInventory = true;
+            IsInventoryOpen = true;
             TriggerEvent("vorp_stables:setClosedInv", true);
         }
 
@@ -214,7 +217,7 @@ namespace VORP.Inventory.Client.Scripts
             API.SetNuiFocus(true, true);
 
             API.SendNuiMessage("{\"action\": \"display\", \"type\": \"cart\", \"title\": \"" + cartName + "\", \"wagonid\": " + wagonid.ToString() + "}");
-            InInventory = true;
+            IsInventoryOpen = true;
             TriggerEvent("vorp_stables:setClosedInv", true);
         }
 
@@ -243,7 +246,7 @@ namespace VORP.Inventory.Client.Scripts
             API.SetNuiFocus(true, true);
 
             API.SendNuiMessage("{\"action\": \"display\", \"type\": \"house\", \"title\": \"" + houseName + "\", \"houseId\": " + houseId.ToString() + "}");
-            InInventory = true;
+            IsInventoryOpen = true;
             //TriggerEvent("vorp_stables:setClosedInv", true);
         }
 
@@ -272,7 +275,7 @@ namespace VORP.Inventory.Client.Scripts
             API.SetNuiFocus(true, true);
 
             API.SendNuiMessage("{\"action\": \"display\", \"type\": \"hideout\", \"title\": \"" + hideoutName + "\", \"hideoutId\": " + hideoutId.ToString() + "}");
-            InInventory = true;
+            IsInventoryOpen = true;
             //TriggerEvent("vorp_stables:setClosedInv", true);
         }
 
@@ -296,9 +299,11 @@ namespace VORP.Inventory.Client.Scripts
         private void NUIUnequipWeapon(ExpandoObject obj)
         {
             Dictionary<string, object> data = Utils.ProcessDynamicObject(obj);
-            if (InventoryAPI.userWeapons.ContainsKey(int.Parse(data["id"].ToString())))
+            int ItemId = int.Parse(data["id"].ToString());
+
+            if (InventoryAPI.UsersWeapons.ContainsKey(ItemId))
             {
-                InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].UnequipWeapon();
+                InventoryAPI.UsersWeapons[ItemId].UnequipWeapon();
             }
             LoadInv();
         }
@@ -386,31 +391,15 @@ namespace VORP.Inventory.Client.Scripts
                         else if (int.Parse(data2["id"].ToString()) == 0)
                         {
                             int amount = int.Parse(data2["count"].ToString());
-                            if (amount > 0 && InventoryAPI.useritems[itemname].getCount() >= amount)
+                            if (amount > 0 && InventoryAPI.UsersItems[itemname].getCount() >= amount)
                             {
                                 TriggerServerEvent("vorpinventory:serverGiveItem", itemname, amount, target, 1);
-                                /*vorp_inventoryClient.useritems[itemname].quitCount(amount);
-                                if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
-                                {
-                                    vorp_inventoryClient.useritems.Remove(itemname);
-                                }*/
                             }
                         }
                         else
                         {
                             TriggerServerEvent("vorpinventory:serverGiveWeapon2", int.Parse(data2["id"].ToString()), target);
                             TriggerServerEvent("vorpinventory:weaponlog", target, data2);
-
-
-                            /*  if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data2["id"].ToString())))
-                             {
-                                 if (vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getUsed())
-                                 {
-                                     vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].setUsed(false);
-                                     vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].RemoveWeaponFromPed();
-                                 }
-                                 vorp_inventoryClient.userWeapons.Remove(int.Parse(data2["id"].ToString()));
-                             } */
                         }
 
                         LoadInv();
@@ -422,14 +411,8 @@ namespace VORP.Inventory.Client.Scripts
         private void NUIUseItem(ExpandoObject obj)
         {
             Dictionary<string, object> data = Utils.ProcessDynamicObject(obj);
-            // foreach (var VARIABLE in data)
-            // {
-            //     Debug.WriteLine($"{VARIABLE.Key}: {VARIABLE.Value}");
-            // }
             if (data["type"].ToString().Contains("item_standard"))
             {
-                // string eventString = "vorp:use" + data["item"];
-                // TriggerServerEvent(eventString); Version antigua
                 TriggerServerEvent("vorp:use", data["item"]);
             }
             else if (data["type"].ToString().Contains("item_weapon"))
@@ -437,8 +420,11 @@ namespace VORP.Inventory.Client.Scripts
                 uint weaponHash = 0;
                 API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
 
-                bool isWeaponARevolver = Function.Call<bool>((Hash)0xC212F1D05A8232BB, API.GetHashKey(InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].getName()));
-                bool isWeaponAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, API.GetHashKey(InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].getName()));
+                int ItemId = int.Parse(data["id"].ToString());
+                WeaponClass weapon = InventoryAPI.UsersWeapons[ItemId];
+
+                bool isWeaponARevolver = Function.Call<bool>((Hash)0xC212F1D05A8232BB, API.GetHashKey(weapon.getName()));
+                bool isWeaponAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, API.GetHashKey(weapon.getName()));
                 string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
 
                 // Check if the weapon used is a pistol or a revolver and ped is not unarmed.
@@ -451,22 +437,22 @@ namespace VORP.Inventory.Client.Scripts
                     if (isWeaponUsedARevolver || isWeaponUsedAPistol)
                     {
                         Debug.WriteLine("Equiping offhand");
-                        InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].setUsed2(true);
-                        InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
-                        InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].loadComponents();
-                        InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
+                        weapon.setUsed2(true);
+                        weapon.loadAmmo();
+                        weapon.loadComponents();
+                        weapon.setUsed(true);
                         TriggerServerEvent("syn_weapons:weaponused", data);
-                        Debug.WriteLine($"used 2 : {InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].getUsed2()}");
+                        Debug.WriteLine($"used 2 : {weapon.getUsed2()}");
 
                     }
                 }
-                else if (!InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].getUsed() &&
-                   !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].getName()), 0, true))
+                else if (!weapon.getUsed() &&
+                   !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(weapon.getName()), 0, true))
                 {
                     Debug.WriteLine("THEIR PART");
-                    InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
-                    InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].loadComponents();
-                    InventoryAPI.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
+                    weapon.loadAmmo();
+                    weapon.loadComponents();
+                    weapon.setUsed(true);
                     TriggerServerEvent("syn_weapons:weaponused", data);
                 }
                 else
@@ -494,14 +480,14 @@ namespace VORP.Inventory.Client.Scripts
                 {
 
 
-                    if (int.Parse(aux["number"].ToString()) > 0 && InventoryAPI.useritems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
+                    if (int.Parse(aux["number"].ToString()) > 0 && InventoryAPI.UsersItems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
                     {
                         TriggerServerEvent("vorpinventory:serverDropItem", itemname, int.Parse(aux["number"].ToString()), 1);
-                        InventoryAPI.useritems[itemname].quitCount(int.Parse(aux["number"].ToString()));
+                        InventoryAPI.UsersItems[itemname].quitCount(int.Parse(aux["number"].ToString()));
                         //Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
-                        if (InventoryAPI.useritems[itemname].getCount() == 0)
+                        if (InventoryAPI.UsersItems[itemname].getCount() == 0)
                         {
-                            InventoryAPI.useritems.Remove(itemname);
+                            InventoryAPI.UsersItems.Remove(itemname);
                         }
                     }
                 }
@@ -510,16 +496,16 @@ namespace VORP.Inventory.Client.Scripts
             {
                 //Function.Call((Hash) 0x4899CB088EDF59B8, API.PlayerPedId(), (uint) int.Parse(aux["hash"]),false,false);
                 TriggerServerEvent("vorpinventory:serverDropWeapon", int.Parse(aux["id"].ToString()));
-                if (InventoryAPI.userWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
+                if (InventoryAPI.UsersWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
                 {
-                    WeaponClass wp = InventoryAPI.userWeapons[int.Parse(aux["id"].ToString())];
+                    WeaponClass wp = InventoryAPI.UsersWeapons[int.Parse(aux["id"].ToString())];
                     if (wp.getUsed())
                     {
                         wp.setUsed(false);
                         API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()),
                             true, 0);
                     }
-                    InventoryAPI.userWeapons.Remove(int.Parse(aux["id"].ToString()));
+                    InventoryAPI.UsersWeapons.Remove(int.Parse(aux["id"].ToString()));
                 }
             }
             LoadInv();
@@ -541,7 +527,7 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (API.IsControlJustReleased(1, (uint)Configuration.KEY_OPEN_INVENTORY) && API.IsInputDisabled(0))
             {
-                if (InInventory)
+                if (IsInventoryOpen)
                 {
                     OnCloseInventory();
                     await Delay(1000);
@@ -555,64 +541,89 @@ namespace VORP.Inventory.Client.Scripts
 
         }
 
-        public static void LoadInv()
+        public void LoadInv()
         {
-            Dictionary<string, dynamic> item;
-            Dictionary<string, dynamic> weapon;
-            items.Clear();
-            gg.Clear();
             TriggerServerEvent("vorpinventory:check_slots");
-            foreach (KeyValuePair<string, ItemClass> userit in InventoryAPI.useritems)
-            {
-                item = new Dictionary<string, dynamic>();
-                item.Add("count", userit.Value.getCount());
-                item.Add("limit", userit.Value.getLimit());
-                item.Add("label", userit.Value.getLabel());
-                item.Add("name", userit.Value.getName());
-                item.Add("type", userit.Value.getType());
-                item.Add("usable", userit.Value.getUsable());
-                item.Add("canRemove", userit.Value.getCanRemove());
-                gg.Add(item);
-            }
 
-            foreach (KeyValuePair<int, WeaponClass> userwp in InventoryAPI.userWeapons)
-            {
-                weapon = new Dictionary<string, dynamic>();
-                weapon.Add("count", userwp.Value.getAmmo("Hola"));
-                weapon.Add("limit", -1);
-                weapon.Add("label", userwp.Value.weaponLabel);
-                weapon.Add("name", userwp.Value.getName());
-                weapon.Add("hash", API.GetHashKey(userwp.Value.getName()));
-                weapon.Add("type", "item_weapon");
-                weapon.Add("usable", true);
-                weapon.Add("canRemove", true);
-                weapon.Add("id", userwp.Value.getId());
-                weapon.Add("used", userwp.Value.getUsed());
-                gg.Add(weapon);
-            }
+            UpdateUserItemCache();
+            UpdateUserWeaponCache();
+
+            var allItems = _userItemsCache.Concat(_userWeaponsCache).ToList();
+
+            Dictionary<string, object> items = new();
             items.Add("action", "setItems");
-            items.Add("itemList", gg);
+            items.Add("itemList", allItems);
 
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
 
             API.SendNuiMessage(json);
         }
 
+        private void UpdateUserItemCache()
+        {
+            _userItemsCache.Clear();
+
+            foreach (KeyValuePair<string, ItemClass> itemKvp in InventoryAPI.UsersItems)
+            {
+                ItemClass item = itemKvp.Value;
+
+                Dictionary<string, dynamic> userItem = new();
+                userItem.Add("count", item.getCount());
+                userItem.Add("limit", item.getLimit());
+                userItem.Add("label", item.getLabel());
+                userItem.Add("name", item.getName());
+                userItem.Add("type", item.getType());
+                userItem.Add("usable", item.getUsable());
+                userItem.Add("canRemove", item.getCanRemove());
+                _userItemsCache.Add(userItem);
+            }
+        }
+
+        private void UpdateUserWeaponCache()
+        {
+            _userWeaponsCache.Clear();
+
+            foreach (KeyValuePair<int, WeaponClass> weaponKvp in InventoryAPI.UsersWeapons)
+            {
+                WeaponClass weapon = weaponKvp.Value;
+
+                Dictionary<string, dynamic> weaponItem = new();
+                weaponItem.Add("count", weapon.getAmmo("Hola"));
+                weaponItem.Add("limit", -1);
+                weaponItem.Add("label", weapon.weaponLabel);
+                weaponItem.Add("name", weapon.getName());
+                weaponItem.Add("hash", API.GetHashKey(weapon.getName()));
+                weaponItem.Add("type", "item_weapon");
+                weaponItem.Add("usable", true);
+                weaponItem.Add("canRemove", true);
+                weaponItem.Add("id", weapon.getId());
+                weaponItem.Add("used", weapon.getUsed());
+                _userWeaponsCache.Add(weaponItem);
+            }
+        }
+
         private void OpenInventory()
         {
-            API.SetNuiFocus(true, true);
+            NUI.SetFocus(true);
 
-            API.SendNuiMessage("{\"action\": \"display\", \"type\": \"main\"}");
-            InInventory = true;
+            NuiMessage nui = new NuiMessage();
+            nui.Action = "display";
+            nui.Type = "main";
 
+            API.SendNuiMessage(nui.ToJson());
+            IsInventoryOpen = true;
             LoadInv();
         }
 
         private void OnCloseInventory()
         {
-            API.SetNuiFocus(false, false);
-            API.SendNuiMessage("{\"action\": \"hide\"}");
-            InInventory = false;
+            NUI.SetFocus(false, false);
+
+            NuiMessage nui = new NuiMessage();
+            nui.Action = "hide";
+
+            API.SendNuiMessage(nui.ToJson());
+            IsInventoryOpen = false;
         }
 
     }

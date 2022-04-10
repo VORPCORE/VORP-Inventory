@@ -13,9 +13,9 @@ namespace VORP.Inventory.Client
     {
         public static PluginManager Instance;
 
-        public static Scripts.Pickups Pickups = new Scripts.Pickups();
-        public static Scripts.NUIEvents NUIEvents = new Scripts.NUIEvents();
-        public static Scripts.InventoryAPI InventoryAPI = new Scripts.InventoryAPI();
+        public Scripts.Pickups Pickups = new();
+        public Scripts.NUIEvents NUIEvents = new();
+        public Scripts.InventoryAPI InventoryAPI = new();
 
         public NuiManager NUI = new();
 
