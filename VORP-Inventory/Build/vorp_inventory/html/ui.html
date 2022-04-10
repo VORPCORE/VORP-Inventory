@@ -144,7 +144,7 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/TakeFromHorse", JSON
+                                    $.post("https://vorp_inventory/TakeFromHorse", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -156,7 +156,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/TakeFromHorse", JSON.stringify({
+                            $.post("https://vorp_inventory/TakeFromHorse", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -183,7 +183,7 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/TakeFromCart", JSON
+                                    $.post("https://vorp_inventory/TakeFromCart", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -197,7 +197,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/TakeFromCart", JSON.stringify({
+                            $.post("https://vorp_inventory/TakeFromCart", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 wagon: wagonid,
@@ -224,7 +224,7 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/TakeFromHouse", JSON
+                                    $.post("https://vorp_inventory/TakeFromHouse", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -237,7 +237,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/TakeFromHouse", JSON.stringify({
+                            $.post("https://vorp_inventory/TakeFromHouse", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -264,7 +264,8 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/TakeFromHideout", JSON
+                                    $.post("https://vorp_inventory/TakeFromHideout",
+                                        JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -277,7 +278,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/TakeFromHideout", JSON.stringify({
+                            $.post("https://vorp_inventory/TakeFromHideout", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -304,7 +305,7 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/TakeFromClan", JSON
+                                    $.post("https://vorp_inventory/TakeFromClan", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -317,7 +318,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/TakeFromClan", JSON.stringify({
+                            $.post("https://vorp_inventory/TakeFromClan", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -343,7 +344,7 @@
                                         dialog.close()
                                         return;
                                     }
-                                    $.post("http://vorp_inventory/TakeFromsteal", JSON
+                                    $.post("https://vorp_inventory/TakeFromsteal", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -356,7 +357,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/TakeFromsteal", JSON.stringify({
+                            $.post("https://vorp_inventory/TakeFromsteal", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -383,7 +384,7 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/TakeFromContainer",
+                                    $.post("https://vorp_inventory/TakeFromContainer",
                                         JSON.stringify({
                                             item: itemData,
                                             type: type,
@@ -396,7 +397,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/TakeFromContainer", JSON.stringify({
+                            $.post("https://vorp_inventory/TakeFromContainer", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -432,7 +433,7 @@
                                         dialog.close()
                                         return;
                                     }
-                                    $.post("http://vorp_inventory/MoveToHorse", JSON
+                                    $.post("https://vorp_inventory/MoveToHorse", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -445,7 +446,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/MoveToHorse", JSON.stringify({
+                            $.post("https://vorp_inventory/MoveToHorse", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -473,7 +474,7 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/MoveToCart", JSON
+                                    $.post("https://vorp_inventory/MoveToCart", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -485,7 +486,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/MoveToCart", JSON.stringify({
+                            $.post("https://vorp_inventory/MoveToCart", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 wagon: wagonid,
@@ -512,7 +513,7 @@
                                         dialog.close()
                                         return;
                                     }
-                                    $.post("http://vorp_inventory/MoveToHouse", JSON
+                                    $.post("https://vorp_inventory/MoveToHouse", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -524,7 +525,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/MoveToHouse", JSON.stringify({
+                            $.post("https://vorp_inventory/MoveToHouse", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -551,7 +552,7 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/MoveToHideout", JSON
+                                    $.post("https://vorp_inventory/MoveToHideout", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -563,7 +564,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/MoveToHideout", JSON.stringify({
+                            $.post("https://vorp_inventory/MoveToHideout", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -591,7 +592,7 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/MoveToClan", JSON
+                                    $.post("https://vorp_inventory/MoveToClan", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -603,7 +604,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/MoveToClan", JSON.stringify({
+                            $.post("https://vorp_inventory/MoveToClan", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -631,7 +632,7 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/MoveTosteal", JSON
+                                    $.post("https://vorp_inventory/MoveTosteal", JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -643,7 +644,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/MoveTosteal", JSON.stringify({
+                            $.post("https://vorp_inventory/MoveTosteal", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -671,7 +672,8 @@
                                         return;
                                     }
 
-                                    $.post("http://vorp_inventory/MoveToContainer", JSON
+                                    $.post("https://vorp_inventory/MoveToContainer",
+                                        JSON
                                         .stringify({
                                             item: itemData,
                                             type: type,
@@ -683,7 +685,7 @@
                             });
                         } else {
 
-                            $.post("http://vorp_inventory/MoveToContainer", JSON.stringify({
+                            $.post("https://vorp_inventory/MoveToContainer", JSON.stringify({
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
@@ -711,7 +713,7 @@
 
                     $("#inventoryHud").append(
                         `<div class='controls'><div class='controls-center'><input type='text' id='search' placeholder='search'/><button id='check'>${checkxy} / ${infoxy}</button></div><button id='close'>Close</button></div></div>`
-                        );
+                    );
 
                     $("#search").bind('input', function () {
                         searchFor = $("#search").val().toLowerCase();
@@ -892,7 +894,7 @@
                 type: data.type,
                 select: true,
                 validate: function (value, data, player) {
-                    $.post("http://vorp_inventory/GiveItem", JSON.stringify({
+                    $.post("https://vorp_inventory/GiveItem", JSON.stringify({
                         player: player,
                         data: data
                     }));
@@ -918,7 +920,7 @@
                             dialog.close()
                             return;
                         }
-                        $.post("http://vorp_inventory/DropItem", JSON.stringify({
+                        $.post("https://vorp_inventory/DropItem", JSON.stringify({
                             item: item,
                             type: type,
                             number: value
@@ -927,7 +929,7 @@
                     }
                 });
             } else {
-                $.post("http://vorp_inventory/DropItem", JSON.stringify({
+                $.post("https://vorp_inventory/DropItem", JSON.stringify({
                     item: item,
                     type: type,
                     hash: hash,
@@ -953,7 +955,7 @@
                             dialog.close()
                             return;
                         }
-                        $.post("http://vorp_inventory/GetNearPlayers", JSON.stringify({
+                        $.post("https://vorp_inventory/GetNearPlayers", JSON.stringify({
                             type: type,
                             what: "give",
                             item: item,
@@ -963,7 +965,7 @@
                     }
                 });
             } else {
-                $.post("http://vorp_inventory/GetNearPlayers", JSON.stringify({
+                $.post("https://vorp_inventory/GetNearPlayers", JSON.stringify({
                     type: type,
                     what: "give",
                     item: item,
@@ -989,7 +991,7 @@
                         dialog.close()
                         return;
                     }
-                    $.post("http://vorp_inventory/GetNearPlayers", JSON.stringify({
+                    $.post("https://vorp_inventory/GetNearPlayers", JSON.stringify({
                         type: type,
                         what: "give",
                         item: item,
@@ -1002,7 +1004,7 @@
         }
 
         function closeInventory() {
-            $.post("http://vorp_inventory/NUIFocusOff", JSON.stringify({}));
+            $.post("https://vorp_inventory/NUIFocusOff", JSON.stringify({}));
             isOpen = false;
         }
 
@@ -1015,7 +1017,7 @@
 
                 if (item.limit > 0) {
                     count = count + " / " + item
-                    .limit; /*   count = count + "" ;   if you want to disable the count max items add this instead. */
+                        .limit; /*   count = count + "" ;   if you want to disable the count max items add this instead. */
                 }
 
                 $("#inventoryElement").append("<div data-label='" + item.label +
@@ -1032,7 +1034,7 @@
                     data.push({
                         text: "Unequip",
                         action: function () {
-                            $.post("http://vorp_inventory/UnequipWeapon", JSON.stringify({
+                            $.post("https://vorp_inventory/UnequipWeapon", JSON.stringify({
                                 item: item.name,
                                 id: item.id
                             }));
@@ -1043,7 +1045,7 @@
                     data.push({
                         text: "Unequip",
                         action: function () {
-                            $.post("http://vorp_inventory/UnequipWeapon", JSON.stringify({
+                            $.post("https://vorp_inventory/UnequipWeapon", JSON.stringify({
                                 item: item.name,
                                 id: item.id
                             }));
@@ -1054,7 +1056,7 @@
                     data.push({
                         text: "Use",
                         action: function () {
-                            $.post("http://vorp_inventory/UseItem", JSON.stringify({
+                            $.post("https://vorp_inventory/UseItem", JSON.stringify({
                                 item: item.name,
                                 type: item.type,
                                 hash: item.hash,
@@ -1185,7 +1187,7 @@
                 div.mouseIsOver = false;
                 div.onmouseover = function () {
                     this.mouseIsOver = true;
-                    $.post("http://vorp_inventory/sound");
+                    $.post("https://vorp_inventory/sound");
                 };
                 div.onmouseout = function () {
                     this.mouseIsOver = false;
