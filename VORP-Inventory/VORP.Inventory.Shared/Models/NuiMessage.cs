@@ -2,6 +2,9 @@
 
 namespace VORP.Inventory.Shared.Models
 {
+    /// <summary>
+    /// Currently isn't fully implemented due to the crap in the NUI HTML, that requires some documentation.
+    /// </summary>
     [DataContract]
     public class NuiMessage
     {
@@ -20,6 +23,9 @@ namespace VORP.Inventory.Shared.Models
 
         [DataMember(Name = "type", EmitDefaultValue = false)]
         public string Type { get; set; }
+
+        [DataMember(Name = "title", EmitDefaultValue = false)]
+        public string Title { get; set; }
 
         [DataMember(Name = "hash", EmitDefaultValue = false)]
         public string Hash { get; set; }
