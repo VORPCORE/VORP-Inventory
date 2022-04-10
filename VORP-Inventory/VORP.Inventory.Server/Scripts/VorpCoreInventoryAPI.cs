@@ -23,6 +23,8 @@ namespace VORP.Inventory.Server.Scripts
 
         public void Init()
         {
+            Logger.Trace($"VorpCoreInventoryAPI Init");
+
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(OnSubtractWeaponAsync);
             EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(OnGiveWeaponAsync);
             EventHandlers["vorpCore:registerWeapon"] += new Action<int, string, ExpandoObject, ExpandoObject>(OnRegisterWeaponAsync);
