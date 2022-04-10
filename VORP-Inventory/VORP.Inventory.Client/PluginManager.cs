@@ -3,6 +3,7 @@ global using static CitizenFX.Core.Native.API;
 using CitizenFX.Core;
 using System;
 using System.Threading.Tasks;
+using VORP.Inventory.Client.Interface;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Shared.Models;
 
@@ -15,6 +16,8 @@ namespace VORP.Inventory.Client
         public static Scripts.Pickups Pickups = new Scripts.Pickups();
         public static Scripts.NUIEvents NUIEvents = new Scripts.NUIEvents();
         public static Scripts.InventoryAPI InventoryAPI = new Scripts.InventoryAPI();
+
+        public NuiManager NUI = new();
 
         public PluginManager()
         {

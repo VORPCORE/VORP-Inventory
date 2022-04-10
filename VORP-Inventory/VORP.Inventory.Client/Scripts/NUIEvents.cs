@@ -7,6 +7,7 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Client.Models;
+using VORP.Inventory.Client.Interface;
 
 namespace VORP.Inventory.Client.Scripts
 {
@@ -20,102 +21,61 @@ namespace VORP.Inventory.Client.Scripts
 
         public void Init()
         {
-
-            API.RegisterNuiCallbackType("NUIFocusOff");
-            EventHandlers["__cfx_nui:NUIFocusOff"] += new Action<ExpandoObject>(NUIFocusOff);
-
-            API.RegisterNuiCallbackType("DropItem");
-            EventHandlers["__cfx_nui:DropItem"] += new Action<ExpandoObject>(NUIDropItem);
-
-            API.RegisterNuiCallbackType("UseItem");
-            EventHandlers["__cfx_nui:UseItem"] += new Action<ExpandoObject>(NUIUseItem);
-
-            API.RegisterNuiCallbackType("sound");
-            EventHandlers["__cfx_nui:sound"] += new Action<ExpandoObject>(NUISound);
-
-            API.RegisterNuiCallbackType("GiveItem");
-            EventHandlers["__cfx_nui:GiveItem"] += new Action<ExpandoObject>(NUIGiveItem);
-
-            API.RegisterNuiCallbackType("GetNearPlayers");
-            EventHandlers["__cfx_nui:GetNearPlayers"] += new Action<ExpandoObject>(NUIGetNearPlayers);
-
-            API.RegisterNuiCallbackType("UnequipWeapon");
-            EventHandlers["__cfx_nui:UnequipWeapon"] += new Action<ExpandoObject>(NUIUnequipWeapon);
+            NUI.RegisterCallback("NUIFocusOff", new Action<ExpandoObject>(NUIFocusOff));
+            NUI.RegisterCallback("DropItem", new Action<ExpandoObject>(NUIDropItem));
+            NUI.RegisterCallback("UnequipWeapon", new Action<ExpandoObject>(NUIUnequipWeapon));
 
             EventHandlers["vorp_inventory:ProcessingReady"] += new Action(setProcessingPayFalse);
-
-
             EventHandlers["vorp_inventory:CloseInv"] += new Action(OnCloseInventory);
 
             //HorseModule
             EventHandlers["vorp_inventory:OpenHorseInventory"] += new Action<string, int>(OpenHorseInventory);
             EventHandlers["vorp_inventory:ReloadHorseInventory"] += new Action<string>(ReloadHorseInventory);
 
-            API.RegisterNuiCallbackType("TakeFromHorse");
-            EventHandlers["__cfx_nui:TakeFromHorse"] += new Action<ExpandoObject>(NUITakeFromHorse);
-
-            API.RegisterNuiCallbackType("MoveToHorse");
-            EventHandlers["__cfx_nui:MoveToHorse"] += new Action<ExpandoObject>(NUIMoveToHorse);
+            NUI.RegisterCallback("TakeFromHorse", new Action<ExpandoObject>(NUITakeFromHorse));
+            NUI.RegisterCallback("MoveToHorse", new Action<ExpandoObject>(NUIMoveToHorse));
 
             //Steal
             EventHandlers["vorp_inventory:OpenstealInventory"] += new Action<string, int>(OpenstealInventory);
             EventHandlers["vorp_inventory:ReloadstealInventory"] += new Action<string>(ReloadstealInventory);
 
-            API.RegisterNuiCallbackType("TakeFromsteal");
-            EventHandlers["__cfx_nui:TakeFromsteal"] += new Action<ExpandoObject>(NUITakeFromsteal);
-
-            API.RegisterNuiCallbackType("MoveTosteal");
-            EventHandlers["__cfx_nui:MoveTosteal"] += new Action<ExpandoObject>(NUIMoveTosteal);
+            NUI.RegisterCallback("TakeFromsteal", new Action<ExpandoObject>(NUITakeFromsteal));
+            NUI.RegisterCallback("MoveTosteal", new Action<ExpandoObject>(NUIMoveTosteal));
 
             //CartModule
             EventHandlers["vorp_inventory:OpenCartInventory"] += new Action<string, int>(OpenCartInventory);
             EventHandlers["vorp_inventory:ReloadCartInventory"] += new Action<string>(ReloadCartInventory);
 
-            API.RegisterNuiCallbackType("TakeFromCart");
-            EventHandlers["__cfx_nui:TakeFromCart"] += new Action<ExpandoObject>(NUITakeFromCart);
-
-            API.RegisterNuiCallbackType("MoveToCart");
-            EventHandlers["__cfx_nui:MoveToCart"] += new Action<ExpandoObject>(NUIMoveToCart);
+            NUI.RegisterCallback("TakeFromCart", new Action<ExpandoObject>(NUITakeFromCart));
+            NUI.RegisterCallback("MoveToCart", new Action<ExpandoObject>(NUIMoveToCart));
 
             //HouseModule
             EventHandlers["vorp_inventory:OpenHouseInventory"] += new Action<string, int>(OpenHouseInventory);
             EventHandlers["vorp_inventory:ReloadHouseInventory"] += new Action<string>(ReloadHouseInventory);
 
-            API.RegisterNuiCallbackType("TakeFromHouse");
-            EventHandlers["__cfx_nui:TakeFromHouse"] += new Action<ExpandoObject>(NUITakeFromHouse);
-
-            API.RegisterNuiCallbackType("MoveToHouse");
-            EventHandlers["__cfx_nui:MoveToHouse"] += new Action<ExpandoObject>(NUIMoveToHouse);
+            NUI.RegisterCallback("TakeFromHouse", new Action<ExpandoObject>(NUITakeFromHouse));
+            NUI.RegisterCallback("MoveToHouse", new Action<ExpandoObject>(NUIMoveToHouse));
 
             //HideoutModule
             EventHandlers["vorp_inventory:OpenHideoutInventory"] += new Action<string, int>(OpenHideoutInventory);
             EventHandlers["vorp_inventory:ReloadHideoutInventory"] += new Action<string>(ReloadHideoutInventory);
 
-            API.RegisterNuiCallbackType("TakeFromHideout");
-            EventHandlers["__cfx_nui:TakeFromHideout"] += new Action<ExpandoObject>(NUITakeFromHideout);
-
-            API.RegisterNuiCallbackType("MoveToHideout");
-            EventHandlers["__cfx_nui:MoveToHideout"] += new Action<ExpandoObject>(NUIMoveToHideout);
+            NUI.RegisterCallback("TakeFromHideout", new Action<ExpandoObject>(NUITakeFromHideout));
+            NUI.RegisterCallback("MoveToHideout", new Action<ExpandoObject>(NUIMoveToHideout));
 
             //clan
             EventHandlers["vorp_inventory:OpenClanInventory"] += new Action<string, int>(OpenClanInventory);
             EventHandlers["vorp_inventory:ReloadClanInventory"] += new Action<string>(ReloadClanInventory);
 
-            API.RegisterNuiCallbackType("TakeFromClan");
-            EventHandlers["__cfx_nui:TakeFromClan"] += new Action<ExpandoObject>(NUITakeFromClan);
-
-            API.RegisterNuiCallbackType("MoveToClan");
-            EventHandlers["__cfx_nui:MoveToClan"] += new Action<ExpandoObject>(NUIMoveToClan);
+            NUI.RegisterCallback("TakeFromClan", new Action<ExpandoObject>(NUITakeFromClan));
+            NUI.RegisterCallback("MoveToClan", new Action<ExpandoObject>(NUIMoveToClan));
 
             //Container
             EventHandlers["vorp_inventory:OpenContainerInventory"] += new Action<string, int>(OpenContainerInventory);
             EventHandlers["vorp_inventory:ReloadContainerInventory"] += new Action<string>(ReloadContainerInventory);
 
-            API.RegisterNuiCallbackType("TakeFromContainer");
-            EventHandlers["__cfx_nui:TakeFromContainer"] += new Action<ExpandoObject>(NUITakeFromContainer);
-
-            API.RegisterNuiCallbackType("MoveToContainer");
-            EventHandlers["__cfx_nui:MoveToContainer"] += new Action<ExpandoObject>(NUIMoveToContainer);
+            NUI.RegisterCallback("TakeFromContainer", new Action<ExpandoObject>(NUITakeFromContainer));
+            NUI.RegisterCallback("MoveToContainer", new Action<ExpandoObject>(NUIMoveToContainer));
 
             AttachTickHandler(OnOpenInventoryKeyAsync);
         }
