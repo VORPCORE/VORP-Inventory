@@ -38,6 +38,8 @@ namespace VORP.Inventory.Client
                 int selectedCharacter = DecoratorExtensions.GetInteger(PlayerPedId(), DECOR_SELECTED_CHARACTER_ID);
                 if (selectedCharacter > 0)
                 {
+                    Logger.Trace($"onResourceStart : Selected Character: {selectedCharacter}");
+
                     Instance.NUIEvents.OnCloseInventory();
 
                     TriggerServerEvent("vorpinventory:getItemsTable");

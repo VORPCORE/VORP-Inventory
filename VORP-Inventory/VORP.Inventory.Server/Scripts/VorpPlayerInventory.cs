@@ -813,6 +813,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 if (PluginManager.ItemsDB.items.Count > 0)
                 {
+                    Logger.Trace($"Player '{source.Name}' requested Items Table.");
                     source.TriggerEvent("vorpInventory:giveItemsTable", PluginManager.ItemsDB.items);
                 }
             }
@@ -826,6 +827,8 @@ namespace VORP.Inventory.Server.Scripts
         {
             try
             {
+                Logger.Trace($"OnGetInventoryAsync: Player '{player.Name}' requested their Inventory.");
+
                 string identifier = "steam:" + player.Identifiers["steam"];
                 dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
 
