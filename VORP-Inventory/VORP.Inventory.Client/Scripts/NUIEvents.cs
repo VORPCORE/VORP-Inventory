@@ -1,5 +1,6 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -584,7 +585,9 @@ namespace VORP.Inventory.Client.Scripts
             items.Add("action", "setItems");
             items.Add("itemList", allItems);
 
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+            string json = JsonConvert.SerializeObject(items);
+
+            Logger.Trace($"INVENTORY: {json}");
 
             API.SendNuiMessage(json);
         }
@@ -634,6 +637,8 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OpenInventory()
         {
+            LoadInv();
+
             NUI.SetFocus(true);
 
             NuiMessage nui = new NuiMessage();
@@ -642,10 +647,9 @@ namespace VORP.Inventory.Client.Scripts
 
             API.SendNuiMessage(nui.ToJson());
             IsInventoryOpen = true;
-            LoadInv();
         }
 
-        private void OnCloseInventory()
+        public void OnCloseInventory()
         {
             NUI.SetFocus(false, false);
 
