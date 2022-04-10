@@ -3,6 +3,7 @@ global using static CitizenFX.Core.Native.API;
 using CitizenFX.Core;
 using System;
 using System.Threading.Tasks;
+using VORP.Inventory.Client.Extensions;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Shared.Models;
 
@@ -10,6 +11,7 @@ namespace VORP.Inventory.Client
 {
     public class PluginManager : BaseScript
     {
+        public const string DECOR_SELECTED_CHARACTER_ID = "SELECTED_CHARACTER_ID";
         public static PluginManager Instance;
 
         public Scripts.Pickups Pickups = new();
@@ -28,6 +30,23 @@ namespace VORP.Inventory.Client
             NUIEvents.Init();
             Pickups.Init();
             InventoryAPI.Init();
+
+            Hook("onResourceStart", new Action<string>(async resourceName =>
+            {
+                if (GetCurrentResourceName() != resourceName) return;
+
+                int selectedCharacter = DecoratorExtensions.GetInteger(PlayerPedId(), DECOR_SELECTED_CHARACTER_ID);
+                if (selectedCharacter > 0)
+                {
+                    Instance.NUIEvents.OnCloseInventory();
+
+                    TriggerServerEvent("vorpinventory:getItemsTable");
+                    Logger.Trace($"OnSelectedCharacterAsync: vorpinventory:getItemsTable");
+                    await Delay(300);
+                    TriggerServerEvent("vorpinventory:getInventory");
+                    Logger.Trace($"OnSelectedCharacterAsync: vorpinventory:getInventory");
+                }
+            }));
 
             Logger.Info($"VORP INVENTORY LOADED");
         }

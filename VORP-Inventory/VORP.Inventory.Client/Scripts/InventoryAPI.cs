@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using VORP.Inventory.Client.Extensions;
 using VORP.Inventory.Client.Models;
 
 namespace VORP.Inventory.Client.Scripts
@@ -21,6 +22,8 @@ namespace VORP.Inventory.Client.Scripts
 
         public void Init()
         {
+            AddEvent("vorp:SelectedCharacter", new Action<int>(OnSelectedCharacterAsync));
+
             AddEvent("vorpCoreClient:addItem", new Action<int, int, string, string, string, bool, bool>(OnAddItem));
             AddEvent("vorpCoreClient:subItem", new Action<string, int>(OnSubtractItem));
             AddEvent("vorpCoreClient:subWeapon", new Action<int>(OnSubtractWeapon));
@@ -32,7 +35,6 @@ namespace VORP.Inventory.Client.Scripts
             AddEvent("vorpInventory:giveItemsTable", new Action<dynamic>(OnProcessItems));
             AddEvent("vorpInventory:giveInventory", new Action<string>(OnGiveInventory));
             AddEvent("vorpInventory:giveLoadout", new Action<dynamic>(OnGiveUserWeapons));
-            AddEvent("vorp:SelectedCharacter", new Action<int>(OnSelectedCharacterAsync));
             AddEvent("vorpinventory:receiveItem", new Action<string, int>(OnReceiveItem));
             AddEvent("vorpinventory:receiveItem2", new Action<string, int>(OnReceiveItemTwo));
             AddEvent("vorpinventory:receiveWeapon",
@@ -122,11 +124,16 @@ namespace VORP.Inventory.Client.Scripts
         private async void OnSelectedCharacterAsync(int charId)
         {
             Logger.Trace($"OnSelectedCharacterAsync: {charId}");
+
+            DecoratorExtensions.Set(PlayerPedId(), PluginManager.DECOR_SELECTED_CHARACTER_ID, charId);
+
             Instance.NUIEvents.OnCloseInventory();
 
             TriggerServerEvent("vorpinventory:getItemsTable");
+            Logger.Trace($"OnSelectedCharacterAsync: vorpinventory:getItemsTable");
             await Delay(300);
             TriggerServerEvent("vorpinventory:getInventory");
+            Logger.Trace($"OnSelectedCharacterAsync: vorpinventory:getInventory");
         }
 
         private void OnProcessItems(dynamic items)
