@@ -811,7 +811,7 @@ namespace VORP.Inventory.Server.Scripts
                     await BaseScript.Delay(500);
                 }
 
-                if (PluginManager.ItemsDB.items.Count != 0)
+                if (PluginManager.ItemsDB.items.Count > 0)
                 {
                     source.TriggerEvent("vorpInventory:giveItemsTable", PluginManager.ItemsDB.items);
                 }
@@ -847,7 +847,7 @@ namespace VORP.Inventory.Server.Scripts
                 if (PluginManager.ActiveCharacters[player.Handle] != charIdentifier)
                     PluginManager.ActiveCharacters[player.Handle] = charIdentifier;
 
-                if (inventory != null)
+                if (inventory is not null)
                 {
                     // turn this into a class
                     dynamic coreInventory = JsonConvert.DeserializeObject<dynamic>(inventory);
@@ -869,6 +869,8 @@ namespace VORP.Inventory.Server.Scripts
                 }
                 ItemDatabase.UserInventory[identifier] = userinv;
 
+                Logger.Trace($"OnGetInventoryAsync[{identifier}]: {inventory}");
+
                 player.TriggerEvent("vorpInventory:giveInventory", inventory);
 
                 Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE `identifier` = ? AND `charidentifier` = ?;", new object[] { identifier, charIdentifier }, new Action<dynamic>((weaponsinvento) =>
@@ -878,8 +880,8 @@ namespace VORP.Inventory.Server.Scripts
                         WeaponClass wp;
                         foreach (var row in weaponsinvento)
                         {
-                            JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
-                            JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
+                            JObject ammo = JsonConvert.DeserializeObject(row.ammo.ToString());
+                            JArray comp = JsonConvert.DeserializeObject(row.components.ToString());
                             Dictionary<string, int> amunition = new Dictionary<string, int>();
                             List<string> components = new List<string>();
                             foreach (JProperty ammos in ammo.Properties())
@@ -905,6 +907,8 @@ namespace VORP.Inventory.Server.Scripts
                             wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charIdentifier);
                             ItemDatabase.UserWeapons[wp.getId()] = wp;
                         }
+
+                        Logger.Trace($"OnGetInventoryAsync[{identifier}]: {weaponsinvento}");
 
                         // is there something wrong with returning an empty list?
                         player.TriggerEvent("vorpInventory:giveLoadout", weaponsinvento);
