@@ -64,22 +64,22 @@ namespace VORP.Inventory.Server.Scripts
                     TriggerEvent("vorpCore:addItem", playerId, item.Key, item.Value);
                 }
 
-                Dictionary<string, Dictionary<string, int>> startWeapons = Configuration.Config.StartWeapons;
+                Dictionary<string, Dictionary<string, double>> startWeapons = Configuration.Config.StartWeapons;
 
-                foreach (KeyValuePair<string, Dictionary<string, int>> weaponData in startWeapons)
+                foreach (KeyValuePair<string, Dictionary<string, double>> weaponData in startWeapons)
                 {
                     List<string> auxiliaryBullets = new List<string>();
                     Dictionary<string, int> receivedBullets = new Dictionary<string, int>();
 
                     Weapon weapon = Configuration.Config.Weapons.FirstOrDefault(x => x.HashName == weaponData.Key);
 
-                    Dictionary<string, int> ammoHash = weapon.AmmoHash;
-                    foreach (KeyValuePair<string, int> bullets in ammoHash)
+                    Dictionary<string, double> ammoHash = weapon.AmmoHash;
+                    foreach (KeyValuePair<string, double> bullets in ammoHash)
                     {
                         auxiliaryBullets.Add(bullets.Key);
                     }
 
-                    foreach (KeyValuePair<string, int> bullet in weaponData.Value)
+                    foreach (KeyValuePair<string, double> bullet in weaponData.Value)
                     {
                         if (auxiliaryBullets.Contains(bullet.Key))
                         {

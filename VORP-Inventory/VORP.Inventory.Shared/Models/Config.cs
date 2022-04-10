@@ -63,7 +63,7 @@ namespace VORP.Inventory.Shared.Models
         public double? Price { get; set; }
 
         [DataMember(Name = "ammoHash")]
-        public Dictionary<string, int> AmmoHash { get; set; }
+        public Dictionary<string, double> AmmoHash { get; set; }
 
         [DataMember(Name = "compsHash")]
         public Dictionary<string, int> CompsHash { get; set; }
@@ -91,7 +91,7 @@ namespace VORP.Inventory.Shared.Models
         public Dictionary<string, int> StartItems { get; set; }
 
         [DataMember(Name = "startWeapons")]
-        public Dictionary<string, Dictionary<string, int>> StartWeapons { get; set; }
+        public Dictionary<string, Dictionary<string, double>> StartWeapons { get; set; }
 
         [DataMember(Name = "weapons")]
         public List<Weapon> Weapons { get; set; }
