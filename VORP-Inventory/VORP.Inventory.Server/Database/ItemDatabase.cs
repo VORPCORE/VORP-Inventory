@@ -31,6 +31,7 @@ namespace VORP.Inventory.Server.Database
 
         public void Init()
         {
+            Logger.Trace($"ItemDatabase Init");
             SetupItems();
             SetupLoadouts();
         }
@@ -57,36 +58,46 @@ namespace VORP.Inventory.Server.Database
 
         public void SetupItems()
         {
-            Logger.Debug($"Setting up Items");
-            Exports["ghmattimysql"].execute("SELECT * FROM items", new Action<dynamic>((result) =>
+            try
             {
-                if (result == null)
+                Logger.Trace($"Setting up Items");
+                Exports["ghmattimysql"].execute("SELECT * FROM items", new Action<dynamic>(async (result) =>
                 {
-                    Logger.Warn($"No items returned from the database");
-                    return;
-                }
-
-                if (result.Count == 0)
-                {
-                    Logger.Warn("No items in the items table of the database.");
-                }
-                else
-                {
-                    items = result;
-                    foreach (dynamic item in items)
+                    await BaseScript.Delay(0);
+                    if (result == null)
                     {
-                        ServerItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove, item.type, item.usable));
+                        Logger.Warn($"No items returned from the database");
+                        return;
                     }
-                }
-            }));
-            Logger.Debug($"Item setup completed");
+
+                    if (result.Count == 0)
+                    {
+                        Logger.Warn("No items in the items table of the database.");
+                    }
+                    else
+                    {
+                        items = result;
+                        foreach (dynamic item in items)
+                        {
+                            ServerItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove, item.type, item.usable));
+                        }
+                    }
+
+                    Logger.Trace($"Item setup completed; found {ServerItems.Count} items.");
+                }));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"SetupItems");
+            }
         }
 
         public void SetupLoadouts()
         {
-            Logger.Debug($"Setting up Loadouts");
-            Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>((loadout) =>
+            Logger.Trace($"Setting up Loadouts");
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>(async loadout =>
             {
+                await BaseScript.Delay(0);
                 if (loadout == null)
                 {
                     Logger.Warn($"No loadouts returned from the database");
@@ -137,7 +148,7 @@ namespace VORP.Inventory.Server.Database
                         }
                     }
                 }
-                Logger.Debug($"Loadouts setup completed");
+                Logger.Trace($"Loadouts setup completed; found {UserWeapons.Count} loadouts.");
             }));
         }
     }
