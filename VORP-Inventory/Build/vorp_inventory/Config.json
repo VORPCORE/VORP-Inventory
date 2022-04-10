@@ -22,21 +22,15 @@
   },
 
   "_comment5": "starting items for a new character (refer to items database table)",
-  "startItems": [
-    {
-      "consumable_raspberrywater": 2,
-      "consumable_salmon": 2,
-      "ammorevolvernormal": 1
-    }
-  ],
-
+  "startItems": {
+    "consumable_raspberrywater": 2,
+    "consumable_salmon": 2,
+    "ammorevolvernormal": 1
+  },
   "_comment6": "starting weapons for a new character (refer to weapon hash names below)",
-  "startWeapons": [
-    {
-      "WEAPON_MELEE_KNIFE": [ {} ]
-    }
-  ],
-
+  "startWeapons": {
+    "WEAPON_MELEE_KNIFE": [{}]
+  },
   "Weapons": [
     {
       "_comment7": "translate the NAME only Dont touch the rest",
@@ -50,7 +44,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [ {} ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Knife",
@@ -70,9 +64,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Knife Horror",
@@ -186,9 +178,7 @@
       "WeaponModel": "w_melee_tomahawk02",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Throwing Knifes",
@@ -525,11 +515,7 @@
           "AMMO_REVOLVER_SPLIT_POINT": 0.25
         }
       ],
-      "CompsHash": [
-        {
-
-        }
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": " Varmint Rifle",
@@ -758,9 +744,7 @@
           "AMMO_RIFLE_SPLIT_POINT": 0.25
         }
       ],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "BoltAction Rifle",
@@ -961,9 +945,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Knife Trader",
@@ -971,9 +953,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Binoculars",
@@ -981,9 +961,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Advanced Camera",
@@ -991,9 +969,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Lantern",
@@ -1001,9 +977,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Davy Lantern",
@@ -1011,9 +985,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Halloween Lantern",
@@ -1021,9 +993,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Poison Bottle",
@@ -1031,9 +1001,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Metal Detector",
@@ -1041,9 +1009,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
 
     {
@@ -1052,9 +1018,7 @@
       "WeaponModel": "w_throw_dynamite01",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Molotov",
@@ -1062,9 +1026,7 @@
       "WeaponModel": "w_throw_molotov01",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Improved Bow",
@@ -1072,9 +1034,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Machete Collector",
@@ -1082,9 +1042,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Electric Lantern",
@@ -1092,9 +1050,7 @@
       "WeaponModel": "s_interact_lantern03x_pickup",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Torch",
@@ -1102,9 +1058,7 @@
       "WeaponModel": "s_interact_torch",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Moonshine Jug",
@@ -1112,9 +1066,7 @@
       "WeaponModel": "s_interact_jug_pickup",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Bolas",
@@ -1122,9 +1074,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Bolas Hawkmoth",
@@ -1132,9 +1082,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Bolas Ironspiked",
@@ -1142,9 +1090,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
     {
       "Name": "Bolas Intertwined",
@@ -1152,9 +1098,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     },
 
     {
@@ -1179,9 +1123,7 @@
       "WeaponModel": "",
       "Price": 100.0,
       "AmmoHash": [],
-      "CompsHash": [
-        {}
-      ]
+      "CompsHash": [{}]
     }
   ]
 }
