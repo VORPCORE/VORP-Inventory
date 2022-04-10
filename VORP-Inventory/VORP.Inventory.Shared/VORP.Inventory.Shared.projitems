@@ -13,9 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Config.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GeneralExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\NuiMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TypeCache.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Models\" />
   </ItemGroup>
 </Project>
