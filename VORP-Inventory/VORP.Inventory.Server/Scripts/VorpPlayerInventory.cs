@@ -23,22 +23,22 @@ namespace VORP.Inventory.Server.Scripts
 
         public void Init()
         {
-            EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(OnGetItemsTableAsync);
-            EventHandlers["vorpinventory:getInventory"] += new Action<Player>(OnGetInventoryAsync);
-            EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(OnServerGiveItemAsync);
-            EventHandlers["vorpinventory:serverGiveWeapon"] += new Action<Player, int, int>(OnServerGiveWeapon);
-            EventHandlers["vorpinventory:serverDropItem"] += new Action<Player, string, int>(OnServerDropItemAsync);
-            EventHandlers["vorpinventory:serverDropMoney"] += new Action<Player, double>(OnServerDropMoneyAsync);
-            EventHandlers["vorpinventory:serverDropAllMoney"] += new Action<Player>(OnServerDropAllMoneyAsync);
-            EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player, int>(OnServerDropWeapon);
-            EventHandlers["vorpinventory:sharePickupServer"] += new Action<string, int, int, Vector3, int>(OnSharePickupServer);
-            EventHandlers["vorpinventory:shareMoneyPickupServer"] += new Action<int, double, Vector3>(OnShareMoneyPickupServer);
-            EventHandlers["vorpinventory:onPickup"] += new Action<Player, int>(OnPickup);
-            EventHandlers["vorpinventory:onPickupMoney"] += new Action<Player, int>(OnPickupMoney);
-            EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool, bool>(OnUsedWeapon);
-            EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(OnSetWeaponBullets);
-            EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(OnGiveMoneyToPlayerAsync);
-            EventHandlers["vorp_NewCharacter"] += new Action<int>(OnNewCharacter);
+            AddEvent("vorpinventory:getItemsTable", new Action<Player>(OnGetItemsTableAsync));
+            AddEvent("vorpinventory:getInventory", new Action<Player>(OnGetInventoryAsync));
+            AddEvent("vorpinventory:serverGiveItem", new Action<Player, string, int, int>(OnServerGiveItemAsync));
+            AddEvent("vorpinventory:serverGiveWeapon", new Action<Player, int, int>(OnServerGiveWeapon));
+            AddEvent("vorpinventory:serverDropItem", new Action<Player, string, int>(OnServerDropItemAsync));
+            AddEvent("vorpinventory:serverDropMoney", new Action<Player, double>(OnServerDropMoneyAsync));
+            AddEvent("vorpinventory:serverDropAllMoney", new Action<Player>(OnServerDropAllMoneyAsync));
+            AddEvent("vorpinventory:serverDropWeapon", new Action<Player, int>(OnServerDropWeapon));
+            AddEvent("vorpinventory:sharePickupServer", new Action<string, int, int, Vector3, int>(OnSharePickupServer));
+            AddEvent("vorpinventory:shareMoneyPickupServer", new Action<int, double, Vector3>(OnShareMoneyPickupServer));
+            AddEvent("vorpinventory:onPickup", new Action<Player, int>(OnPickup));
+            AddEvent("vorpinventory:onPickupMoney", new Action<Player, int>(OnPickupMoney));
+            AddEvent("vorpinventory:setUsedWeapon", new Action<Player, int, bool, bool>(OnUsedWeapon));
+            AddEvent("vorpinventory:setWeaponBullets", new Action<Player, int, string, int>(OnSetWeaponBullets));
+            AddEvent("vorp_inventory:giveMoneyToPlayer", new Action<Player, int, double>(OnGiveMoneyToPlayerAsync));
+            AddEvent("vorp_NewCharacter", new Action<int>(OnNewCharacter));
         }
 
         private async void OnNewCharacter(int playerId)
@@ -805,6 +805,8 @@ namespace VORP.Inventory.Server.Scripts
         {
             try
             {
+                Logger.Trace($"Player '{source.Name}' requested Items Table.");
+
                 // must have a better way
                 while (PluginManager.ItemsDB.items is null)
                 {
@@ -813,7 +815,6 @@ namespace VORP.Inventory.Server.Scripts
 
                 if (PluginManager.ItemsDB.items.Count > 0)
                 {
-                    Logger.Trace($"Player '{source.Name}' requested Items Table.");
                     source.TriggerEvent("vorpInventory:giveItemsTable", PluginManager.ItemsDB.items);
                 }
             }

@@ -35,6 +35,8 @@ namespace VORP.Inventory.Client
             {
                 if (GetCurrentResourceName() != resourceName) return;
 
+                await BaseScript.Delay(1000);
+
                 int selectedCharacter = DecoratorExtensions.GetInteger(PlayerPedId(), DECOR_SELECTED_CHARACTER_ID);
                 if (selectedCharacter > 0)
                 {

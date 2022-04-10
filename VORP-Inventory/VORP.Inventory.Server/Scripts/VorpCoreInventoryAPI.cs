@@ -25,27 +25,27 @@ namespace VORP.Inventory.Server.Scripts
         {
             Logger.Trace($"VorpCoreInventoryAPI Init");
 
-            EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(OnSubtractWeaponAsync);
-            EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(OnGiveWeaponAsync);
-            EventHandlers["vorpCore:registerWeapon"] += new Action<int, string, ExpandoObject, ExpandoObject>(OnRegisterWeaponAsync);
-            EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(OnAddItemAsync);
-            EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(OnSubtractItemAsync);
-            EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(OnGetItems);
-            EventHandlers["vorpCore:getUserInventory"] += new Action<int, CallbackDelegate>(OnGetInventory);
-            EventHandlers["vorpCore:canCarryItems"] += new Action<int, int, CallbackDelegate>(OnCanCarryAmountItem);
-            EventHandlers["vorpCore:canCarryItem"] += new Action<int, string, int, CallbackDelegate>(OnUserCanCarryItem);
-            EventHandlers["vorpCore:canCarryWeapons"] += new Action<int, int, CallbackDelegate>(OnCanCarryAmountWeaponsAsync);
-            EventHandlers["vorpCore:subBullets"] += new Action<int, int, string, int>(OnSubtractBullets);
-            EventHandlers["vorpCore:addBullets"] += new Action<int, int, string, int>(OnAddBullets);
-            EventHandlers["vorpCore:getWeaponComponents"] += new Action<int, CallbackDelegate, int>(OnGetWeaponComponents);
-            EventHandlers["vorpCore:getWeaponBullets"] += new Action<int, CallbackDelegate, int>(OnGetWeaponBullets);
-            EventHandlers["vorpCore:getUserWeapons"] += new Action<int, CallbackDelegate>(OnGetUserWeaponsAsync);
-            EventHandlers["vorpCore:addComponent"] += new Action<int, int, string, CallbackDelegate>(OnAddComponent);
-            EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(OnGetUserWeapon);
-            EventHandlers["vorpCore:registerUsableItem"] += new Action<string, CallbackDelegate>(OnRegisterUsableItem);
-            EventHandlers["vorp:use"] += new Action<Player, string, object[]>(OnUseItem);
+            AddEvent("vorpCore:subWeapon", new Action<int, int>(OnSubtractWeaponAsync));
+            AddEvent("vorpCore:giveWeapon", new Action<int, int, int>(OnGiveWeaponAsync));
+            AddEvent("vorpCore:registerWeapon", new Action<int, string, ExpandoObject, ExpandoObject>(OnRegisterWeaponAsync));
+            AddEvent("vorpCore:addItem", new Action<int, string, int>(OnAddItemAsync));
+            AddEvent("vorpCore:subItem", new Action<int, string, int>(OnSubtractItemAsync));
+            AddEvent("vorpCore:getItemCount", new Action<int, CallbackDelegate, string>(OnGetItems));
+            AddEvent("vorpCore:getUserInventory", new Action<int, CallbackDelegate>(OnGetInventory));
+            AddEvent("vorpCore:canCarryItems", new Action<int, int, CallbackDelegate>(OnCanCarryAmountItem));
+            AddEvent("vorpCore:canCarryItem", new Action<int, string, int, CallbackDelegate>(OnUserCanCarryItem));
+            AddEvent("vorpCore:canCarryWeapons", new Action<int, int, CallbackDelegate>(OnCanCarryAmountWeaponsAsync));
+            AddEvent("vorpCore:subBullets", new Action<int, int, string, int>(OnSubtractBullets));
+            AddEvent("vorpCore:addBullets", new Action<int, int, string, int>(OnAddBullets));
+            AddEvent("vorpCore:getWeaponComponents", new Action<int, CallbackDelegate, int>(OnGetWeaponComponents));
+            AddEvent("vorpCore:getWeaponBullets", new Action<int, CallbackDelegate, int>(OnGetWeaponBullets));
+            AddEvent("vorpCore:getUserWeapons", new Action<int, CallbackDelegate>(OnGetUserWeaponsAsync));
+            AddEvent("vorpCore:addComponent", new Action<int, int, string, CallbackDelegate>(OnAddComponent));
+            AddEvent("vorpCore:getUserWeapon", new Action<int, CallbackDelegate, int>(OnGetUserWeapon));
+            AddEvent("vorpCore:registerUsableItem", new Action<string, CallbackDelegate>(OnRegisterUsableItem));
+            AddEvent("vorp:use", new Action<Player, string, object[]>(OnUseItem));
 
-            Exports.Add("CanCarryWeapon", ExportUserCanCarryWeaponAsync);
+            Export.Add("CanCarryWeapon", ExportUserCanCarryWeaponAsync);
         }
 
         public async Task<bool> SaveInventoryItemsSupportAsync(string steamIdendifier, int coreCharacterId)
