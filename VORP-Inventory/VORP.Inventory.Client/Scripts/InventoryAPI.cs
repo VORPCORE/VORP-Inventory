@@ -88,7 +88,7 @@ namespace VORP.Inventory.Client.Scripts
                     "item_standard", true, citems[name]["can_remove"]));
             }
 
-            Instance.NUIEvents.LoadInv();
+            PluginManager.Instance.NUIEvents.LoadInventory();
         }
 
         private void OnReceiveItemTwo(string name, int count)
@@ -98,7 +98,7 @@ namespace VORP.Inventory.Client.Scripts
             {
                 UsersItems.Remove(name);
             }
-            Instance.NUIEvents.LoadInv();
+            PluginManager.Instance.NUIEvents.LoadInventory();
         }
 
         private void OnReceiveWeapon(int id, string propietary, string name, ExpandoObject ammo, List<dynamic> components)
@@ -118,7 +118,7 @@ namespace VORP.Inventory.Client.Scripts
             {
                 UsersWeapons.Add(weapon.getId(), weapon);
             }
-            Instance.NUIEvents.LoadInv();
+            PluginManager.Instance.NUIEvents.LoadInventory();
         }
 
         private async void OnSelectedCharacterAsync(int charId)
@@ -127,7 +127,9 @@ namespace VORP.Inventory.Client.Scripts
 
             DecoratorExtensions.Set(PlayerPedId(), PluginManager.DECOR_SELECTED_CHARACTER_ID, charId);
 
-            Instance.NUIEvents.OnCloseInventory();
+            PluginManager.Instance.NUIEvents.OnCloseInventory();
+
+            await BaseScript.Delay(1000);
 
             TriggerServerEvent("vorpinventory:getItemsTable");
             Logger.Trace($"OnSelectedCharacterAsync: vorpinventory:getItemsTable");
@@ -277,7 +279,7 @@ namespace VORP.Inventory.Client.Scripts
                     API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), UsersWeapons[weaponId].getAmmo(bulletType));
                 }
             }
-            Instance.NUIEvents.LoadInv();
+            PluginManager.Instance.NUIEvents.LoadInventory();
         }
 
         private void OnAddWeaponBullets(int weaponId, string bulletType, int cuantity)
@@ -290,7 +292,7 @@ namespace VORP.Inventory.Client.Scripts
                     API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), UsersWeapons[weaponId].getAmmo(bulletType));
                 }
             }
-            Instance.NUIEvents.LoadInv();
+            PluginManager.Instance.NUIEvents.LoadInventory();
         }
 
 
@@ -306,7 +308,7 @@ namespace VORP.Inventory.Client.Scripts
                 }
                 UsersWeapons.Remove(weaponId);
             }
-            Instance.NUIEvents.LoadInv();
+            PluginManager.Instance.NUIEvents.LoadInventory();
         }
 
         private void OnSubtractItem(string name, int cuantity)
@@ -320,7 +322,7 @@ namespace VORP.Inventory.Client.Scripts
                     UsersItems.Remove(name);
                 }
             }
-            Instance.NUIEvents.LoadInv();
+            PluginManager.Instance.NUIEvents.LoadInventory();
         }
 
         private void OnAddItem(int count, int limit, string label, string name, string type, bool usable, bool canRemove)
@@ -334,7 +336,7 @@ namespace VORP.Inventory.Client.Scripts
                 ItemClass auxitem = new ItemClass(count, limit, label, name, type, usable, canRemove);
                 UsersItems.Add(name, auxitem);
             }
-            Instance.NUIEvents.LoadInv();
+            PluginManager.Instance.NUIEvents.LoadInventory();
         }
     }
 }

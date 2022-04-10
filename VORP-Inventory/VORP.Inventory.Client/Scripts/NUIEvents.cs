@@ -91,21 +91,21 @@ namespace VORP.Inventory.Client.Scripts
         {
             API.SendNuiMessage(horseInventory);
             await Delay(500);
-            LoadInv();
+            LoadInventory();
         }
 
         private async void ReloadstealInventory(string stealInventory)
         {
             API.SendNuiMessage(stealInventory);
             await Delay(500);
-            LoadInv();
+            LoadInventory();
         }
 
         private async void ReloadClanInventory(string cartInventory)
         {
             API.SendNuiMessage(cartInventory);
             await Delay(500);
-            LoadInv();
+            LoadInventory();
         }
 
         private void OpenClanInventory(string clanName, int clanId)
@@ -140,7 +140,7 @@ namespace VORP.Inventory.Client.Scripts
         {
             API.SendNuiMessage(cartInventory);
             await Delay(500);
-            LoadInv();
+            LoadInventory();
         }
 
         private void OpenContainerInventory(string containerName, int containerId)
@@ -229,7 +229,7 @@ namespace VORP.Inventory.Client.Scripts
         {
             API.SendNuiMessage(cartInventory);
             await Delay(500);
-            LoadInv();
+            LoadInventory();
         }
 
         private void OpenCartInventory(string cartName, int wagonId)
@@ -264,7 +264,7 @@ namespace VORP.Inventory.Client.Scripts
         {
             API.SendNuiMessage(cartInventory);
             await Delay(500);
-            LoadInv();
+            LoadInventory();
         }
 
         private void OpenHouseInventory(string houseName, int houseId)
@@ -298,7 +298,7 @@ namespace VORP.Inventory.Client.Scripts
         {
             API.SendNuiMessage(cartInventory);
             await Delay(500);
-            LoadInv();
+            LoadInventory();
         }
 
         private void OpenHideoutInventory(string hideoutName, int hideoutId)
@@ -341,7 +341,7 @@ namespace VORP.Inventory.Client.Scripts
             {
                 InventoryAPI.UsersWeapons[ItemId].UnequipWeapon();
             }
-            LoadInv();
+            LoadInventory();
         }
 
         private void NUIGetNearPlayers(ExpandoObject obj)
@@ -437,7 +437,7 @@ namespace VORP.Inventory.Client.Scripts
                             TriggerServerEvent("vorpinventory:weaponlog", target, data2);
                         }
 
-                        LoadInv();
+                        LoadInventory();
                     }
                 }
             }
@@ -492,7 +492,7 @@ namespace VORP.Inventory.Client.Scripts
                 {
                     //TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma", 3000);
                 }
-                LoadInv();
+                LoadInventory();
             }
         }
 
@@ -539,7 +539,7 @@ namespace VORP.Inventory.Client.Scripts
                     InventoryAPI.UsersWeapons.Remove(int.Parse(aux["id"].ToString()));
                 }
             }
-            LoadInv();
+            LoadInventory();
         }
 
         private void NUISound()
@@ -572,7 +572,7 @@ namespace VORP.Inventory.Client.Scripts
 
         }
 
-        public void LoadInv()
+        public void LoadInventory()
         {
             TriggerServerEvent("vorpinventory:check_slots");
 
@@ -637,7 +637,7 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OpenInventory()
         {
-            LoadInv();
+            LoadInventory();
 
             NUI.SetFocus(true);
 
