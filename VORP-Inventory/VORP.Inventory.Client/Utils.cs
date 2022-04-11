@@ -97,11 +97,10 @@ namespace VORP.Inventory.Client
         }
 
         // This should be replaced with prompts, solution requires designing.
-        public static async Task DrawText3DAsync(Vector3 position, string text)
+        public static void DrawText3D(Vector3 position, string text)
         {
             float _x = 0.0F;
             float _y = 0.0F;
-            //Debug.WriteLine(position.X.ToString());
             API.GetScreenCoordFromWorldCoord(position.X, position.Y, position.Z, ref _x, ref _y);
             API.SetTextScale(0.35F, 0.35F);
             API.SetTextFontForCurrentCommand(1);
