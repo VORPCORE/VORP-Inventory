@@ -95,7 +95,7 @@ namespace VORP.Inventory.Client.Scripts
                 return;
             }
 
-            List<Pickup> pickupsInRange = _worldPickups.Select(x => x.Value).Where(x => x.IsInRange).ToList();
+            List<Pickup> pickupsInRange = _worldPickups.Select(x => x.Value).Where(x => x.IsInRange).OrderBy(x => x.Distance).ToList();
             int playerPedId = API.PlayerPedId();
 
             pickupsInRange.ForEach(x =>
