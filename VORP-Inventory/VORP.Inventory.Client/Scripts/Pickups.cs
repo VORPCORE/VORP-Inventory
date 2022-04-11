@@ -361,7 +361,6 @@ namespace VORP.Inventory.Client.Scripts
 
         public static void SetupPickPrompt()
         {
-            Debug.WriteLine("Prompt creado");
             PickPrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
             long str = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", Configuration.GetTranslation("TakeFromFloor"));
             Function.Call((Hash)0x5DD02A8318420DD7, PickPrompt, str);
