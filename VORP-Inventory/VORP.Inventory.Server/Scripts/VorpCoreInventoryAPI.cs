@@ -312,6 +312,8 @@ namespace VORP.Inventory.Server.Scripts
                         useritems.Add(item);
                     }
 
+                    Logger.Trace($"User '{identifier}' Inventory: {JsonConvert.SerializeObject(useritems)}");
+
                     if (!string.IsNullOrEmpty(player?.EndPoint ?? ""))
                         cb.Invoke(useritems);
                 }
