@@ -65,6 +65,10 @@
   <ItemGroup>
     <Compile Include="Extensions\DecoratorExtensions.cs" />
     <Compile Include="Interface\NuiManager.cs" />
+    <Compile Include="RedM\Enums\eControl.cs" />
+    <Compile Include="RedM\Enums\ePromptType.cs" />
+    <Compile Include="RedM\PoolObject.cs" />
+    <Compile Include="RedM\Prompt.cs" />
     <Compile Include="Scripts\InventoryAPI.cs" />
     <Compile Include="Models\ItemClass.cs" />
     <Compile Include="Models\Weapon.cs" />
