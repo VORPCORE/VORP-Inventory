@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+#if CLIENT
 using VORP.Inventory.Client.Scripts;
+#endif
 using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Shared
