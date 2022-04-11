@@ -6,13 +6,13 @@ namespace VORP.Inventory.Shared.Models
     [DataContract]
     public class DropOnRespawn
     {
-        [DataMember(Name = "money")]
+        [DataMember(Name = "Money")]
         public bool Money { get; set; }
 
-        [DataMember(Name = "weapons")]
+        [DataMember(Name = "Weapons")]
         public bool Weapons { get; set; }
 
-        [DataMember(Name = "items")]
+        [DataMember(Name = "Items")]
         public bool Items { get; set; }
     }
 
@@ -22,7 +22,7 @@ namespace VORP.Inventory.Shared.Models
         private int _weapons;
         private int _items;
 
-        [DataMember(Name = "weapons")]
+        [DataMember(Name = "Weapons")]
         public int Weapons
         {
             get => _weapons;
@@ -34,7 +34,7 @@ namespace VORP.Inventory.Shared.Models
             }
         }
 
-        [DataMember(Name = "items")]
+        [DataMember(Name = "Items")]
         public int Items
         {
             get => _items;
@@ -50,22 +50,22 @@ namespace VORP.Inventory.Shared.Models
     [DataContract]
     public class Weapon
     {
-        [DataMember(Name = "name")]
+        [DataMember(Name = "Name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "hashName")]
+        [DataMember(Name = "HashName")]
         public string HashName { get; set; }
 
-        [DataMember(Name = "weaponModel")]
+        [DataMember(Name = "WeaponModel")]
         public string WeaponModel { get; set; }
 
-        [DataMember(Name = "price")]
+        [DataMember(Name = "Price")]
         public double? Price { get; set; }
 
-        [DataMember(Name = "ammoHash")]
+        [DataMember(Name = "AmmoHash")]
         public Dictionary<string, double> AmmoHash { get; set; }
 
-        [DataMember(Name = "compsHash")]
+        [DataMember(Name = "CompsHash")]
         public Dictionary<string, int> CompsHash { get; set; }
     }
 
@@ -75,16 +75,16 @@ namespace VORP.Inventory.Shared.Models
         [DataMember(Name = "defaultlang")]
         public string Defaultlanguage { get; set; }
 
-        [DataMember(Name = "openKey")]
+        [DataMember(Name = "OpenKey")]
         public string OpenKey { get; set; }
 
-        [DataMember(Name = "pickupKey")]
+        [DataMember(Name = "PickupKey")]
         public string PickupKey { get; set; }
 
-        [DataMember(Name = "dropOnRespawn")]
+        [DataMember(Name = "DropOnRespawn")]
         public DropOnRespawn DropOnRespawn { get; set; }
 
-        [DataMember(Name = "maxItemsInInventory")]
+        [DataMember(Name = "MaxItemsInInventory")]
         public MaxItemsInInventory MaxItemsInInventory { get; set; }
 
         [DataMember(Name = "startItems")]
@@ -93,7 +93,7 @@ namespace VORP.Inventory.Shared.Models
         [DataMember(Name = "startWeapons")]
         public Dictionary<string, Dictionary<string, double>> StartWeapons { get; set; }
 
-        [DataMember(Name = "weapons")]
+        [DataMember(Name = "Weapons")]
         public List<Weapon> Weapons { get; set; }
     }
 }

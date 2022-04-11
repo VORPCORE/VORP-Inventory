@@ -39,6 +39,9 @@ namespace VORP.Inventory.Shared
 #if SERVER
                 INVENTORY_MAX_ITEMS = _config.MaxItemsInInventory.Items;
                 INVENTORY_MAX_WEAPONS = _config.MaxItemsInInventory.Weapons;
+
+                Logger.Trace($"INVENTORY_MAX_ITEMS: {INVENTORY_MAX_ITEMS}");
+                Logger.Trace($"INVENTORY_MAX_WEAPONS: {INVENTORY_MAX_WEAPONS}");
 #endif
 
                 _config.Weapons.ForEach(weapon =>

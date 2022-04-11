@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VORP.Inventory.Server.Scripts;
+using VORP.Inventory.Shared;
+using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Server
 {
@@ -87,6 +89,8 @@ namespace VORP.Inventory.Server
         async void Setup()
         {
             await VendorReady(); // wait till ghmattimysql resource has started
+
+            Config config = Configuration.Config;
 
             ItemsDB.Init();
             ScriptVorpCoreInventoryApi.Init();
