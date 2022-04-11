@@ -69,8 +69,6 @@ namespace VORP.Inventory.Client.Models
                     // GETTING THE EQUIPED WEAPON
                     uint weaponHash = 0;
                     API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
-                    Debug.WriteLine($"equiped one : {weaponHash}");
-                    Debug.WriteLine($"{(uint)API.GetHashKey(this.name)}");
 
                     Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), weaponHash, 1, 1, 1, 2, false, 0.5, 1.0, 752097756, 0, true, 0.0);
                     Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 1, 1, 1, 3, false, 0.5, 1.0, 752097756, 0, true, 0.0);

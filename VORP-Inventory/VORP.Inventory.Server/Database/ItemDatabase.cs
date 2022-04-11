@@ -144,7 +144,7 @@ namespace VORP.Inventory.Server.Database
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine(ex.Message);
+                            Logger.Error(ex, "SetupLoadouts");
                         }
                     }
                 }

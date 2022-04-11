@@ -164,7 +164,6 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnGiveUserWeapons(dynamic loadout)
         {
-            Debug.WriteLine(API.PlayerPedId().ToString());
             foreach (var row in loadout)
             {
                 JArray componentes = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
@@ -180,7 +179,6 @@ namespace VORP.Inventory.Client.Scripts
                 {
                     ammos.Add(amunition.Name, int.Parse(amunition.Value.ToString()));
                 }
-                Debug.WriteLine(row.used.ToString());
                 bool auused = false;
                 if (row.used == 1)
                 {
@@ -219,7 +217,6 @@ namespace VORP.Inventory.Client.Scripts
                 {
                     if (items[fitems.Key] != null)
                     {
-                        Debug.WriteLine(fitems.Key);
                         int cuantity = int.Parse(items[fitems.Key].ToString());
                         int limit = int.Parse(fitems.Value["limit"].ToString());
                         string label = fitems.Value["label"].ToString();
@@ -313,7 +310,6 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnSubtractItem(string name, int cuantity)
         {
-            Debug.WriteLine($"{name} = {cuantity}");
             if (UsersItems.ContainsKey(name))
             {
                 UsersItems[name].setCount(cuantity);

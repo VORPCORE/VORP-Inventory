@@ -32,7 +32,6 @@ namespace VORP.Inventory.Client
                 foreach (KeyValuePair<string, int> ammos in InventoryAPI.UsersWeapons[id].getAllAmmo())
                 {
                     API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
-                    Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
                 }
             }
             else
@@ -50,7 +49,6 @@ namespace VORP.Inventory.Client
             foreach (KeyValuePair<string, int> ammos in InventoryAPI.UsersWeapons[id].getAllAmmo())
             {
                 API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
-                Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
             }
 
             InventoryAPI.UsersWeapons[id].setUsed(true);

@@ -247,7 +247,6 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (value == 1)
             {
-                Debug.WriteLine(obj.ToString());
                 pickups.Add(obj, new Dictionary<string, dynamic>
                 {
                     ["name"] = name,
@@ -257,7 +256,7 @@ namespace VORP.Inventory.Client.Scripts
                     ["inRange"] = false,
                     ["coords"] = position
                 });
-                Debug.WriteLine($"name: {pickups[obj]["name"].ToString()} cuantity: {pickups[obj]["amount"].ToString()},id:{pickups[obj]["weaponid"].ToString()}");
+                Logger.Trace($"name: {pickups[obj]["name"].ToString()} cuantity: {pickups[obj]["amount"].ToString()},id:{pickups[obj]["weaponid"].ToString()}");
             }
             else
             {
@@ -269,7 +268,6 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (value == 1)
             {
-                Debug.WriteLine(obj.ToString());
                 pickupsMoney.Add(obj, new Dictionary<string, dynamic>
                 {
                     ["name"] = "money",
@@ -278,7 +276,7 @@ namespace VORP.Inventory.Client.Scripts
                     ["inRange"] = false,
                     ["coords"] = position
                 });
-                Debug.WriteLine($"name: {pickupsMoney[obj]["name"].ToString()} cuantity: {pickupsMoney[obj]["amount"].ToString()},");
+                Logger.Trace($"name: {pickupsMoney[obj]["name"].ToString()} cuantity: {pickupsMoney[obj]["amount"].ToString()},");
             }
             else
             {
@@ -350,7 +348,6 @@ namespace VORP.Inventory.Client.Scripts
             Function.Call((Hash)0x58A850EAEE20FAA3, obj);
             Function.Call((Hash)0xDC19C288082E586E, obj, true, false);
             Function.Call((Hash)0x7D9EFB7AD6B19754, obj, true);
-            Debug.WriteLine(obj.ToString());
             TriggerServerEvent("vorpinventory:shareMoneyPickupServer", obj, amount, position);
             Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
         }

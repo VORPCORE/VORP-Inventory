@@ -363,7 +363,7 @@ namespace VORP.Inventory.Client.Scripts
 
             if (!foundPlayers)
             {
-                Debug.WriteLine("No near players");
+                Logger.Trace("Not near players");
             }
             else
             {
@@ -469,20 +469,17 @@ namespace VORP.Inventory.Client.Scripts
                     bool isWeaponUsedAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, weaponHash);
                     if (isWeaponUsedARevolver || isWeaponUsedAPistol)
                     {
-                        Debug.WriteLine("Equiping offhand");
                         weapon.setUsed2(true);
                         weapon.loadAmmo();
                         weapon.loadComponents();
                         weapon.setUsed(true);
                         TriggerServerEvent("syn_weapons:weaponused", data);
-                        Debug.WriteLine($"used 2 : {weapon.getUsed2()}");
 
                     }
                 }
                 else if (!weapon.getUsed() &&
                    !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(weapon.getName()), 0, true))
                 {
-                    Debug.WriteLine("THEIR PART");
                     weapon.loadAmmo();
                     weapon.loadComponents();
                     weapon.setUsed(true);
@@ -508,7 +505,6 @@ namespace VORP.Inventory.Client.Scripts
             }
             else if (type == "item_standard")
             {
-                Debug.Write(aux["number"].ToString());
                 if (aux["number"].ToString() != null && aux["number"].ToString() != "")
                 {
 

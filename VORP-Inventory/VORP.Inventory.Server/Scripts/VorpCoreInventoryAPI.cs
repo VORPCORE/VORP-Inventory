@@ -615,7 +615,7 @@ namespace VORP.Inventory.Server.Scripts
                 }
                 else
                 {
-                    Debug.WriteLine("Weapon not found in DBa");
+                    Logger.Trace("Weapon not found in DBa");
                 }
             }
             catch (Exception ex)
@@ -648,7 +648,7 @@ namespace VORP.Inventory.Server.Scripts
                 }
                 else
                 {
-                    Debug.WriteLine("Weapon not found in DB");
+                    Logger.Trace("Weapon not found in DB");
                 }
             }
             catch (Exception ex)
@@ -704,7 +704,7 @@ namespace VORP.Inventory.Server.Scripts
             {
                 if (!ItemDatabase.ServerItems.ContainsKey(name))
                 {
-                    Debug.WriteLine($"addItem: Item: {name} not exist on Database please add this item on Table `Items`");
+                    Logger.Trace($"addItem: Item: {name} not exist on Database please add this item on Table `Items`");
                     return;
                 }
 
@@ -851,7 +851,7 @@ namespace VORP.Inventory.Server.Scripts
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Logger.Error(ex, "OnAddItemAsync");
             }
         }
 
@@ -861,7 +861,7 @@ namespace VORP.Inventory.Server.Scripts
             {
                 if (ItemDatabase.GetItem(itemName) == null)
                 {
-                    Debug.WriteLine($"Item: {itemName} not exist on Database please add this item on Table `Items`");
+                    Logger.Trace($"Item: {itemName} not exist on Database please add this item on Table `Items`");
                     return;
                 }
 
@@ -965,7 +965,7 @@ namespace VORP.Inventory.Server.Scripts
                         totalcount += 1;
                         if (totalcount > Configuration.INVENTORY_MAX_WEAPONS)
                         {
-                            Debug.WriteLine($"{targetPlayer.Name} Can't carry more weapons");
+                            Logger.Trace($"{targetPlayer.Name} Can't carry more weapons");
                             return;
                         }
                     }
@@ -1062,7 +1062,7 @@ namespace VORP.Inventory.Server.Scripts
                     totalcount += 1;
                     if (totalcount > Configuration.INVENTORY_MAX_WEAPONS)
                     {
-                        Debug.WriteLine($"{player.Name} Can't carry more weapons");
+                        Logger.Trace($"{player.Name} Can't carry more weapons");
                         return;
                     }
                 }
