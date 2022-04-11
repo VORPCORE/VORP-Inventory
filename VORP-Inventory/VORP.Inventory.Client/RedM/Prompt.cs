@@ -3,11 +3,6 @@ using CitizenFX.Core.Native;
 using System.Collections.Generic;
 using VORP.Inventory.Client.RedM.Enums;
 
-namespace VORP.Inventory.Client.RedM.PromptEvents
-{
-    public delegate void PromptEvent();
-}
-
 namespace VORP.Inventory.Client.RedM
 {
     internal class Prompt : PoolObject
