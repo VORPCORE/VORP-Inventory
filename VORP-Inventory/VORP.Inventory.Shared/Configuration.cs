@@ -63,6 +63,12 @@ namespace VORP.Inventory.Shared
                     _language = JsonConvert.DeserializeObject<Dictionary<string, string>>(languageFileContents);
                     Logger.Trace($"Language Loaded: {language}");
                 }
+                else
+                {
+                    languageFileContents = LoadResourceFile(GetCurrentResourceName(), $"/languages/en_lang.json");
+                    _language = JsonConvert.DeserializeObject<Dictionary<string, string>>(languageFileContents);
+                    Logger.Trace($"Language '{language}.json' was not found, defaulted to en_lang.json.");
+                }
 
                 return _config;
             }
