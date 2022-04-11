@@ -44,31 +44,8 @@ namespace VORP.Inventory.Shared
                 Logger.Trace($"INVENTORY_MAX_WEAPONS: {INVENTORY_MAX_WEAPONS}");
 #endif
 
-                _config.Weapons.ForEach(weapon =>
-                {
-                    if (!Weapons.ContainsKey(weapon.HashName))
-                        Weapons.Add(weapon.HashName, weapon);
-                });
-
-                Logger.Trace($"Weapons Loaded: {Weapons.Count}");
-
-                string language = _config.Defaultlanguage;
-                if (string.IsNullOrEmpty(language))
-                    language = "en_lang";
-
-                string languageFileContents = LoadResourceFile(GetCurrentResourceName(), $"/languages/{language}.json");
-
-                if (!string.IsNullOrEmpty(languageFileContents))
-                {
-                    _language = JsonConvert.DeserializeObject<Dictionary<string, string>>(languageFileContents);
-                    Logger.Trace($"Language Loaded: {language}");
-                }
-                else
-                {
-                    languageFileContents = LoadResourceFile(GetCurrentResourceName(), $"/languages/en_lang.json");
-                    _language = JsonConvert.DeserializeObject<Dictionary<string, string>>(languageFileContents);
-                    Logger.Trace($"Language '{language}.json' was not found, defaulted to en_lang.json.");
-                }
+                LoadWeapons();
+                LoadLanguage();
 
                 return _config;
             }
@@ -76,6 +53,38 @@ namespace VORP.Inventory.Shared
             {
                 Logger.CriticalError(ex, $"Configuration.GetConfig");
                 return null;
+            }
+        }
+
+        private static void LoadWeapons()
+        {
+            _config.Weapons.ForEach(weapon =>
+            {
+                if (!Weapons.ContainsKey(weapon.HashName))
+                    Weapons.Add(weapon.HashName, weapon);
+            });
+
+            Logger.Trace($"Weapons Loaded: {Weapons.Count}");
+        }
+
+        private static void LoadLanguage()
+        {
+            string language = _config.Defaultlanguage;
+            if (string.IsNullOrEmpty(language))
+                language = "en_lang";
+
+            string languageFileContents = LoadResourceFile(GetCurrentResourceName(), $"/languages/{language}.json");
+
+            if (!string.IsNullOrEmpty(languageFileContents))
+            {
+                _language = JsonConvert.DeserializeObject<Dictionary<string, string>>(languageFileContents);
+                Logger.Trace($"Language Loaded: {language}");
+            }
+            else
+            {
+                languageFileContents = LoadResourceFile(GetCurrentResourceName(), $"/languages/en_lang.json");
+                _language = JsonConvert.DeserializeObject<Dictionary<string, string>>(languageFileContents);
+                Logger.Trace($"Language '{language}.json' was not found, defaulted to en_lang.json.");
             }
         }
 
