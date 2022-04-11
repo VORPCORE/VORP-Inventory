@@ -46,6 +46,15 @@ namespace VORP.Inventory.Shared.Diagnostics
         /// <summary>
         /// Critical Error does not check the log_level metadata, this will print directly to the console.
         /// </summary>
+        /// <param name="msg">Error Message to be displayed, preferably the Method being executed.</param>
+        public static void CriticalError(string msg)
+        {
+            Format($"[CRITICAL_ERROR] {msg}");
+        }
+
+        /// <summary>
+        /// Critical Error does not check the log_level metadata, this will print directly to the console.
+        /// </summary>
         /// <param name="ex">Exception</param>
         /// <param name="msg">Error Message to be displayed, preferably the Method being executed.</param>
         public static void CriticalError(Exception ex, string msg)
