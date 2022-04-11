@@ -104,9 +104,7 @@ namespace VORP.Inventory.Client.Scripts
 
             foreach (var pick in pickups)
             {
-                float distance = Function.Call<float>((Hash)0x0BE7F4E3CDBAFB28, coords.X, coords.Y, coords.Z,
-                    pick.Value["coords"].X,
-                    pick.Value["coords"].Y, pick.Value["coords"].Z, false);
+                float distance = Vdist(coords.X, coords.Y, coords.Z, pick.Value["coords"].X, pick.Value["coords"].Y, pick.Value["coords"].Z);
 
                 if (distance <= 5.0F && !pick.Value["inRange"])
                 {
@@ -171,9 +169,7 @@ namespace VORP.Inventory.Client.Scripts
 
             foreach (var pick in pickupsMoney)
             {
-                float distance = Function.Call<float>((Hash)0x0BE7F4E3CDBAFB28, coords.X, coords.Y, coords.Z,
-                    pick.Value["coords"].X,
-                    pick.Value["coords"].Y, pick.Value["coords"].Z, false);
+                float distance = Vdist(coords.X, coords.Y, coords.Z, pick.Value["coords"].X, pick.Value["coords"].Y, pick.Value["coords"].Z);
 
                 if (distance <= 5.0F)
                 {
