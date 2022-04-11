@@ -696,7 +696,7 @@ namespace VORP.Inventory.Server.Scripts
             }
         }
 
-        private async void OnAddItemAsync(int source, string name, int cuantity)
+        private async void OnAddItemAsync(int source, string name, int quantity)
         {
             try
             {
@@ -728,70 +728,70 @@ namespace VORP.Inventory.Server.Scripts
                 {
                     if (ItemDatabase.UserInventory[identifier].ContainsKey(name))
                     {
-                        if (ItemDatabase.UserInventory[identifier][name].getCount() + cuantity <= ItemDatabase.UserInventory[identifier][name].getLimit())
+                        if (ItemDatabase.UserInventory[identifier][name].getCount() + quantity <= ItemDatabase.UserInventory[identifier][name].getLimit())
                         {
-                            if (cuantity > 0)
+                            if (quantity > 0)
                             {
                                 if (Configuration.INVENTORY_MAX_ITEMS != 0)
                                 {
                                     int totalcount = GetTotalAmountOfItems(identifier);
-                                    totalcount += cuantity;
+                                    totalcount += quantity;
                                     if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                     {
                                         added = true;
-                                        ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
+                                        ItemDatabase.UserInventory[identifier][name].addCount(quantity);
                                     }
                                 }
                                 else
                                 {
                                     added = true;
-                                    ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
+                                    ItemDatabase.UserInventory[identifier][name].addCount(quantity);
                                 }
                             }
                         }
                         else if (ItemDatabase.UserInventory[identifier][name].getLimit() == -1)
                         {
-                            if (cuantity > 0)
+                            if (quantity > 0)
                             {
                                 if (Configuration.INVENTORY_MAX_ITEMS != 0)
                                 {
                                     int totalcount = GetTotalAmountOfItems(identifier);
-                                    totalcount += cuantity;
+                                    totalcount += quantity;
                                     if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                     {
                                         added = true;
-                                        ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
+                                        ItemDatabase.UserInventory[identifier][name].addCount(quantity);
                                     }
                                 }
                                 else
                                 {
                                     added = true;
-                                    ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
+                                    ItemDatabase.UserInventory[identifier][name].addCount(quantity);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if (cuantity <= ItemDatabase.ServerItems[name].getLimit())
+                        if (quantity <= ItemDatabase.ServerItems[name].getLimit())
                         {
                             added = true;
 
                             if (Configuration.INVENTORY_MAX_ITEMS != 0)
                             {
                                 int totalcount = GetTotalAmountOfItems(identifier);
-                                totalcount += cuantity;
+                                totalcount += quantity;
                                 if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                 {
                                     added = true;
-                                    ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
+                                    ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(quantity, ItemDatabase.ServerItems[name].getLimit(),
                                 ItemDatabase.ServerItems[name].getLabel(), name, ItemDatabase.ServerItems[name].getType(), true, ItemDatabase.ServerItems[name].getCanRemove()));
                                 }
                             }
                             else
                             {
                                 added = true;
-                                ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
+                                ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(quantity, ItemDatabase.ServerItems[name].getLimit(),
                                 ItemDatabase.ServerItems[name].getLabel(), name, ItemDatabase.ServerItems[name].getType(), true, ItemDatabase.ServerItems[name].getCanRemove()));
                             }
 
@@ -802,18 +802,18 @@ namespace VORP.Inventory.Server.Scripts
                             if (Configuration.INVENTORY_MAX_ITEMS != 0)
                             {
                                 int totalcount = GetTotalAmountOfItems(identifier);
-                                totalcount += cuantity;
+                                totalcount += quantity;
                                 if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                 {
                                     added = true;
-                                    ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
+                                    ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(quantity, ItemDatabase.ServerItems[name].getLimit(),
                                         ItemDatabase.ServerItems[name].getLabel(), name, ItemDatabase.ServerItems[name].getType(), true, ItemDatabase.ServerItems[name].getCanRemove()));
                                 }
                             }
                             else
                             {
                                 added = true;
-                                ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
+                                ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(quantity, ItemDatabase.ServerItems[name].getLimit(),
                                     ItemDatabase.ServerItems[name].getLabel(), name, ItemDatabase.ServerItems[name].getType(), true, ItemDatabase.ServerItems[name].getCanRemove()));
                             }
 
@@ -827,7 +827,7 @@ namespace VORP.Inventory.Server.Scripts
                         string type = ItemDatabase.UserInventory[identifier][name].getType();
                         bool usable = ItemDatabase.UserInventory[identifier][name].getUsable();
                         bool canRemove = ItemDatabase.UserInventory[identifier][name].getCanRemove();
-                        player.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
+                        player.TriggerEvent("vorpCoreClient:addItem", quantity, limit, label, name, type, usable, canRemove);//Pass item to client
                         bool result = await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                         if (!result)
                         {
