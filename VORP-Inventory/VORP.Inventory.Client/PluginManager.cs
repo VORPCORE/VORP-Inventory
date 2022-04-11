@@ -46,7 +46,7 @@ namespace VORP.Inventory.Client
 
                     TriggerServerEvent("vorpinventory:getItemsTable");
                     Logger.Trace($"OnSelectedCharacterAsync: vorpinventory:getItemsTable");
-                    await Delay(300);
+                    await Delay(1000);
                     TriggerServerEvent("vorpinventory:getInventory");
                     Logger.Trace($"OnSelectedCharacterAsync: vorpinventory:getInventory");
                 }
