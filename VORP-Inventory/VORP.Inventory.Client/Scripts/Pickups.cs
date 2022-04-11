@@ -14,9 +14,13 @@ namespace VORP.Inventory.Client.Scripts
     public class Pickups : Manager
     {
         Dictionary<int, Pickup> _worldPickups = new();
+        int _promptGroup = GetRandomIntInRange(0, 0xffffff);
+
 
         private static bool dropAll = false;
         private static Vector3 lastCoords = new Vector3();
+
+
 
         public void Init()
         {
@@ -100,13 +104,16 @@ namespace VORP.Inventory.Client.Scripts
 
             pickupsInRange.ForEach(x =>
             {
-                Utils.DrawText3D(x.Position, x.Name);
+                // Utils.DrawText3D(x.Position, x.Name);
 
                 if (x.Distance <= 1.2)
                 {
                     Function.Call((Hash)0x69F4BE8C8CC4796C, playerPedId, x.EntityId, 3000, 2048, 3); // TaskLookAtEntity
                     x.Prompt.Visible = true;
                     x.Prompt.Enabled = true;
+
+                    long promptSubLabel = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", x.Name);
+                    Function.Call((Hash)0xC65A45D4453C2627, _promptGroup, promptSubLabel, 1); // UiPromptSetActiveGroupThisFrame
 
                     if (x.Prompt.HasHoldModeCompleted)
                     {
@@ -174,7 +181,7 @@ namespace VORP.Inventory.Client.Scripts
                         Amount = amount,
                         WeaponId = weaponId,
                         Position = position,
-                        Prompt = Prompt.Create((eControl)Configuration.KEY_PICKUP_ITEM, Configuration.GetTranslation("TakeFromFloor"), promptType: ePromptType.StandardHold)
+                        Prompt = Prompt.Create((eControl)Configuration.KEY_PICKUP_ITEM, Configuration.GetTranslation("TakeFromFloor"), promptType: ePromptType.StandardHold, group: (uint)_promptGroup)
                     };
 
                     pickup.Prompt.Enabled = false;
@@ -209,7 +216,7 @@ namespace VORP.Inventory.Client.Scripts
                         EntityId = entityHandle,
                         Amount = amount,
                         Position = position,
-                        Prompt = Prompt.Create((eControl)Configuration.KEY_PICKUP_ITEM, Configuration.GetTranslation("TakeFromFloor"), promptType: ePromptType.StandardHold)
+                        Prompt = Prompt.Create((eControl)Configuration.KEY_PICKUP_ITEM, Configuration.GetTranslation("TakeFromFloor"), promptType: ePromptType.StandardHold, group: (uint)_promptGroup)
                     };
 
                     pickup.Prompt.Enabled = false;

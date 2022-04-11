@@ -53,11 +53,12 @@ namespace VORP.Inventory.Client.RedM
             ePromptType promptType = ePromptType.Pressed,
             Vector3? contextPoint = null,
             float contextSize = 0f,
-            uint timedEventHash = 0
+            uint timedEventHash = 0,
+            uint group = 0
             )
         {
             List<eControl> controls = new() { control };
-            return Create(controls, label, priority, transportMode, tag, promptType, contextPoint, contextSize, timedEventHash);
+            return Create(controls, label, priority, transportMode, tag, promptType, contextPoint, contextSize, timedEventHash, group);
         }
 
         public static Prompt Create(List<eControl> controls, string label, int priority = 1, int transportMode = 0,
@@ -65,7 +66,8 @@ namespace VORP.Inventory.Client.RedM
             ePromptType promptType = ePromptType.Pressed,
             Vector3? contextPoint = null,
             float contextSize = 0f,
-            uint timedEventHash = 0
+            uint timedEventHash = 0,
+            uint group = 0
             )
         {
             int promptHandle = PromptRegisterBegin();
@@ -107,6 +109,9 @@ namespace VORP.Inventory.Client.RedM
                 Function.Call((Hash)0xAE84C5EE2C384FB3, promptHandle, contextPoint.Value.X, contextPoint.Value.Y, contextPoint.Value.Z);
             if (contextSize > 0f)
                 Function.Call((Hash)0x0C718001B77CA468, promptHandle, contextSize);
+
+            if (group > 0)
+                PromptSetGroup(promptHandle, (int)group, 0);
 
             PromptRegisterEnd(promptHandle);
 
