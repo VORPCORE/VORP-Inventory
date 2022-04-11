@@ -166,9 +166,10 @@ namespace VORP.Inventory.Client.Scripts
             {
                 if (!_worldPickups.ContainsKey(entityHandle))
                 {
+                    string label = Configuration.GetHashReadableLabel(name);
                     Pickup pickup = new Pickup()
                     {
-                        Name = amount > 1 ? $"{Configuration.GetHashReadableLabel(name)} x {amount}" : Configuration.GetHashReadableLabel(name),
+                        Name = amount > 1 ? $"{label} x {amount}" : label,
                         EntityId = entityHandle,
                         Amount = amount,
                         WeaponId = weaponId,
