@@ -21,8 +21,8 @@ namespace VORP.Inventory.Client.Scripts
             AddEvent("vorpInventory:playerAnim", new Action(OnPlayerExitAnimationAsync));
             AddEvent("vorp:PlayerForceRespawn", new Action(OnDeadActionsAsync));
 
-            PluginManager.Instance.AttachTickHandler(PrincipalFunctionPickupsAsync);
-            PluginManager.Instance.AttachTickHandler(PrincipalFunctionPickupsMoneyAsync);
+            AttachTickHandler(PrincipalFunctionPickupsAsync);
+            AttachTickHandler(PrincipalFunctionPickupsMoneyAsync);
         }
 
         private static int PickPrompt;
