@@ -1017,11 +1017,18 @@
                         .limit; /*   count = count + "" ;   if you want to disable the count max items add this instead. */
                 }
 
-                $("#inventoryElement").append("<div data-label='" + item.label +
-                    "' style='background-image: url(\"img/items/" + item.name.toLowerCase() +
-                    ".png\"), url(); background-size: 90px 90px, 90px 90px; background-repeat: no-repeat; background-position: center;' id='item-" +
-                    index + "' class='item'><div class='count'>" + count +
-                    "</div><div class='text'></div></div>")
+                if (item.count > 0) {
+                    $("#inventoryElement").append("<div data-label='" + item.label +
+                        "' style='background-image: url(\"img/items/" + item.name.toLowerCase() +
+                        ".png\"), url(); background-size: 90px 90px, 90px 90px; background-repeat: no-repeat; background-position: center;' id='item-" +
+                        index + "' class='item'><div class='count'>" + count +
+                        "</div><div class='text'></div></div>");
+                } else {
+                    $("#inventoryElement").append("<div data-label='" + item.label +
+                        "' style='background-image: url(\"img/items/" + item.name.toLowerCase() +
+                        ".png\"), url(); background-size: 90px 90px, 90px 90px; background-repeat: no-repeat; background-position: center;' id='item-" +
+                        index + "' class='item'></div>");
+                }
 
                 $('#item-' + index).data('item', item);
                 $('#item-' + index).data('inventory', "main");
