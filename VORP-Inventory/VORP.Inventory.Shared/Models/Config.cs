@@ -30,7 +30,7 @@ namespace VORP.Inventory.Shared.Models
             {
                 if (value < 0)
                     value = 0;
-                _items = value;
+                _weapons = value;
             }
         }
 
