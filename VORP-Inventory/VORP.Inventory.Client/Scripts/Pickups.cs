@@ -6,11 +6,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Client.Models;
+using VORP.Inventory.Client.RedM;
+using VORP.Inventory.Client.RedM.Enums;
 
 namespace VORP.Inventory.Client.Scripts
 {
     public class Pickups : Manager
     {
+        Dictionary<int, Pickup> _worldPickups = new();
+
+        private static bool dropAll = false;
+        private static Vector3 lastCoords = new Vector3();
+
         public void Init()
         {
             AddEvent("vorpInventory:createPickup", new Action<string, int, int>(OnCreatePickupAsync));
@@ -21,19 +28,8 @@ namespace VORP.Inventory.Client.Scripts
             AddEvent("vorpInventory:playerAnim", new Action(OnPlayerExitAnimationAsync));
             AddEvent("vorp:PlayerForceRespawn", new Action(OnDeadActionsAsync));
 
-            AttachTickHandler(PrincipalFunctionPickupsAsync);
-            AttachTickHandler(PrincipalFunctionPickupsMoneyAsync);
-
-            SetupPickPrompt();
+            AttachTickHandler(OnWorldPickupAsync);
         }
-
-        private static int PickPrompt;
-        public static Dictionary<int, Dictionary<string, dynamic>> pickups = new Dictionary<int, Dictionary<string, dynamic>>();
-        public static Dictionary<int, Dictionary<string, dynamic>> pickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
-        private static bool active = false;
-        private static bool active2 = false;
-        private static bool dropAll = false;
-        private static Vector3 lastCoords = new Vector3();
 
         private async void OnDeadActionsAsync()
         {
@@ -91,121 +87,42 @@ namespace VORP.Inventory.Client.Scripts
             dropAll = false;
         }
 
-        private async Task PrincipalFunctionPickupsAsync()
+        private async Task OnWorldPickupAsync()
         {
-            int playerPed = API.PlayerPedId();
-            Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, playerPed, true, true);
-
-            if (pickups.Count == 0)
+            if (_worldPickups.Count == 0)
             {
                 await BaseScript.Delay(1000);
                 return;
             }
 
-            foreach (var pick in pickups)
+            List<Pickup> pickupsInRange = _worldPickups.Select(x => x.Value).Where(x => x.IsInRange).ToList();
+            int playerPedId = API.PlayerPedId();
+
+            pickupsInRange.ForEach(x =>
             {
-                float distance = Vdist(coords.X, coords.Y, coords.Z, pick.Value["coords"].X, pick.Value["coords"].Y, pick.Value["coords"].Z);
+                Utils.DrawText3D(x.Position, x.Name);
 
-                if (distance <= 5.0F && !pick.Value["inRange"])
+                if (x.Distance <= 1.2)
                 {
-                    if (pick.Value["weaponid"] == 1)
-                    {
-                        string name = pick.Value["name"];
-                        if (InventoryAPI.citems.ContainsKey(name))
-                        {
-                            name = InventoryAPI.citems[name]["label"];
-                        }
-                        Utils.DrawText3DAsync(pick.Value["coords"], name);
-                    }
-                    else
-                    {
-                        string name = Function.Call<string>((Hash)0x89CF5FF3D363311E,
-                            (uint)API.GetHashKey(pick.Value["name"]));
-                        Utils.DrawText3DAsync(pick.Value["coords"], name);
-                    }
-                }
+                    Function.Call((Hash)0x69F4BE8C8CC4796C, playerPedId, x.EntityId, 3000, 2048, 3); // TaskLookAtEntity
+                    x.Prompt.Visible = true;
+                    x.Prompt.Enabled = true;
 
-                if (distance <= 1.2F && !pick.Value["inRange"])
-                {
-                    Function.Call((Hash)0x69F4BE8C8CC4796C, playerPed, pick.Value["obj"], 3000, 2048, 3);
-                    if (active == false)
+                    if (x.Prompt.HasHoldModeCompleted)
                     {
-                        //Debug.WriteLine("Entro");
-                        Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, true);
-                        Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, true);
-                        active = true;
-                    }
-
-                    if (Function.Call<bool>((Hash)0xE0F65F0640EF0617, PickPrompt))
-                    {
-                        TriggerServerEvent("vorpinventory:onPickup", pick.Value["obj"]);
-                        pick.Value["inRange"] = true;
-                        Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
-                        Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
+                        TriggerServerEvent("vorpinventory:onPickup", x.EntityId);
+                        x.Prompt.Delete();
                     }
                 }
                 else
                 {
-                    if (active)
+                    if (x.Prompt.Enabled)
                     {
-                        Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
-                        Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
-                        active = false;
+                        x.Prompt.Enabled = false;
+                        x.Prompt.Visible = false;
                     }
                 }
-            }
-        }
-
-        private async Task PrincipalFunctionPickupsMoneyAsync()
-        {
-            int playerPed = API.PlayerPedId();
-            Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, playerPed, true, true);
-
-            if (pickupsMoney.Count == 0)
-            {
-                await BaseScript.Delay(1000);
-                return;
-            }
-
-            foreach (var pick in pickupsMoney)
-            {
-                float distance = Vdist(coords.X, coords.Y, coords.Z, pick.Value["coords"].X, pick.Value["coords"].Y, pick.Value["coords"].Z);
-
-                if (distance <= 5.0F)
-                {
-                    string name = pick.Value["name"];
-                    Utils.DrawText3DAsync(pick.Value["coords"], name);
-                }
-
-                if (distance <= 1.2F && !pick.Value["inRange"])
-                {
-                    Function.Call((Hash)0x69F4BE8C8CC4796C, playerPed, pick.Value["obj"], 3000, 2048, 3);
-                    if (active2 == false)
-                    {
-                        //Debug.WriteLine("Entro");
-                        Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, true);
-                        Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, true);
-                        active2 = true;
-                    }
-
-                    if (Function.Call<bool>((Hash)0xE0F65F0640EF0617, PickPrompt))
-                    {
-                        TriggerServerEvent("vorpinventory:onPickupMoney", pick.Value["obj"]);
-                        pick.Value["inRange"] = true;
-                        Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
-                        Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
-                    }
-                }
-                else
-                {
-                    if (active2)
-                    {
-                        Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
-                        Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
-                        active2 = false;
-                    }
-                }
-            }
+            });
         }
 
         private async void OnPlayerExitAnimationAsync()
@@ -243,44 +160,74 @@ namespace VORP.Inventory.Client.Scripts
             API.DeleteObject(ref obj);
         }
 
-        private void OnSharePickupClient(string name, int obj, int amount, Vector3 position, int value, int weaponId)
+        private void OnSharePickupClient(string name, int entityHandle, int amount, Vector3 position, int value, int weaponId)
         {
             if (value == 1)
             {
-                pickups.Add(obj, new Dictionary<string, dynamic>
+                if (!_worldPickups.ContainsKey(entityHandle))
                 {
-                    ["name"] = name,
-                    ["obj"] = obj,
-                    ["amount"] = amount,
-                    ["weaponid"] = weaponId,
-                    ["inRange"] = false,
-                    ["coords"] = position
-                });
-                Logger.Trace($"name: {pickups[obj]["name"].ToString()} cuantity: {pickups[obj]["amount"].ToString()},id:{pickups[obj]["weaponid"].ToString()}");
+                    Pickup pickup = new Pickup()
+                    {
+                        Name = amount > 1 ? $"{Configuration.GetWeaponLabel(name)} x {amount}" : Configuration.GetWeaponLabel(name),
+                        EntityId = entityHandle,
+                        Amount = amount,
+                        WeaponId = weaponId,
+                        Position = position,
+                        Prompt = Prompt.Create((eControl)Configuration.KEY_PICKUP_ITEM, Configuration.GetTranslation("TakeFromFloor"), promptType: ePromptType.StandardHold)
+                    };
+
+                    pickup.Prompt.Enabled = false;
+                    pickup.Prompt.Visible = false;
+
+                    _worldPickups.Add(entityHandle, pickup);
+                }
+
+                Logger.Trace($"Item Pickup Added: {_worldPickups[entityHandle]}");
             }
             else
             {
-                pickups.Remove(obj);
+                if (_worldPickups.ContainsKey(entityHandle))
+                {
+                    Pickup pickup = _worldPickups[entityHandle];
+                    pickup.Prompt.Delete();
+
+                    _worldPickups.Remove(entityHandle);
+                }
             }
         }
 
-        private void OnShareMoneyPickupClient(int obj, double amount, Vector3 position, int value)
+        private void OnShareMoneyPickupClient(int entityHandle, double amount, Vector3 position, int value)
         {
             if (value == 1)
             {
-                pickupsMoney.Add(obj, new Dictionary<string, dynamic>
+                if (!_worldPickups.ContainsKey(entityHandle))
                 {
-                    ["name"] = "money",
-                    ["obj"] = obj,
-                    ["amount"] = amount,
-                    ["inRange"] = false,
-                    ["coords"] = position
-                });
-                Logger.Trace($"name: {pickupsMoney[obj]["name"].ToString()} cuantity: {pickupsMoney[obj]["amount"].ToString()},");
+                    Pickup pickup = new Pickup()
+                    {
+                        Name = $"Money (${amount})",
+                        EntityId = entityHandle,
+                        Amount = amount,
+                        Position = position,
+                        Prompt = Prompt.Create((eControl)Configuration.KEY_PICKUP_ITEM, Configuration.GetTranslation("TakeFromFloor"), promptType: ePromptType.StandardHold)
+                    };
+
+                    pickup.Prompt.Enabled = false;
+                    pickup.Prompt.Visible = false;
+
+                    _worldPickups.Add(entityHandle, pickup);
+                }
+
+                Logger.Trace($"Money Pickup Added: {_worldPickups[entityHandle]}");
             }
             else
             {
-                pickupsMoney.Remove(obj);
+                if (_worldPickups.ContainsKey(entityHandle))
+                {
+                    Pickup pickup = _worldPickups[entityHandle];
+                    pickup.Prompt.Delete();
+
+                    _worldPickups.Remove(entityHandle);
+                }
             }
         }
 
@@ -350,18 +297,6 @@ namespace VORP.Inventory.Client.Scripts
             Function.Call((Hash)0x7D9EFB7AD6B19754, obj, true);
             TriggerServerEvent("vorpinventory:shareMoneyPickupServer", obj, amount, position);
             Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
-        }
-
-        public static void SetupPickPrompt()
-        {
-            PickPrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
-            long str = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", Configuration.GetTranslation("TakeFromFloor"));
-            Function.Call((Hash)0x5DD02A8318420DD7, PickPrompt, str);
-            Function.Call((Hash)0xB5352B7494A08258, PickPrompt, Configuration.KEY_PICKUP_ITEM);
-            Function.Call((Hash)0x8A0FB4D03A630D21, PickPrompt, false);
-            Function.Call((Hash)0x71215ACCFDE075EE, PickPrompt, false);
-            Function.Call((Hash)0x94073D5CA3F16B7B, PickPrompt, true);
-            Function.Call((Hash)0xF7AA2696A22AD8B9, PickPrompt);
         }
     }
 }
