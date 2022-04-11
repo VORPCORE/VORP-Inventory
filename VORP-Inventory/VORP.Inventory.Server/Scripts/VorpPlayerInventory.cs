@@ -808,8 +808,16 @@ namespace VORP.Inventory.Server.Scripts
                 Logger.Trace($"Player '{source.Name}' requested Items Table.");
 
                 // must have a better way
+                int attempts = 0;
                 while (PluginManager.ItemsDB.items is null)
                 {
+                    if (attempts > 10)
+                    {
+                        Logger.CriticalError($"Failed to generate Items table, possible there are no items in the database?");
+                        break;
+                    }
+
+                    attempts++;
                     await BaseScript.Delay(500);
                 }
 
