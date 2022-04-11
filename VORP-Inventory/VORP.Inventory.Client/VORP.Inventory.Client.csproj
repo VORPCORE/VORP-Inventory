@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Extensions\DecoratorExtensions.cs" />
     <Compile Include="Interface\NuiManager.cs" />
+    <Compile Include="Models\Pickup.cs" />
     <Compile Include="RedM\Enums\eControl.cs" />
     <Compile Include="RedM\Enums\ePromptType.cs" />
     <Compile Include="RedM\PoolObject.cs" />
