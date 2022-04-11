@@ -23,6 +23,8 @@ namespace VORP.Inventory.Client.Scripts
 
             AttachTickHandler(PrincipalFunctionPickupsAsync);
             AttachTickHandler(PrincipalFunctionPickupsMoneyAsync);
+
+            SetupPickPrompt();
         }
 
         private static int PickPrompt;
@@ -357,7 +359,7 @@ namespace VORP.Inventory.Client.Scripts
             Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
         }
 
-        public static void SetupPickPrompt() // Currently not used, this should be used...
+        public static void SetupPickPrompt()
         {
             Debug.WriteLine("Prompt creado");
             PickPrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
