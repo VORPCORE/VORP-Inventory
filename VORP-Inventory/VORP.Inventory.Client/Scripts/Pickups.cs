@@ -168,7 +168,7 @@ namespace VORP.Inventory.Client.Scripts
                 {
                     Pickup pickup = new Pickup()
                     {
-                        Name = amount > 1 ? $"{Configuration.GetWeaponLabel(name)} x {amount}" : Configuration.GetWeaponLabel(name),
+                        Name = amount > 1 ? $"{Configuration.GetHashReadableLabel(name)} x {amount}" : Configuration.GetHashReadableLabel(name),
                         EntityId = entityHandle,
                         Amount = amount,
                         WeaponId = weaponId,

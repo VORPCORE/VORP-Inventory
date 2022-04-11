@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VORP.Inventory.Client.Scripts;
 using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Shared
@@ -95,6 +96,27 @@ namespace VORP.Inventory.Shared
         }
 
         public static Config Config => GetConfig();
+
+#if CLIENT
+        public static string GetHashReadableLabel(string hash)
+        {
+            try
+            {
+                if (HasWeaponHashName(hash))
+                    return GetWeaponLabel(hash);
+
+                if (InventoryAPI.citems.ContainsKey(hash))
+                    return InventoryAPI.citems[hash]["label"];
+
+                return hash;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "GetHashReadableLable");
+                return hash;
+            }
+        }
+#endif
 
         public static string GetWeaponLabel(string hash)
         {
