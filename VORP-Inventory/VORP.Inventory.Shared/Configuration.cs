@@ -50,6 +50,8 @@ namespace VORP.Inventory.Shared
                         Weapons.Add(weapon.HashName, weapon);
                 });
 
+                Logger.Trace($"Weapons Loaded: {Weapons.Count}");
+
                 string language = _config.Defaultlanguage;
                 if (string.IsNullOrEmpty(language))
                     language = "en_lang";
@@ -59,6 +61,7 @@ namespace VORP.Inventory.Shared
                 if (!string.IsNullOrEmpty(languageFileContents))
                 {
                     _language = JsonConvert.DeserializeObject<Dictionary<string, string>>(languageFileContents);
+                    Logger.Trace($"Language Loaded: {language}");
                 }
 
                 return _config;
