@@ -32,6 +32,12 @@ namespace VORP.Inventory.Shared
                 if (_config is not null) return _config;
 
                 string fileContents = LoadResourceFile(GetCurrentResourceName(), "/config.json");
+
+                if (string.IsNullOrEmpty(fileContents))
+                {
+                    Logger.CriticalError($"config.json was not found.");
+                }
+
                 _config = JsonConvert.DeserializeObject<Config>(fileContents);
 
 #if CLIENT
