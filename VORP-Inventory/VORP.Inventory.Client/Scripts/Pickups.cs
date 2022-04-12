@@ -117,7 +117,15 @@ namespace VORP.Inventory.Client.Scripts
 
                     if (x.Prompt.HasHoldModeCompleted)
                     {
-                        TriggerServerEvent("vorpinventory:onPickup", x.EntityId);
+                        if (x.IsMoney)
+                        {
+                            TriggerServerEvent("vorpinventory:onPickupMoney", x.EntityId);
+                        }
+                        else
+                        {
+                            TriggerServerEvent("vorpinventory:onPickup", x.EntityId);
+                        }
+
                         x.Prompt.Delete();
                     }
                 }
@@ -213,10 +221,11 @@ namespace VORP.Inventory.Client.Scripts
                 {
                     Pickup pickup = new Pickup()
                     {
-                        Name = $"Money (${amount})",
+                        Name = $"Money (${amount:N2})",
                         EntityId = entityHandle,
                         Amount = amount,
                         Position = position,
+                        IsMoney = true,
                         Prompt = Prompt.Create((eControl)Configuration.KEY_PICKUP_ITEM, Configuration.GetTranslation("TakeFromFloor"), promptType: ePromptType.StandardHold, group: (uint)_promptGroup)
                     };
 

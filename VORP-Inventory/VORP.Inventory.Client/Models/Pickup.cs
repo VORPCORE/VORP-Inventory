@@ -15,6 +15,8 @@ namespace VORP.Inventory.Client.Models
 
         public bool IsWeapon => WeaponId > 0;
 
+        public bool IsMoney { get; set; } = false;
+
         public int WeaponId { get; set; }
 
         public Vector3 Position { get; set; }
