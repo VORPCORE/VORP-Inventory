@@ -264,7 +264,33 @@ namespace VORP.Inventory.Client.Scripts
                 position = new Vector3((lastCoords.X + (rn1 / 10.0f)), (lastCoords.Y + (rn2 / 10.0f)), lastCoords.Z);
             }
 
-            uint objectHash = (uint)API.GetHashKey("P_COTTONBOX01X");
+            int entityHandle = await CreateObjectAsync("P_COTTONBOX01X", position);
+            TriggerServerEvent("vorpinventory:sharePickupServer", name, entityHandle, amount, position, weaponId);
+            Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
+        }
+
+        private async void OnCreateMoneyPickupAsync(double amount)
+        {
+            int ped = API.PlayerPedId();
+            Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
+            Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
+            Vector3 position = (coords + forward * 1.6F);
+
+            if (dropAll)
+            {
+                Random rnd = new Random();
+
+                position = new Vector3((lastCoords.X + (float)rnd.Next(-3, 3)), (lastCoords.Y + (float)rnd.Next(-3, 3)), lastCoords.Z);
+            }
+
+            int entityHandle = await CreateObjectAsync("p_moneybag02x", position);
+            TriggerServerEvent("vorpinventory:shareMoneyPickupServer", entityHandle, amount, position);
+            Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
+        }
+
+        private async Task<int> CreateObjectAsync(string hash, Vector3 position)
+        {
+            uint objectHash = (uint)API.GetHashKey(hash);
 
             if (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, objectHash))
             {
@@ -283,44 +309,12 @@ namespace VORP.Inventory.Client.Scripts
             Function.Call((Hash)0xDC19C288082E586E, entityHandle, true, false);
             Function.Call((Hash)0x7D9EFB7AD6B19754, entityHandle, true);
             Function.Call((Hash)0x7DFB49BCDB73089A, entityHandle, true);
-            TriggerServerEvent("vorpinventory:sharePickupServer", name, entityHandle, amount, position, weaponId);
-            Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
+
+            Function.Call((Hash)0xF66F820909453B8C, entityHandle, false, true);
 
             SetModelAsNoLongerNeeded(objectHash);
-        }
 
-        private async void OnCreateMoneyPickupAsync(double amount)
-        {
-            int ped = API.PlayerPedId();
-            Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
-            Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
-            Vector3 position = (coords + forward * 1.6F);
-
-            if (dropAll)
-            {
-                Random rnd = new Random();
-
-                position = new Vector3((lastCoords.X + (float)rnd.Next(-3, 3)), (lastCoords.Y + (float)rnd.Next(-3, 3)), lastCoords.Z);
-            }
-
-            if (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("p_moneybag02x")))
-            {
-                Function.Call((Hash)0xFA28FE3A6246FC30, (uint)API.GetHashKey("p_moneybag02x"));
-            }
-
-            while (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("p_moneybag02x")))
-            {
-                await Delay(1);
-            }
-
-            int entityHandle = Function.Call<int>((Hash)0x509D5878EB39E842, (uint)API.GetHashKey("p_moneybag02x"), position.X
-                , position.Y, position.Z, true, true, true);
-            Function.Call((Hash)0x58A850EAEE20FAA3, entityHandle);
-            Function.Call((Hash)0xDC19C288082E586E, entityHandle, true, false);
-            Function.Call((Hash)0x7D9EFB7AD6B19754, entityHandle, true);
-            Function.Call((Hash)0x7DFB49BCDB73089A, entityHandle, true);
-            TriggerServerEvent("vorpinventory:shareMoneyPickupServer", entityHandle, amount, position);
-            Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
+            return entityHandle;
         }
     }
 }
