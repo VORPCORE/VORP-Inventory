@@ -99,8 +99,9 @@ namespace VORP.Inventory.Client.Scripts
                 return;
             }
 
-            List<Pickup> pickupsInRange = _worldPickups.Select(x => x.Value).Where(x => x.IsInRange).OrderBy(x => x.Distance).ToList();
             int playerPedId = API.PlayerPedId();
+
+            List<Pickup> pickupsInRange = _worldPickups.Select(x => x.Value).Where(x => x.IsInRange).OrderBy(x => x.Distance).ToList();
 
             pickupsInRange.ForEach(x =>
             {
@@ -109,8 +110,11 @@ namespace VORP.Inventory.Client.Scripts
                 if (x.Distance <= 1.2)
                 {
                     Function.Call((Hash)0x69F4BE8C8CC4796C, playerPedId, x.EntityId, 3000, 2048, 3); // TaskLookAtEntity
-                    x.Prompt.Visible = true;
-                    x.Prompt.Enabled = true;
+
+                    bool isDead = API.IsEntityDead(playerPedId);
+
+                    x.Prompt.Visible = !isDead;
+                    x.Prompt.Enabled = !isDead;
 
                     long promptSubLabel = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", x.Name);
                     Function.Call((Hash)0xC65A45D4453C2627, _promptGroup, promptSubLabel, 1); // UiPromptSetActiveGroupThisFrame
