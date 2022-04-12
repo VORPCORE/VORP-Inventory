@@ -283,7 +283,6 @@ namespace VORP.Inventory.Client.Scripts
             Function.Call((Hash)0xDC19C288082E586E, entityHandle, true, false);
             Function.Call((Hash)0x7D9EFB7AD6B19754, entityHandle, true);
             Function.Call((Hash)0x7DFB49BCDB73089A, entityHandle, true);
-            Debug.WriteLine(entityHandle.ToString());
             TriggerServerEvent("vorpinventory:sharePickupServer", name, entityHandle, amount, position, weaponId);
             Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
 
