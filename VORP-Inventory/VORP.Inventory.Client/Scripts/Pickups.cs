@@ -148,12 +148,12 @@ namespace VORP.Inventory.Client.Scripts
             Function.Call((Hash)0xE1EF3C1216AFF2CD, API.PlayerPedId());
         }
 
-        private async void OnRemovePickupClientAsync(int obj)
+        private async void OnRemovePickupClientAsync(int entityHandle)
         {
-            Function.Call((Hash)0xDC19C288082E586E, obj, false, true);
-            API.NetworkRequestControlOfEntity(obj);
+            Function.Call((Hash)0xDC19C288082E586E, entityHandle, false, true);
+            API.NetworkRequestControlOfEntity(entityHandle);
             int timeout = 0;
-            while (!API.NetworkHasControlOfEntity(obj) && timeout < 5000)
+            while (!API.NetworkHasControlOfEntity(entityHandle) && timeout < 5000)
             {
                 timeout += 100;
                 if (timeout == 5000)
@@ -163,8 +163,9 @@ namespace VORP.Inventory.Client.Scripts
 
                 await Delay(100);
             }
-            Function.Call((Hash)0x7D9EFB7AD6B19754, obj, false);
-            API.DeleteObject(ref obj);
+            Function.Call((Hash)0x7D9EFB7AD6B19754, entityHandle, false);
+            Function.Call((Hash)0x7DFB49BCDB73089A, entityHandle, false);
+            API.DeleteObject(ref entityHandle);
         }
 
         private void OnSharePickupClient(string name, int entityHandle, int amount, Vector3 position, int value, int weaponId)
@@ -254,24 +255,30 @@ namespace VORP.Inventory.Client.Scripts
                 position = new Vector3((lastCoords.X + (rn1 / 10.0f)), (lastCoords.Y + (rn2 / 10.0f)), lastCoords.Z);
             }
 
-            if (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("P_COTTONBOX01X")))
+            uint objectHash = (uint)API.GetHashKey("P_COTTONBOX01X");
+
+            if (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, objectHash))
             {
-                Function.Call((Hash)0xFA28FE3A6246FC30, (uint)API.GetHashKey("P_COTTONBOX01X"));
+                Function.Call((Hash)0xFA28FE3A6246FC30, objectHash);
             }
 
-            while (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, (uint)API.GetHashKey("P_COTTONBOX01X")))
+            while (!Function.Call<bool>((Hash)0x1283B8B89DD5D1B6, objectHash))
             {
                 await Delay(1);
             }
 
-            int obj = Function.Call<int>((Hash)0x509D5878EB39E842, (uint)API.GetHashKey("P_COTTONBOX01X"), position.X
+            int entityHandle = Function.Call<int>((Hash)0x509D5878EB39E842, objectHash, position.X
                 , position.Y, position.Z, true, true, true);
-            Function.Call((Hash)0x58A850EAEE20FAA3, obj);
-            Function.Call((Hash)0xDC19C288082E586E, obj, true, false);
-            Function.Call((Hash)0x7D9EFB7AD6B19754, obj, true);
-            Debug.WriteLine(obj.ToString());
-            TriggerServerEvent("vorpinventory:sharePickupServer", name, obj, amount, position, weaponId);
+
+            Function.Call((Hash)0x58A850EAEE20FAA3, entityHandle);
+            Function.Call((Hash)0xDC19C288082E586E, entityHandle, true, false);
+            Function.Call((Hash)0x7D9EFB7AD6B19754, entityHandle, true);
+            Function.Call((Hash)0x7DFB49BCDB73089A, entityHandle, true);
+            Debug.WriteLine(entityHandle.ToString());
+            TriggerServerEvent("vorpinventory:sharePickupServer", name, entityHandle, amount, position, weaponId);
             Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
+
+            SetModelAsNoLongerNeeded(objectHash);
         }
 
         private async void OnCreateMoneyPickupAsync(double amount)
@@ -298,12 +305,13 @@ namespace VORP.Inventory.Client.Scripts
                 await Delay(1);
             }
 
-            int obj = Function.Call<int>((Hash)0x509D5878EB39E842, (uint)API.GetHashKey("p_moneybag02x"), position.X
+            int entityHandle = Function.Call<int>((Hash)0x509D5878EB39E842, (uint)API.GetHashKey("p_moneybag02x"), position.X
                 , position.Y, position.Z, true, true, true);
-            Function.Call((Hash)0x58A850EAEE20FAA3, obj);
-            Function.Call((Hash)0xDC19C288082E586E, obj, true, false);
-            Function.Call((Hash)0x7D9EFB7AD6B19754, obj, true);
-            TriggerServerEvent("vorpinventory:shareMoneyPickupServer", obj, amount, position);
+            Function.Call((Hash)0x58A850EAEE20FAA3, entityHandle);
+            Function.Call((Hash)0xDC19C288082E586E, entityHandle, true, false);
+            Function.Call((Hash)0x7D9EFB7AD6B19754, entityHandle, true);
+            Function.Call((Hash)0x7DFB49BCDB73089A, entityHandle, true);
+            TriggerServerEvent("vorpinventory:shareMoneyPickupServer", entityHandle, amount, position);
             Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
         }
     }
