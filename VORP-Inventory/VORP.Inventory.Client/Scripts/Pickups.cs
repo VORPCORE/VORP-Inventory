@@ -114,7 +114,6 @@ namespace VORP.Inventory.Client.Scripts
                     bool isDead = API.IsEntityDead(playerPedId);
 
                     x.Prompt.Visible = !isDead;
-                    x.Prompt.Enabled = !isDead;
 
                     long promptSubLabel = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", x.Name);
                     Function.Call((Hash)0xC65A45D4453C2627, _promptGroup, promptSubLabel, 1); // UiPromptSetActiveGroupThisFrame
@@ -137,7 +136,6 @@ namespace VORP.Inventory.Client.Scripts
                 {
                     if (x.Prompt.Enabled)
                     {
-                        x.Prompt.Enabled = false;
                         x.Prompt.Visible = false;
                     }
                 }
