@@ -56,13 +56,6 @@ namespace VORP.Inventory.Client.Scripts
             NUI.RegisterCallback("TakeFromCart", new Action<ExpandoObject>(NUITakeFromCart));
             NUI.RegisterCallback("MoveToCart", new Action<ExpandoObject>(NUIMoveToCart));
 
-            //HouseModule
-            AddEvent("vorp_inventory:OpenHouseInventory", new Action<string, int>(OpenHouseInventory));
-            AddEvent("vorp_inventory:ReloadHouseInventory", new Action<string>(ReloadHouseInventory));
-
-            NUI.RegisterCallback("TakeFromHouse", new Action<ExpandoObject>(NUITakeFromHouse));
-            NUI.RegisterCallback("MoveToHouse", new Action<ExpandoObject>(NUIMoveToHouse));
-
             //HideoutModule
             AddEvent("vorp_inventory:OpenHideoutInventory", new Action<string, int>(OpenHideoutInventory));
             AddEvent("vorp_inventory:ReloadHideoutInventory", new Action<string>(ReloadHideoutInventory));
