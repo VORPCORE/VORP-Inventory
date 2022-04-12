@@ -103,40 +103,40 @@ namespace VORP.Inventory.Client.Scripts
 
             List<Pickup> pickupsInRange = _worldPickups.Select(x => x.Value).Where(x => x.IsInRange).OrderBy(x => x.Distance).ToList();
 
-            pickupsInRange.ForEach(x =>
+            pickupsInRange.ForEach(pickup =>
             {
                 // Utils.DrawText3D(x.Position, x.Name);
 
-                if (x.Distance <= 1.2)
+                if (pickup.Distance <= 1.2)
                 {
-                    Function.Call((Hash)0x69F4BE8C8CC4796C, playerPedId, x.EntityId, 3000, 2048, 3); // TaskLookAtEntity
+                    Function.Call((Hash)0x69F4BE8C8CC4796C, playerPedId, pickup.EntityId, 3000, 2048, 3); // TaskLookAtEntity
 
                     bool isDead = API.IsEntityDead(playerPedId);
 
-                    x.Prompt.Visible = !isDead;
+                    pickup.Prompt.Visible = !isDead;
 
-                    long promptSubLabel = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", x.Name);
+                    long promptSubLabel = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", pickup.Name);
                     Function.Call((Hash)0xC65A45D4453C2627, _promptGroup, promptSubLabel, 1); // UiPromptSetActiveGroupThisFrame
 
-                    if (x.Prompt.HasHoldModeCompleted)
+                    if (pickup.Prompt.HasHoldModeCompleted)
                     {
-                        if (x.IsMoney)
+                        if (pickup.IsMoney)
                         {
-                            TriggerServerEvent("vorpinventory:onPickupMoney", x.EntityId);
+                            TriggerServerEvent("vorpinventory:onPickupMoney", pickup.EntityId);
                         }
                         else
                         {
-                            TriggerServerEvent("vorpinventory:onPickup", x.EntityId);
+                            TriggerServerEvent("vorpinventory:onPickup", pickup.EntityId);
                         }
 
-                        x.Prompt.Delete();
+                        pickup.Prompt.Delete();
                     }
                 }
                 else
                 {
-                    if (x.Prompt.Enabled)
+                    if (pickup.Prompt.Enabled)
                     {
-                        x.Prompt.Visible = false;
+                        pickup.Prompt.Visible = false;
                     }
                 }
             });
