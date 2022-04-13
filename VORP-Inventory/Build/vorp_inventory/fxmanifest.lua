@@ -14,7 +14,7 @@ server_exports {'vorp_inventoryApi'}
 
 files {'Newtonsoft.Json.dll', 'html/**/*', 'config.json', 'languages/**/*'}
 
--- Log Levels; Trace, Debug, Info, Warn, Error, All
+-- Log Levels; none, trace, debug, info, warn, error, all
 log_level 'none'
 -- block_inventory_on_death true/false : If set to true, the player will not be able to use their inventory when dead
 block_inventory_on_death 'false'
