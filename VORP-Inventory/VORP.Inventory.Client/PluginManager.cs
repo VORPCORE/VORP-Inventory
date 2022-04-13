@@ -18,6 +18,8 @@ namespace VORP.Inventory.Client
         public Scripts.NUIEvents NUIEvents = new();
         public Scripts.InventoryAPI InventoryAPI = new();
 
+        public static bool BLOCK_INVENTORY_WHEN_DEAD = false;
+
         public PluginManager()
         {
             Logger.Info($"VORP INVENTORY INIT");
@@ -30,6 +32,9 @@ namespace VORP.Inventory.Client
             NUIEvents.Init();
             Pickups.Init();
             InventoryAPI.Init();
+
+            BLOCK_INVENTORY_WHEN_DEAD = GetResourceMetadata(GetCurrentResourceName(), "block_inventory_on_death", 0) == "true";
+            Logger.Trace($"BLOCK_INVENTORY_WHEN_DEAD {BLOCK_INVENTORY_WHEN_DEAD}");
 
             Hook("onResourceStart", new Action<string>(async resourceName =>
             {

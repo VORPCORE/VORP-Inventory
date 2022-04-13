@@ -576,6 +576,13 @@ namespace VORP.Inventory.Client.Scripts
 
         private async Task OnOpenInventoryKeyAsync()
         {
+            bool isDead = API.IsEntityDead(API.PlayerPedId());
+            if (isDead && PluginManager.BLOCK_INVENTORY_WHEN_DEAD)
+            {
+                await Delay(1000);
+                return;
+            }
+
             if (API.IsControlJustReleased(1, (uint)Configuration.KEY_OPEN_INVENTORY) && API.IsInputDisabled(0))
             {
                 if (IsInventoryOpen)
@@ -657,7 +664,8 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OpenInventory()
         {
-            AttachTickHandler(OnCheckPlayerDeathAsync);
+            if (PluginManager.BLOCK_INVENTORY_WHEN_DEAD)
+                AttachTickHandler(OnCheckPlayerDeathAsync);
 
             LoadInventory();
 

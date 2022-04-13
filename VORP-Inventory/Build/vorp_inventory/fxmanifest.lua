@@ -15,3 +15,4 @@ server_exports {'vorp_inventoryApi'}
 files {'Newtonsoft.Json.dll', 'html/**/*', 'config.json', 'languages/**/*'}
 
 log_level 'none'
+block_inventory_on_death 'false'
