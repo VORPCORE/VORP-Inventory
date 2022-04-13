@@ -80,6 +80,9 @@ namespace VORP.Inventory.Shared.Models
         [DataMember(Name = "players", EmitDefaultValue = false)]
         public List<NuiPlayer> Players { get; set; }
 
+        [DataMember(Name = "foundAny", EmitDefaultValue = false)]
+        public bool FoundAny { get; set; }
+
         public override string ToString()
         {
             return this.ToJson();
