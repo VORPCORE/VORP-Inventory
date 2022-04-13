@@ -24,6 +24,14 @@ namespace VORP.Inventory.Client.Scripts
 
         public void Init()
         {
+
+#if DEVELOPMENT
+            API.RegisterCommand("kill", new Action(() =>
+            {
+                API.SetEntityHealth(API.PlayerPedId(), 0, 0);
+            }), false);
+#endif
+
             NUI.RegisterCallback("NUIFocusOff", new Action(NUIFocusOff));
             NUI.RegisterCallback("DropItem", new Action<ExpandoObject>(NUIDropItem));
             NUI.RegisterCallback("UseItem", new Action<ExpandoObject>(NUIUseItem));
@@ -78,6 +86,31 @@ namespace VORP.Inventory.Client.Scripts
             NUI.RegisterCallback("MoveToContainer", new Action<ExpandoObject>(NUIMoveToContainer));
 
             AttachTickHandler(OnOpenInventoryKeyAsync);
+        }
+
+        private void OnGameEventTriggered(string name, List<dynamic> args)
+        {
+            Logger.Debug($"game event {name} ({String.Join(", ", args.ToArray())})");
+
+            if (name == "CEventNetworkEntityDamage")
+            {
+                int victim = (int)args[0];
+                // int attacker = (int)args[1];
+                bool isDamageFatal = Convert.ToBoolean((int)args[5]);
+                // uint weaponInfoHash = (uint)args[6];
+                // bool isMeleeDamage = Convert.ToBoolean((int)args[11]);
+                // int damageTypeFlag = (int)args[12];
+
+                int victimNetId = PedToNet(victim);
+                int localPlayerNetId = PedToNet(API.PlayerPedId());
+
+                bool isVictimThisPlayer = victimNetId == localPlayerNetId;
+
+                if (isDamageFatal && isVictimThisPlayer)
+                {
+                    OnCloseInventory();
+                }
+            }
         }
 
         private async void ReloadHorseInventory(string horseInventory)
@@ -624,6 +657,8 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OpenInventory()
         {
+            AttachTickHandler(OnCheckPlayerDeathAsync);
+
             LoadInventory();
 
             NUI.SetFocus(true);
@@ -638,6 +673,8 @@ namespace VORP.Inventory.Client.Scripts
 
         public void OnCloseInventory()
         {
+            DetachTickHandler(OnCheckPlayerDeathAsync);
+
             NUI.SetFocus(false, false);
 
             NuiMessage nui = new NuiMessage();
@@ -647,5 +684,16 @@ namespace VORP.Inventory.Client.Scripts
             IsInventoryOpen = false;
         }
 
+        private async Task OnCheckPlayerDeathAsync()
+        {
+            bool isDead = API.IsEntityDead(API.PlayerPedId());
+
+            if (isDead)
+            {
+                DetachTickHandler(OnCheckPlayerDeathAsync);
+                OnCloseInventory();
+                await BaseScript.Delay(500);
+            }
+        }
     }
 }
