@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VORP.Inventory.Client.Extensions;
 using VORP.Inventory.Client.Models;
+using VORP.Inventory.Shared;
 
 namespace VORP.Inventory.Client.Scripts
 {
@@ -42,6 +43,12 @@ namespace VORP.Inventory.Client.Scripts
 
             AttachTickHandler(UpdateAmmoInWeaponAsync);
 
+            Exports.Add("getWeaponLabelFromHash", new Func<string, string>(hash =>
+            {
+                if (Configuration.Weapons.ContainsKey(hash))
+                    return Configuration.Weapons[hash].Name;
+                return hash;
+            }));
         }
 
         private async Task UpdateAmmoInWeaponAsync()
