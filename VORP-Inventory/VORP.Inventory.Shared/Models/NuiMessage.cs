@@ -1,7 +1,18 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace VORP.Inventory.Shared.Models
 {
+    [DataContract]
+    public class NuiPlayer
+    {
+        [DataMember(Name = "player", EmitDefaultValue = false)]
+        public int PlayerID { get; set; }
+
+        [DataMember(Name = "label", EmitDefaultValue = false)]
+        public string PlayerName { get; set; }
+    }
+
     /// <summary>
     /// Currently isn't fully implemented due to the crap in the NUI HTML, that requires some documentation.
     /// </summary>
@@ -65,6 +76,9 @@ namespace VORP.Inventory.Shared.Models
 
         [DataMember(Name = "container", EmitDefaultValue = false)]
         public int ContainerID { get; set; }
+
+        [DataMember(Name = "players", EmitDefaultValue = false)]
+        public List<NuiPlayer> Players { get; set; }
 
         public override string ToString()
         {
