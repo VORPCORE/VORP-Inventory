@@ -458,7 +458,21 @@ namespace VORP.Inventory.Client.Scripts
                         else
                         {
                             TriggerServerEvent("vorpinventory:serverGiveWeapon2", data.Data.ID, target);
-                            TriggerServerEvent("vorpinventory:weaponlog", target, JsonConvert.SerializeObject(data.Data));
+
+                            Dictionary<string, object> weaponLogData = new()
+                            {
+                                { "action", data.Data.Action },
+                                { "count", data.Data.Count },
+                                { "foundAny", data.Data.FoundAny },
+                                { "hash", data.Data.Hash },
+                                { "id", data.Data.ID },
+                                { "item", data.Data.Item },
+                                { "type", data.Data.Type },
+                                { "what", data.Data.What },
+                                { "players", data.Data.Players }
+                            };
+
+                            TriggerServerEvent("vorpinventory:weaponlog", target, weaponLogData);
                         }
 
                         LoadInventory();
