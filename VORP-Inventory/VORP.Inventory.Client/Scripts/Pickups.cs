@@ -16,11 +16,8 @@ namespace VORP.Inventory.Client.Scripts
         Dictionary<int, Pickup> _worldPickups = new();
         int _promptGroup = GetRandomIntInRange(0, 0xffffff);
 
-
         private static bool dropAll = false;
         private static Vector3 lastCoords = new Vector3();
-
-
 
         public void Init()
         {
