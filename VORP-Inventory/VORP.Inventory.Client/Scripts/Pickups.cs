@@ -55,7 +55,6 @@ namespace VORP.Inventory.Client.Scripts
                 {
                     TriggerServerEvent("vorpinventory:serverDropItem", item.getName(), item.getCount(), 1);
                     InventoryAPI.UsersItems[item.getName()].quitCount(item.getCount());
-                    //Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
                     if (InventoryAPI.UsersItems[item.getName()].getCount() == 0)
                     {
                         InventoryAPI.UsersItems.Remove(item.getName());
@@ -102,8 +101,6 @@ namespace VORP.Inventory.Client.Scripts
 
             pickupsInRange.ForEach(pickup =>
             {
-                // Utils.DrawText3D(x.Position, x.Name);
-
                 if (pickup.Distance <= 1.2)
                 {
                     Function.Call((Hash)0x69F4BE8C8CC4796C, playerPedId, pickup.EntityId, 3000, 2048, 3); // TaskLookAtEntity
