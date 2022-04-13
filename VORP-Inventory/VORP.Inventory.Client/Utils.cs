@@ -60,6 +60,7 @@ namespace VORP.Inventory.Client
             Dictionary<string, dynamic> aux = new Dictionary<string, dynamic>();
             foreach (var o in dynObject)
             {
+                Logger.Trace($"{o.Key}");
                 aux.Add(o.Key, o.Value);
             }
             return aux;
@@ -80,16 +81,15 @@ namespace VORP.Inventory.Client
             foreach (var player in players)
             {
                 int target = API.GetPlayerPed(player);
-                if (target != localPed)
-                {
-                    Vector3 targetCoords = API.GetEntityCoords(target, true, true);
-                    float distanceBetween = API.GetDistanceBetweenCoords(targetCoords.X, targetCoords.Y, targetCoords.Z,
-                        coords.X, coords.Y, coords.Z, false);
+                if (target == localPed) continue;
 
-                    if (closestDistance > distanceBetween)
-                    {
-                        closestPlayers.Add(player);
-                    }
+                Vector3 targetCoords = API.GetEntityCoords(target, true, true);
+                float distanceBetween = API.GetDistanceBetweenCoords(targetCoords.X, targetCoords.Y, targetCoords.Z,
+                    coords.X, coords.Y, coords.Z, false);
+
+                if (closestDistance > distanceBetween)
+                {
+                    closestPlayers.Add(player);
                 }
             }
 

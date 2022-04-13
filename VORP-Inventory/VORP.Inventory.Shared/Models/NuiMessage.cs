@@ -8,6 +8,9 @@ namespace VORP.Inventory.Shared.Models
     [DataContract]
     public class NuiMessage
     {
+        [DataMember(Name = "data", EmitDefaultValue = false)]
+        public NuiMessage Data { get; set; }
+
         [DataMember(Name = "action", EmitDefaultValue = false)]
         public string Action { get; set; }
 
@@ -32,6 +35,9 @@ namespace VORP.Inventory.Shared.Models
 
         [DataMember(Name = "amount", EmitDefaultValue = false)]
         public double Amount { get; set; }
+
+        [DataMember(Name = "count", EmitDefaultValue = false)]
+        public double Count { get; set; }
 
         [DataMember(Name = "id", EmitDefaultValue = false)]
         public int ID { get; set; }

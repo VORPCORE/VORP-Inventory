@@ -28,7 +28,7 @@ namespace VORP.Inventory.Client.Scripts
             NUI.RegisterCallback("DropItem", new Action<ExpandoObject>(NUIDropItem));
             NUI.RegisterCallback("UseItem", new Action<ExpandoObject>(NUIUseItem));
             NUI.RegisterCallback("sound", new Action(NUISound));
-            NUI.RegisterCallback("GiveItem", new Action<ExpandoObject>(NUIGiveItem));
+            NUI.RegisterCallback("GiveItem", new Action<NuiMessage>(NUIGiveItem));
             NUI.RegisterCallback("GetNearPlayers", new Action<ExpandoObject>(NUIGetNearPlayers));
             NUI.RegisterCallback("UnequipWeapon", new Action<ExpandoObject>(NUIUnequipWeapon));
 
@@ -339,15 +339,15 @@ namespace VORP.Inventory.Client.Scripts
 
         private void NUIGetNearPlayers(ExpandoObject obj)
         {
-            int playerPed = API.PlayerPedId();
-            List<int> players = Utils.GetNearestPlayers();
+            List<int> nearestPlayers = Utils.GetNearestPlayers();
             bool foundPlayers = false;
-            List<Dictionary<string, object>> elements = new List<Dictionary<string, object>>();
+            List<Dictionary<string, object>> playersNearBy = new List<Dictionary<string, object>>();
             Dictionary<string, object> nuireturn = new Dictionary<string, object>();
-            foreach (var player in players)
+
+            foreach (var player in nearestPlayers)
             {
                 foundPlayers = true;
-                elements.Add(new Dictionary<string, object>
+                playersNearBy.Add(new Dictionary<string, object>
                 {
                     ["label"] = API.GetPlayerName(player),
                     ["player"] = API.GetPlayerServerId(player)
@@ -380,7 +380,7 @@ namespace VORP.Inventory.Client.Scripts
                 }
                 nuireturn.Add("action", "nearPlayers");
                 nuireturn.Add("foundAny", foundPlayers);
-                nuireturn.Add("players", elements);
+                nuireturn.Add("players", playersNearBy);
                 nuireturn.Add("item", item["item"]);
                 nuireturn.Add("hash", item["hash"]);
                 nuireturn.Add("count", item["count"]);
@@ -392,33 +392,31 @@ namespace VORP.Inventory.Client.Scripts
             }
         }
 
-        private void NUIGiveItem(ExpandoObject obj)
+        private void NUIGiveItem(NuiMessage data)
         {
-            int playerPed = API.PlayerPedId();
             List<int> players = Utils.GetNearestPlayers();
-            Dictionary<string, object> data = Utils.ProcessDynamicObject(obj);
-            Dictionary<string, object> data2 = Utils.ProcessDynamicObject(data["data"]);
+
             foreach (var varia in players)
             {
                 if (varia != API.PlayerId())
                 {
-                    if (API.GetPlayerServerId(varia) == int.Parse(data["player"].ToString()))
+                    if (API.GetPlayerServerId(varia) == data.PlayerID)
                     {
-                        string itemname = data2["item"].ToString();
+                        string itemname = data.Data.Item;
 
-                        int target = int.Parse(data["player"].ToString());
+                        int target = data.PlayerID;
 
-                        if (data2["type"].ToString().Equals("item_money"))
+                        if (data.Data.Type == "item_money")
                         {
                             if (isProcessingPay)
                                 return;
 
                             isProcessingPay = true;
-                            TriggerServerEvent("vorp_inventory:giveMoneyToPlayer", target, double.Parse(data2["count"].ToString()));
+                            TriggerServerEvent("vorp_inventory:giveMoneyToPlayer", target, data.Data.Count);
                         }
-                        else if (int.Parse(data2["id"].ToString()) == 0)
+                        else if (data.Data.ID == 0)
                         {
-                            int amount = int.Parse(data2["count"].ToString());
+                            int amount = (int)data.Data.Count;
                             if (amount > 0 && InventoryAPI.UsersItems[itemname].getCount() >= amount)
                             {
                                 TriggerServerEvent("vorpinventory:serverGiveItem", itemname, amount, target, 1);
@@ -426,8 +424,8 @@ namespace VORP.Inventory.Client.Scripts
                         }
                         else
                         {
-                            TriggerServerEvent("vorpinventory:serverGiveWeapon2", int.Parse(data2["id"].ToString()), target);
-                            TriggerServerEvent("vorpinventory:weaponlog", target, data2);
+                            TriggerServerEvent("vorpinventory:serverGiveWeapon2", data.Data.ID, target);
+                            TriggerServerEvent("vorpinventory:weaponlog", target, JsonConvert.SerializeObject(data.Data));
                         }
 
                         LoadInventory();
