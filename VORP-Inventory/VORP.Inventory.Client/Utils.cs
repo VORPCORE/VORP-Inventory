@@ -93,6 +93,10 @@ namespace VORP.Inventory.Client
                 }
             }
 
+#if DEVELOPMENT
+            closestPlayers.Add(API.PlayerId());
+#endif
+
             return closestPlayers;
         }
     }
