@@ -41,6 +41,12 @@ namespace VORP.Inventory.Client.Scripts
             AddEvent("vorpinventory:receiveWeapon",
                 new Action<int, string, string, ExpandoObject, List<dynamic>>(OnReceiveWeapon));
 
+            AddEvent("vorp:inventory:ux:update", new Action<double, double>((cash, gold) =>
+            {
+                var hudObject = new { action = "updateStatusHud", show = !IsRadarHidden(), money = cash, gold = gold, id = GetPlayerServerId(PlayerId()) };
+                NUI.SendMessage(hudObject);
+            }));
+
             AttachTickHandler(UpdateAmmoInWeaponAsync);
 
             Exports.Add("getWeaponLabelFromHash", new Func<string, string>(hash =>
