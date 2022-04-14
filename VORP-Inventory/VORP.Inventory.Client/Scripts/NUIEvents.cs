@@ -205,7 +205,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Title = horseName;
             nui.HorseID = horseId;
 
-            API.SendNuiMessage(nui.ToJson());
+            NUI.SendMessage(nui);
 
             IsInventoryOpen = true;
             TriggerEvent("vorp_stables:setClosedInv", true);
@@ -233,7 +233,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Title = stealName;
             nui.StealID = stealId;
 
-            API.SendNuiMessage(nui.ToJson());
+            NUI.SendMessage(nui);
 
             IsInventoryOpen = true;
             TriggerEvent("vorp_stables:setClosedInv", true);
@@ -268,7 +268,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Title = cartName;
             nui.WagonID = wagonId;
 
-            API.SendNuiMessage(nui.ToJson());
+            NUI.SendMessage(nui);
 
             IsInventoryOpen = true;
             TriggerEvent("vorp_stables:setClosedInv", true);
@@ -303,7 +303,8 @@ namespace VORP.Inventory.Client.Scripts
             nui.Title = houseName;
             nui.HouseID = houseId;
 
-            API.SendNuiMessage(nui.ToJson());
+            NUI.SendMessage(nui);
+
             IsInventoryOpen = true;
             //TriggerEvent("vorp_stables:setClosedInv", true);
         }
@@ -337,7 +338,8 @@ namespace VORP.Inventory.Client.Scripts
             nui.Title = hideoutName;
             nui.HideoutID = hideoutId;
 
-            API.SendNuiMessage(nui.ToJson());
+            NUI.SendMessage(nui);
+
             IsInventoryOpen = true;
         }
 
@@ -689,7 +691,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Action = "display";
             nui.Type = "main";
 
-            API.SendNuiMessage(nui.ToJson());
+            NUI.SendMessage(nui);
             IsInventoryOpen = true;
         }
 
@@ -702,7 +704,7 @@ namespace VORP.Inventory.Client.Scripts
             NuiMessage nui = new NuiMessage();
             nui.Action = "hide";
 
-            API.SendNuiMessage(nui.ToJson());
+            NUI.SendMessage(nui);
             IsInventoryOpen = false;
         }
 
