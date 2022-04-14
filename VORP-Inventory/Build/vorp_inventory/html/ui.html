@@ -674,16 +674,34 @@
             window.addEventListener("message", function (event) {
                 if (event.data.action == "updateStatusHud") {
 
-                    if (event.data.money) {
-                        $("#money-value").text(event.data.money.toFixed(2) + " ");
+                    var message = event.data;
+
+                    console.log(JSON.stringify(message));
+
+                    if ('money' in message) {
+                        var moneyFloat = parseFloat(message.money);
+                        var ele = $("#money-value");
+                        if (moneyFloat == 0) {
+                            ele.text("0.00 ");
+                        } else {
+                            ele.text(moneyFloat.toFixed(2) + " ");
+                        }
+                        console.log(JSON.stringify(moneyFloat));
                     }
 
-                    if (event.data.gold) {
-                        $("#gold-value").text(event.data.gold.toFixed(2) + " ");
-                    }
+                    // Commented out, if you want gold to show in the UI, uncomment this.
+                    // if ('gold' in message) {
+                    //    var goldFloat = parseFloat(message.gold);
+                    //    var ele = $("#gold-value");
+                    //    if (goldFloat == 0) {
+                    //        ele.text("0.00 ");
+                    //    } else {
+                    //        ele.text(goldFloat.toFixed(2) + " ");
+                    //    }
+                    //}
 
-                    if (event.data.id) {
-                        $("#id-value").text("ID " + event.data.id);
+                    if ('id' in message) {
+                        $("#id-value").text("ID " + message.id);
                     }
                 }
 
