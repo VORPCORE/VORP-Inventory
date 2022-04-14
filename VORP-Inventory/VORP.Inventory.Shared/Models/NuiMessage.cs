@@ -92,6 +92,7 @@ namespace VORP.Inventory.Shared.Models
         [DataMember(Name = "stealId", EmitDefaultValue = false)]
         public int StealId { get; set; }
 
+        // HTML NUI File and external resources all use this base casing, heck this whole thing isn't even good JSON.... its a horror show.
         [DataMember(Name = "Container", EmitDefaultValue = false)]
         public int Container { get; set; }
 
