@@ -114,6 +114,10 @@ namespace VORP.Inventory.Client.Scripts
 
             pickupsInRange.ForEach(pickup =>
             {
+#if DEVELOPMENT
+                Utils.Draw3DText(pickup.Position, pickup.ToJson());
+#endif
+
                 if (pickup.Distance <= 1.2)
                 {
                     Function.Call((Hash)0x69F4BE8C8CC4796C, playerPedId, pickup.EntityId, 3000, 2048, 3); // TaskLookAtEntity
