@@ -676,8 +676,6 @@
 
                     var message = event.data;
 
-                    console.log(JSON.stringify(message));
-
                     if ('money' in message) {
                         var moneyFloat = parseFloat(message.money);
                         var ele = $("#money-value");
