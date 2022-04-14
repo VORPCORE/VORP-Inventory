@@ -115,21 +115,21 @@ namespace VORP.Inventory.Client.Scripts
 
         private async void ReloadHorseInventory(string horseInventory)
         {
-            API.SendNuiMessage(horseInventory);
+            NUI.SendMessage(horseInventory);
             await Delay(500);
             LoadInventory();
         }
 
         private async void ReloadstealInventory(string stealInventory)
         {
-            API.SendNuiMessage(stealInventory);
+            NUI.SendMessage(stealInventory);
             await Delay(500);
             LoadInventory();
         }
 
         private async void ReloadClanInventory(string cartInventory)
         {
-            API.SendNuiMessage(cartInventory);
+            NUI.SendMessage(cartInventory);
             await Delay(500);
             LoadInventory();
         }
@@ -144,7 +144,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Title = clanName;
             nui.ClanId = clanId;
 
-            API.SendNuiMessage(nui.ToJson());
+            NUI.SendMessage(nui.ToJson());
 
             IsInventoryOpen = true;
         }
@@ -164,7 +164,7 @@ namespace VORP.Inventory.Client.Scripts
         // container
         private async void ReloadContainerInventory(string cartInventory)
         {
-            API.SendNuiMessage(cartInventory);
+            NUI.SendMessage(cartInventory);
             await Delay(500);
             LoadInventory();
         }
@@ -179,7 +179,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Title = containerName;
             nui.ContainerId = containerId;
 
-            API.SendNuiMessage(nui.ToJson());
+            NUI.SendMessage(nui);
 
             IsInventoryOpen = true;
         }
@@ -253,7 +253,7 @@ namespace VORP.Inventory.Client.Scripts
 
         private async void ReloadCartInventory(string cartInventory)
         {
-            API.SendNuiMessage(cartInventory);
+            NUI.SendMessage(cartInventory);
             await Delay(500);
             LoadInventory();
         }
@@ -288,7 +288,7 @@ namespace VORP.Inventory.Client.Scripts
 
         private async void ReloadHouseInventory(string cartInventory)
         {
-            API.SendNuiMessage(cartInventory);
+            NUI.SendMessage(cartInventory);
             await Delay(500);
             LoadInventory();
         }
@@ -323,7 +323,7 @@ namespace VORP.Inventory.Client.Scripts
 
         private async void ReloadHideoutInventory(string cartInventory)
         {
-            API.SendNuiMessage(cartInventory);
+            NUI.SendMessage(cartInventory);
             await Delay(500);
             LoadInventory();
         }
@@ -423,7 +423,7 @@ namespace VORP.Inventory.Client.Scripts
                 nuireturn.Add("type", item["type"]);
                 nuireturn.Add("what", item["what"]);
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(nuireturn);
-                API.SendNuiMessage(json);
+                NUI.SendMessage(json);
             }
         }
 
@@ -632,7 +632,7 @@ namespace VORP.Inventory.Client.Scripts
 
             Logger.Trace($"INVENTORY: {json}");
 
-            API.SendNuiMessage(json);
+            NUI.SendMessage(json);
         }
 
         private void UpdateUserItemCache()
