@@ -152,8 +152,8 @@ namespace VORP.Inventory.Server.Scripts
                     Logger.Trace($"vorpInventory:createMoneyPickup({sourceMoney})");
                     player.TriggerEvent("vorpInventory:createMoneyPickup", sourceMoney);
                     await BaseScript.Delay(100);
-                    player.TriggerEvent("vorp:inventory:ux:update", 0, coreUserCharacter.gold);
-                    Logger.Trace($"vorp:inventory:ux:update({0},{coreUserCharacter.gold})");
+                    player.TriggerEvent("vorp:inventory:ux:update", 0);
+                    Logger.Trace($"vorp:inventory:ux:update({0})");
                 }
             }
             catch (Exception ex)

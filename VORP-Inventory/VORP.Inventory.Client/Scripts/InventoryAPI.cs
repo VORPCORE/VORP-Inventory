@@ -41,9 +41,9 @@ namespace VORP.Inventory.Client.Scripts
             AddEvent("vorpinventory:receiveWeapon",
                 new Action<int, string, string, ExpandoObject, List<dynamic>>(OnReceiveWeapon));
 
-            AddEvent("vorp:inventory:ux:update", new Action<double, double>((cash, gold) =>
+            AddEvent("vorp:inventory:ux:update", new Action<double>((cash) =>
             {
-                var hudObject = new { action = "updateStatusHud", show = !IsRadarHidden(), money = cash, gold = gold, id = GetPlayerServerId(PlayerId()) };
+                var hudObject = new { action = "updateStatusHud", money = cash };
                 NUI.SendMessage(hudObject);
             }));
 
