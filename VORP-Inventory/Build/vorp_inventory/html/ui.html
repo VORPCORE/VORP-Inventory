@@ -77,30 +77,6 @@
             document.getElementById("titleHorse").innerHTML = title;
         }
 
-        window.addEventListener('message', function (event) {
-
-
-
-            if (event.data.action == "updateStatusHud") {
-
-                if (event.data.money) {
-                    $("#money-value").text(event.data.money.toFixed(2) + " ");
-
-                }
-
-                if (event.data.gold) {
-                    $("#gold-value").text(event.data.gold.toFixed(2) + " ");
-
-                }
-
-                if (event.data.id) {
-                    $("#id-value").text("ID " + event.data.id);
-
-                }
-
-            }
-        });
-
         $("document").ready(function () {
 
             $("#secondInventoryHud").draggable();
@@ -386,7 +362,7 @@
                                             item: itemData,
                                             type: type,
                                             number: value,
-                                            Container: Containerid
+                                            container: Containerid
                                         }));
 
 
@@ -398,7 +374,7 @@
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
-                                Container: Containerid
+                                container: Containerid
                             }));
 
                         }
@@ -675,7 +651,7 @@
                                             item: itemData,
                                             type: type,
                                             number: value,
-                                            Container: Containerid
+                                            container: Containerid
                                         }));
 
                                 }
@@ -686,7 +662,7 @@
                                 item: itemData,
                                 type: itemData.type,
                                 number: 1,
-                                Container: Containerid
+                                container: Containerid
                             }));
 
                         }
@@ -696,7 +672,20 @@
             });
 
             window.addEventListener("message", function (event) {
+                if (event.data.action == "updateStatusHud") {
 
+                    if (event.data.money) {
+                        $("#money-value").text(event.data.money.toFixed(2) + " ");
+                    }
+
+                    if (event.data.gold) {
+                        $("#gold-value").text(event.data.gold.toFixed(2) + " ");
+                    }
+
+                    if (event.data.id) {
+                        $("#id-value").text("ID " + event.data.id);
+                    }
+                }
 
                 if (event.data.action == "changecheck") {
                     checkxy = event.data.check
