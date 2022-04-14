@@ -39,6 +39,10 @@ namespace VORP.Inventory.Client.Scripts
 
             if (Configuration.Config.DropOnRespawn.Money)
             {
+                var hudStatus = new { action = "updateStatusHud", show = !IsRadarHidden(), money = 0, gold = 0, id = GetPlayerServerId(PlayerId()) };
+                NUI.SendMessage(hudStatus);
+                await Delay(100);
+                Logger.Trace($"Dropping Money");
                 TriggerServerEvent("vorpinventory:serverDropAllMoney");
             }
 
@@ -47,46 +51,56 @@ namespace VORP.Inventory.Client.Scripts
 
         public async Task DropInventoryAsync()
         {
-            await Delay(200);
-            if (Configuration.Config.DropOnRespawn.Items)
+            try
             {
-                Dictionary<string, ItemClass> items = InventoryAPI.UsersItems.ToDictionary(p => p.Key, p => p.Value);
-                foreach (var item in items.Values)
+                await Delay(200);
+                if (Configuration.Config.DropOnRespawn.Items)
                 {
-                    TriggerServerEvent("vorpinventory:serverDropItem", item.getName(), item.getCount(), 1);
-                    InventoryAPI.UsersItems[item.getName()].quitCount(item.getCount());
-                    if (InventoryAPI.UsersItems[item.getName()].getCount() == 0)
-                    {
-                        InventoryAPI.UsersItems.Remove(item.getName());
-                    }
-                    await Delay(200);
-                }
-            }
+                    Logger.Trace($"Dropping Items");
+                    Dictionary<string, ItemClass> items = InventoryAPI.UsersItems.ToDictionary(p => p.Key, p => p.Value);
 
-            if (Configuration.Config.DropOnRespawn.Weapons)
-            {
-                Dictionary<int, WeaponClass> weapons = InventoryAPI.UsersWeapons.ToDictionary(p => p.Key, p => p.Value);
-                foreach (var weapon in weapons)
-                {
-                    TriggerServerEvent("vorpinventory:serverDropWeapon", weapon.Key);
-                    if (InventoryAPI.UsersWeapons.ContainsKey(weapon.Key))
+                    foreach (KeyValuePair<string, ItemClass> itemKvp in items)
                     {
-                        WeaponClass wp = InventoryAPI.UsersWeapons[weapon.Key];
-                        if (wp.getUsed())
+                        ItemClass item = itemKvp.Value;
+                        int itemCount = item.getCount();
+                        TriggerServerEvent("vorpinventory:serverDropItem", item.getName(), itemCount, 1);
+                        item.setCount(0);
+
+                        if (InventoryAPI.UsersItems.ContainsKey(itemKvp.Key))
+                            InventoryAPI.UsersItems.Remove(itemKvp.Key);
+
+                        await Delay(200);
+                    }
+                }
+
+                if (Configuration.Config.DropOnRespawn.Weapons)
+                {
+                    Logger.Trace($"Dropping Weapons");
+                    Dictionary<int, WeaponClass> weapons = InventoryAPI.UsersWeapons.ToDictionary(p => p.Key, p => p.Value);
+
+                    foreach (KeyValuePair<int, WeaponClass> weaponKvp in weapons)
+                    {
+                        TriggerServerEvent("vorpinventory:serverDropWeapon", weaponKvp.Key);
+                        if (InventoryAPI.UsersWeapons.ContainsKey(weaponKvp.Key))
                         {
-                            wp.setUsed(false);
-                            API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()),
-                                true, 0);
+                            WeaponClass wp = InventoryAPI.UsersWeapons[weaponKvp.Key];
+                            if (wp.getUsed())
+                            {
+                                wp.setUsed(false);
+                                API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()), true, 0);
+                            }
+                            InventoryAPI.UsersWeapons.Remove(weaponKvp.Key);
                         }
-                        InventoryAPI.UsersWeapons.Remove(weapon.Key);
+                        await Delay(200);
                     }
-                    await Delay(200);
                 }
+                await Delay(800);
+                dropAll = false;
             }
-            await Delay(800);
-            dropAll = false;
-
-            PluginManager.Instance.NUIEvents.LoadInventory();
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "DropInventoryAsync");
+            }
         }
 
         private async Task OnWorldPickupAsync()
@@ -249,41 +263,55 @@ namespace VORP.Inventory.Client.Scripts
 
         private async void OnCreatePickupAsync(string name, int amount, int weaponId)
         {
-            int ped = API.PlayerPedId();
-            Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
-            Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
-            Vector3 position = (coords + forward * 1.6F);
-
-            if (dropAll)
+            try
             {
-                Random rnd = new Random();
-                float rn1 = (float)rnd.Next(-35, 35);
-                float rn2 = (float)rnd.Next(-35, 35);
-                position = new Vector3((lastCoords.X + (rn1 / 10.0f)), (lastCoords.Y + (rn2 / 10.0f)), lastCoords.Z);
-            }
+                int ped = API.PlayerPedId();
+                Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
+                Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
+                Vector3 position = (coords + forward * 1.6F);
 
-            int entityHandle = await CreateObjectAsync("P_COTTONBOX01X", position);
-            TriggerServerEvent("vorpinventory:sharePickupServer", name, entityHandle, amount, position, weaponId);
-            Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
+                if (dropAll)
+                {
+                    Random rnd = new Random();
+                    float rn1 = (float)rnd.Next(-35, 35);
+                    float rn2 = (float)rnd.Next(-35, 35);
+                    position = new Vector3((lastCoords.X + (rn1 / 10.0f)), (lastCoords.Y + (rn2 / 10.0f)), lastCoords.Z);
+                }
+
+                int entityHandle = await CreateObjectAsync("P_COTTONBOX01X", position);
+                TriggerServerEvent("vorpinventory:sharePickupServer", name, entityHandle, amount, position, weaponId);
+                Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "OnCreatePickupAsync");
+            }
         }
 
         private async void OnCreateMoneyPickupAsync(double amount)
         {
-            int ped = API.PlayerPedId();
-            Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
-            Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
-            Vector3 position = (coords + forward * 1.6F);
-
-            if (dropAll)
+            try
             {
-                Random rnd = new Random();
+                int ped = API.PlayerPedId();
+                Vector3 coords = Function.Call<Vector3>((Hash)0xA86D5F069399F44D, ped, true, true);
+                Vector3 forward = Function.Call<Vector3>((Hash)0x2412D9C05BB09B97, ped);
+                Vector3 position = (coords + forward * 1.6F);
 
-                position = new Vector3((lastCoords.X + (float)rnd.Next(-3, 3)), (lastCoords.Y + (float)rnd.Next(-3, 3)), lastCoords.Z);
+                if (dropAll)
+                {
+                    Random rnd = new Random();
+
+                    position = new Vector3((lastCoords.X + (float)rnd.Next(-3, 3)), (lastCoords.Y + (float)rnd.Next(-3, 3)), lastCoords.Z);
+                }
+
+                int entityHandle = await CreateObjectAsync("p_moneybag02x", position);
+                TriggerServerEvent("vorpinventory:shareMoneyPickupServer", entityHandle, amount, position);
+                Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
             }
-
-            int entityHandle = await CreateObjectAsync("p_moneybag02x", position);
-            TriggerServerEvent("vorpinventory:shareMoneyPickupServer", entityHandle, amount, position);
-            Function.Call((Hash)0x67C540AA08E4A6F5, "show_info", "Study_Sounds", true, 0);
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "OnCreateMoneyPickupAsync");
+            }
         }
 
         private async Task<int> CreateObjectAsync(string hash, Vector3 position)
