@@ -142,7 +142,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Action = "display";
             nui.Type = "clan";
             nui.Title = clanName;
-            nui.ClanID = clanId;
+            nui.ClanId = clanId;
 
             API.SendNuiMessage(nui.ToJson());
 
@@ -177,7 +177,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Action = "display";
             nui.Type = "Container";
             nui.Title = containerName;
-            nui.ContainerID = containerId;
+            nui.ContainerId = containerId;
 
             API.SendNuiMessage(nui.ToJson());
 
@@ -203,7 +203,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Action = "display";
             nui.Type = "horse";
             nui.Title = horseName;
-            nui.HorseID = horseId;
+            nui.HorseId = horseId;
 
             NUI.SendMessage(nui);
 
@@ -231,7 +231,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Action = "display";
             nui.Type = "steal";
             nui.Title = stealName;
-            nui.StealID = stealId;
+            nui.StealId = stealId;
 
             NUI.SendMessage(nui);
 
@@ -266,7 +266,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Action = "display";
             nui.Type = "cart";
             nui.Title = cartName;
-            nui.WagonID = wagonId;
+            nui.WagonId = wagonId;
 
             NUI.SendMessage(nui);
 
@@ -301,7 +301,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Action = "display";
             nui.Type = "house";
             nui.Title = houseName;
-            nui.HouseID = houseId;
+            nui.HouseId = houseId;
 
             NUI.SendMessage(nui);
 
@@ -336,7 +336,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Action = "display";
             nui.Type = "hideout";
             nui.Title = hideoutName;
-            nui.HideoutID = hideoutId;
+            nui.Hideout = hideoutId;
 
             NUI.SendMessage(nui);
 

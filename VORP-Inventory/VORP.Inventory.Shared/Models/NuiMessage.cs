@@ -57,25 +57,46 @@ namespace VORP.Inventory.Shared.Models
         public int Number { get; set; }
 
         [DataMember(Name = "horse", EmitDefaultValue = false)]
-        public int HorseID { get; set; }
+        public int Horse { get; set; }
+
+        [DataMember(Name = "horseid", EmitDefaultValue = false)]
+        public int HorseId { get; set; }
 
         [DataMember(Name = "wagon", EmitDefaultValue = false)]
-        public int WagonID { get; set; }
+        public int Wagon { get; set; }
+
+        [DataMember(Name = "wagonid", EmitDefaultValue = false)]
+        public int WagonId { get; set; }
 
         [DataMember(Name = "hideout", EmitDefaultValue = false)]
-        public int HideoutID { get; set; }
+        public int Hideout { get; set; }
+
+        [DataMember(Name = "hideoutId", EmitDefaultValue = false)]
+        public int HideoutId { get; set; }
 
         [DataMember(Name = "house", EmitDefaultValue = false)]
-        public int HouseID { get; set; }
+        public int House { get; set; }
+
+        [DataMember(Name = "houseId", EmitDefaultValue = false)]
+        public int HouseId { get; set; }
+
+        [DataMember(Name = "clanid", EmitDefaultValue = false)]
+        public int ClanId { get; set; }
 
         [DataMember(Name = "clan", EmitDefaultValue = false)]
-        public int ClanID { get; set; }
+        public int Clan { get; set; }
 
         [DataMember(Name = "steal", EmitDefaultValue = false)]
-        public int StealID { get; set; }
+        public int Steal { get; set; }
+
+        [DataMember(Name = "stealId", EmitDefaultValue = false)]
+        public int StealId { get; set; }
 
         [DataMember(Name = "container", EmitDefaultValue = false)]
-        public int ContainerID { get; set; }
+        public int Container { get; set; }
+
+        [DataMember(Name = "Containerid", EmitDefaultValue = false)]
+        public int ContainerId { get; set; }
 
         [DataMember(Name = "players", EmitDefaultValue = false)]
         public List<NuiPlayer> Players { get; set; }
