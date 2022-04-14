@@ -3,27 +3,39 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vorpinventory_cl", "vorpinventory-cl\vorpinventory_cl.csproj", "{C345E405-24BC-42B6-9BDF-9DE5C520B302}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vorpinventory_sv", "vorpinventory_sv\vorpinventory_sv.csproj", "{80729F2D-5A1F-4BFE-8C15-574B063909E1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FADB5039-BA71-4686-B6BB-46BB61619A2E}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 	EndProjectSection
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "VORP.Inventory.Shared", "VORP.Inventory.Shared\VORP.Inventory.Shared.shproj", "{D65EAC6F-E2A9-472F-A22B-7C8FBF3A25C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VORP.Inventory.Client", "VORP.Inventory.Client\VORP.Inventory.Client.csproj", "{C345E405-24BC-42B6-9BDF-9DE5C520B302}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VORP.Inventory.Server", "VORP.Inventory.Server\VORP.Inventory.Server.csproj", "{80729F2D-5A1F-4BFE-8C15-574B063909E1}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		VORP.Inventory.Shared\VORP.Inventory.Shared.projitems*{80729f2d-5a1f-4bfe-8c15-574b063909e1}*SharedItemsImports = 4
+		VORP.Inventory.Shared\VORP.Inventory.Shared.projitems*{c345e405-24bc-42b6-9bdf-9de5c520b302}*SharedItemsImports = 4
+		VORP.Inventory.Shared\VORP.Inventory.Shared.projitems*{d65eac6f-e2a9-472f-a22b-7c8fbf3a25c7}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Development|Any CPU = Development|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C345E405-24BC-42B6-9BDF-9DE5C520B302}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C345E405-24BC-42B6-9BDF-9DE5C520B302}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C345E405-24BC-42B6-9BDF-9DE5C520B302}.Development|Any CPU.ActiveCfg = Development|Any CPU
+		{C345E405-24BC-42B6-9BDF-9DE5C520B302}.Development|Any CPU.Build.0 = Development|Any CPU
 		{C345E405-24BC-42B6-9BDF-9DE5C520B302}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C345E405-24BC-42B6-9BDF-9DE5C520B302}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80729F2D-5A1F-4BFE-8C15-574B063909E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{80729F2D-5A1F-4BFE-8C15-574B063909E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80729F2D-5A1F-4BFE-8C15-574B063909E1}.Development|Any CPU.ActiveCfg = Development|Any CPU
+		{80729F2D-5A1F-4BFE-8C15-574B063909E1}.Development|Any CPU.Build.0 = Development|Any CPU
 		{80729F2D-5A1F-4BFE-8C15-574B063909E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80729F2D-5A1F-4BFE-8C15-574B063909E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
