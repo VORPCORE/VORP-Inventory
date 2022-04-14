@@ -85,6 +85,8 @@ namespace VORP.Inventory.Client.Scripts
             }
             await Delay(800);
             dropAll = false;
+
+            PluginManager.Instance.NUIEvents.LoadInventory();
         }
 
         private async Task OnWorldPickupAsync()
