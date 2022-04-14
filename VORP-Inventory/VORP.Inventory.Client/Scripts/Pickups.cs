@@ -39,7 +39,6 @@ namespace VORP.Inventory.Client.Scripts
 
             if (Configuration.Config.DropOnRespawn.Money)
             {
-                await Delay(100);
                 Logger.Trace($"Dropping Money");
                 TriggerServerEvent("vorpinventory:serverDropAllMoney");
             }
