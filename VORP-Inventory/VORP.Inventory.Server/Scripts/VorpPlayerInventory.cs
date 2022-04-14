@@ -150,6 +150,8 @@ namespace VORP.Inventory.Server.Scripts
                 {
                     coreUserCharacter.removeCurrency(0, sourceMoney);
                     player.TriggerEvent("vorpInventory:createMoneyPickup", sourceMoney);
+                    await BaseScript.Delay(100);
+                    player.TriggerEvent("vorp:inventory:ux:update", 0, coreUserCharacter.gold);
                 }
             }
             catch (Exception ex)
