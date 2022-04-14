@@ -92,7 +92,7 @@ namespace VORP.Inventory.Shared.Models
         [DataMember(Name = "stealId", EmitDefaultValue = false)]
         public int StealId { get; set; }
 
-        [DataMember(Name = "container", EmitDefaultValue = false)]
+        [DataMember(Name = "Container", EmitDefaultValue = false)]
         public int Container { get; set; }
 
         [DataMember(Name = "Containerid", EmitDefaultValue = false)]
