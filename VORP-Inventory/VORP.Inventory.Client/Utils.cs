@@ -1,7 +1,6 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using VORP.Inventory.Client.Scripts;
 
 namespace VORP.Inventory.Client

@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VORP.Inventory.Shared;
 using VORP.Inventory.Client.Models;
 using VORP.Inventory.Client.RedM;
 using VORP.Inventory.Client.RedM.Enums;
+using VORP.Inventory.Shared;
 
 namespace VORP.Inventory.Client.Scripts
 {

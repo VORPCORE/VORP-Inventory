@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VORP.Inventory.Shared;
-using VORP.Inventory.Shared.Models;
 using VORP.Inventory.Server.Database;
 using VORP.Inventory.Server.Extensions;
 using VORP.Inventory.Server.Models;
+using VORP.Inventory.Shared;
+using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Server.Scripts
 {

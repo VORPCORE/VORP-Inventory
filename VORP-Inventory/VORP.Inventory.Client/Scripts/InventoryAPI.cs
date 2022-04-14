@@ -225,7 +225,7 @@ namespace VORP.Inventory.Client.Scripts
                 Logger.Trace($"OnGetInventory: {inventory}");
 
                 dynamic items = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(inventory);
-                
+
                 foreach (KeyValuePair<string, Dictionary<string, dynamic>> fitems in citems)
                 {
                     if (items[fitems.Key] != null)
