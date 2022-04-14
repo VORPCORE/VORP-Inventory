@@ -39,8 +39,6 @@ namespace VORP.Inventory.Client.Scripts
 
             if (Configuration.Config.DropOnRespawn.Money)
             {
-                var hudStatus = new { action = "updateStatusHud", show = !IsRadarHidden(), money = 0, gold = 0, id = GetPlayerServerId(PlayerId()) };
-                NUI.SendMessage(hudStatus);
                 await Delay(100);
                 Logger.Trace($"Dropping Money");
                 TriggerServerEvent("vorpinventory:serverDropAllMoney");
