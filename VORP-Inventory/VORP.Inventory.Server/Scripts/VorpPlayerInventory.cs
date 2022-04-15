@@ -308,13 +308,13 @@ namespace VORP.Inventory.Server.Scripts
                 if (userInventory.ContainsKey(name))
                 {
                     ItemClass itemClass = userInventory[name];
-                    if (cuantity <= itemClass.getCount())
+                    if (cuantity <= itemClass.Count)
                     {
                         itemClass.Subtract(cuantity);
                         await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                     }
 
-                    if (itemClass.getCount() == 0)
+                    if (itemClass.Count == 0)
                     {
                         userInventory.Remove(name);
                         await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
@@ -348,7 +348,7 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (cuantity > 0)
                         {
-                            ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
+                            ItemDatabase.UserInventory[identifier][name].AddCount(cuantity);
                             await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                         }
                     }
@@ -356,8 +356,17 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (ItemDatabase.ServerItems.ContainsKey(name))
                         {
-                            ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
-                                ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
+                            ItemDatabase.UserInventory[identifier].Add(name, new ItemClass 
+                            {
+                                Count = cuantity, 
+                                Limit = ItemDatabase.ServerItems[name].getLimit(),
+                                Label = ItemDatabase.ServerItems[name].getLabel(), 
+                                Name = name, 
+                                Type = "item_inventory", 
+                                Usable = true, 
+                                CanRemove = ItemDatabase.ServerItems[name].getCanRemove() 
+                            });
+
                             await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                         }
                     }
@@ -368,8 +377,17 @@ namespace VORP.Inventory.Server.Scripts
                     ItemDatabase.UserInventory.Add(identifier, userinv);
                     if (ItemDatabase.ServerItems.ContainsKey(name))
                     {
-                        ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
-                            ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
+                        ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
+                        { 
+                            Count = cuantity, 
+                            Limit = ItemDatabase.ServerItems[name].getLimit(),
+                            Label =  ItemDatabase.ServerItems[name].getLabel(), 
+                            Name = name, 
+                            Type = "item_inventory", 
+                            Usable = true, 
+                            CanRemove = ItemDatabase.ServerItems[name].getCanRemove()
+                        });
+
                         await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                     }
                 }
@@ -480,7 +498,7 @@ namespace VORP.Inventory.Server.Scripts
                             {
                                 if (ItemDatabase.UserInventory[identifier].ContainsKey(Pickups[obj]["name"]))
                                 {
-                                    int totalcount = Pickups[obj]["amount"] + ItemDatabase.UserInventory[identifier][Pickups[obj]["name"]].getCount();
+                                    int totalcount = Pickups[obj]["amount"] + ItemDatabase.UserInventory[identifier][Pickups[obj]["name"]].Count;
 
                                     if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() < totalcount)
                                     {
@@ -490,7 +508,7 @@ namespace VORP.Inventory.Server.Scripts
                                 }
                                 //int totalcount = Pickups[obj]["amount"] ItemDatabase.usersInventory[identifier];
                                 //totalcount += Pickups[obj]["amount"];
-                                //ItemDatabase.svItems[Pickups[obj]["name"]].getCount();
+                                //ItemDatabase.svItems[Pickups[obj]["name"]].Count;
 
                             }
 
@@ -734,7 +752,7 @@ namespace VORP.Inventory.Server.Scripts
                 }
 
                 ItemClass item = userInventory[itemName];
-                int itemCount = item.getCount();
+                int itemCount = item.Count;
 
                 int targetTotalItems = 0;
                 int targetItemLimit = 0;
@@ -746,8 +764,8 @@ namespace VORP.Inventory.Server.Scripts
                 if (targetInventory.ContainsKey(itemName))
                 {
                     targetItem = targetInventory[itemName];
-                    targetTotalItems = targetItem.getCount();
-                    targetItemLimit = targetItem.getLimit();
+                    targetTotalItems = targetItem.Count;
+                    targetItemLimit = targetItem.Limit;
 
                     if (targetTotalItems + amount >= targetItemLimit)
                         canGiveItemToTarget = false;
@@ -766,14 +784,23 @@ namespace VORP.Inventory.Server.Scripts
 
                 if (targetItem is not null)
                 {
-                    targetItem.addCount(amount);
+                    targetItem.AddCount(amount);
                 }
                 else
                 {
                     if (ItemDatabase.ServerItems.ContainsKey(itemName))
                     {
                         Items serverItem = ItemDatabase.ServerItems[itemName];
-                        targetInventory.Add(itemName, new ItemClass(amount, serverItem.getLimit(), serverItem.getLabel(), itemName, "item_inventory", true, serverItem.getCanRemove()));
+                        targetInventory.Add(itemName, new ItemClass
+                        {
+                            Count = amount, 
+                            Limit = serverItem.getLimit(), 
+                            Label = serverItem.getLabel(), 
+                            Name = itemName, 
+                            Type = "item_inventory", 
+                            Usable = true, 
+                            CanRemove = serverItem.getCanRemove()
+                        });
                     }
                     else
                     {
@@ -786,7 +813,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 item.Subtract(amount);
 
-                if (item.getCount() == 0)
+                if (item.Count == 0)
                     userInventory.Remove(itemName);
 
                 await SaveInventoryItemsSupportAsync(identifier, playerCharId);
@@ -872,8 +899,17 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (coreInventory[itemname.item.ToString()] != null)
                         {
-                            ItemClass item = new ItemClass(int.Parse(coreInventory[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
-                                itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
+                            ItemClass item = new ItemClass
+                            {
+                                Count = int.Parse(coreInventory[itemname.item.ToString()].ToString()), 
+                                Limit = int.Parse(itemname.limit.ToString()),
+                                Label = itemname.label, 
+                                Name = itemname.item, 
+                                Type = itemname.type, 
+                                Usable = itemname.usable, 
+                                CanRemove = itemname.can_remove
+                            };
+
                             userinv.Add(itemname.item.ToString(), item);
                         }
                     }
