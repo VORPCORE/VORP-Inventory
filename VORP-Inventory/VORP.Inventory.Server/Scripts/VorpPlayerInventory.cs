@@ -359,12 +359,12 @@ namespace VORP.Inventory.Server.Scripts
                             ItemDatabase.UserInventory[identifier].Add(name, new ItemClass 
                             {
                                 Count = cuantity, 
-                                Limit = ItemDatabase.ServerItems[name].getLimit(),
-                                Label = ItemDatabase.ServerItems[name].getLabel(), 
+                                Limit = ItemDatabase.ServerItems[name].Limit,
+                                Label = ItemDatabase.ServerItems[name].Label,
                                 Name = name, 
                                 Type = "item_inventory", 
                                 Usable = true, 
-                                CanRemove = ItemDatabase.ServerItems[name].getCanRemove() 
+                                CanRemove = ItemDatabase.ServerItems[name].CanRemove
                             });
 
                             await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
@@ -380,12 +380,12 @@ namespace VORP.Inventory.Server.Scripts
                         ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
                         { 
                             Count = cuantity, 
-                            Limit = ItemDatabase.ServerItems[name].getLimit(),
-                            Label =  ItemDatabase.ServerItems[name].getLabel(), 
+                            Limit = ItemDatabase.ServerItems[name].Limit,
+                            Label =  ItemDatabase.ServerItems[name].Label,
                             Name = name, 
                             Type = "item_inventory", 
                             Usable = true, 
-                            CanRemove = ItemDatabase.ServerItems[name].getCanRemove()
+                            CanRemove = ItemDatabase.ServerItems[name].CanRemove
                         });
 
                         await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
@@ -794,12 +794,12 @@ namespace VORP.Inventory.Server.Scripts
                         targetInventory.Add(itemName, new ItemClass
                         {
                             Count = amount, 
-                            Limit = serverItem.getLimit(), 
-                            Label = serverItem.getLabel(), 
+                            Limit = serverItem.Limit,
+                            Label = serverItem.Label, 
                             Name = itemName, 
                             Type = "item_inventory", 
                             Usable = true, 
-                            CanRemove = serverItem.getCanRemove()
+                            CanRemove = serverItem.CanRemove
                         });
                     }
                     else

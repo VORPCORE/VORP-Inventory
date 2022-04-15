@@ -206,7 +206,7 @@ namespace VORP.Inventory.Server.Scripts
                     cb.Invoke(false);
                 }
 
-                int maxLimitItem = item.getLimit();
+                int maxLimitItem = item.Limit;
                 Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
 
                 int maxLimitConfig = Configuration.INVENTORY_MAX_ITEMS;
@@ -347,7 +347,7 @@ namespace VORP.Inventory.Server.Scripts
                 Dictionary<string, object> argumentos = new()
                 {
                     { "source", int.Parse(source.Handle) },
-                    { "item", ItemDatabase.ServerItems[itemName].getItemDictionary() },
+                    { "item", ItemDatabase.ServerItems[itemName].GetItemDictionary() },
                     { "args", args }
                 };
                 usableItemsFunctions[itemName](argumentos);
@@ -773,7 +773,7 @@ namespace VORP.Inventory.Server.Scripts
                     }
                     else
                     {
-                        if (quantity <= ItemDatabase.ServerItems[name].getLimit())
+                        if (quantity <= ItemDatabase.ServerItems[name].Limit)
                         {
                             added = true;
 
@@ -786,13 +786,13 @@ namespace VORP.Inventory.Server.Scripts
                                     added = true;
                                     ItemDatabase.UserInventory[identifier].Add(name, new ItemClass 
                                     {
-                                        Count = quantity, 
-                                        Limit = ItemDatabase.ServerItems[name].getLimit(),
-                                        Label = ItemDatabase.ServerItems[name].getLabel(), 
-                                        Name = name, 
-                                        Type = ItemDatabase.ServerItems[name].getType(), 
-                                        Usable = true, 
-                                        CanRemove = ItemDatabase.ServerItems[name].getCanRemove() 
+                                        Count = quantity,
+                                        Limit = ItemDatabase.ServerItems[name].Limit,
+                                        Label = ItemDatabase.ServerItems[name].Label,
+                                        Name = name,
+                                        Type = ItemDatabase.ServerItems[name].Type,
+                                        Usable = true,
+                                        CanRemove = ItemDatabase.ServerItems[name].CanRemove
                                     });
                                 }
                             }
@@ -801,19 +801,19 @@ namespace VORP.Inventory.Server.Scripts
                                 added = true;
                                 ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
                                 { 
-                                    Count = quantity, 
-                                    Limit = ItemDatabase.ServerItems[name].getLimit(),
-                                    Label = ItemDatabase.ServerItems[name].getLabel(), 
-                                    Name = name, 
-                                    Type = ItemDatabase.ServerItems[name].getType(), 
-                                    Usable = true, 
-                                    CanRemove = ItemDatabase.ServerItems[name].getCanRemove()
+                                    Count = quantity,
+                                    Limit = ItemDatabase.ServerItems[name].Limit,
+                                    Label = ItemDatabase.ServerItems[name].Label,
+                                    Name = name,
+                                    Type = ItemDatabase.ServerItems[name].Type,
+                                    Usable = true,
+                                    CanRemove = ItemDatabase.ServerItems[name].CanRemove
                                 });
                             }
 
 
                         }
-                        else if (ItemDatabase.ServerItems[name].getLimit() == -1)
+                        else if (ItemDatabase.ServerItems[name].Limit == -1)
                         {
                             if (Configuration.INVENTORY_MAX_ITEMS != 0)
                             {
@@ -825,12 +825,12 @@ namespace VORP.Inventory.Server.Scripts
                                     ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
                                     { 
                                         Count = quantity, 
-                                        Limit = ItemDatabase.ServerItems[name].getLimit(),
-                                        Label = ItemDatabase.ServerItems[name].getLabel(), 
+                                        Limit = ItemDatabase.ServerItems[name].Limit,
+                                        Label = ItemDatabase.ServerItems[name].Label, 
                                         Name = name, 
-                                        Type = ItemDatabase.ServerItems[name].getType(), 
+                                        Type = ItemDatabase.ServerItems[name].Type,
                                         Usable = true, 
-                                        CanRemove = ItemDatabase.ServerItems[name].getCanRemove()
+                                        CanRemove = ItemDatabase.ServerItems[name].CanRemove
                                     });
                                 }
                             }
@@ -840,12 +840,12 @@ namespace VORP.Inventory.Server.Scripts
                                 ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
                                 {
                                     Count = quantity,
-                                    Limit = ItemDatabase.ServerItems[name].getLimit(),
-                                    Label = ItemDatabase.ServerItems[name].getLabel(),
+                                    Limit = ItemDatabase.ServerItems[name].Limit,
+                                    Label = ItemDatabase.ServerItems[name].Label,
                                     Name = name,
-                                    Type = ItemDatabase.ServerItems[name].getType(),
+                                    Type = ItemDatabase.ServerItems[name].Type,
                                     Usable = true,
-                                    CanRemove = ItemDatabase.ServerItems[name].getCanRemove()
+                                    CanRemove = ItemDatabase.ServerItems[name].CanRemove
                                 });
                             }
                         }

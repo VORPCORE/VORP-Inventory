@@ -79,7 +79,15 @@ namespace VORP.Inventory.Server.Database
                         items = result;
                         foreach (dynamic item in items)
                         {
-                            ServerItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove, item.type, item.usable));
+                            ServerItems.Add(item.item.ToString(), new Items
+                            {
+                                Item = item.item, 
+                                Label = item.label, 
+                                Limit = int.Parse(item.limit.ToString()), 
+                                CanRemove = item.can_remove, 
+                                Type = item.type, 
+                                Usable = item.usable
+                            });
                         }
                     }
 
