@@ -5,152 +5,72 @@ namespace VORP.Inventory.Server.Models
 {
     public class WeaponClass : BaseScript
     {
-        private string name;
-        private int id;
-        private string propietary;
-        private int charId;
-        private bool used;
-        private bool used2;
-        private Dictionary<string, int> ammo;
-        private List<string> components;
-        public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used, bool used2, int charid)
-        {
-            this.id = id;
-            this.name = name;
-            this.ammo = ammo;
-            this.components = components;
-            this.propietary = propietary;
-            this.used = used;
-            this.used2 = used2;
-            this.charId = charid;
-        }
+        public int Id { get; set; }
+        public string Propietary { get; set; }
+        public string Name { get; set; }
+        public Dictionary<string, int> Ammo { get; set; }
+        public List<string> Components { get; set; }
+        public bool Used { get; set; }
+        public bool Used2 { get; set; }
+        public int CharId { get; set; }
 
-        public void setUsed(bool used)
+        public void QuitComponent(string component)
         {
-            this.used = used;
-        }
-
-        public bool getUsed()
-        {
-            return this.used;
-        }
-
-        public void setUsed2(bool used2)
-        {
-            this.used2 = used2;
-        }
-
-        public bool getUsed2()
-        {
-            return this.used2;
-        }
-        public string getPropietary()
-        {
-            return this.propietary;
-        }
-
-        public int getCharId()
-        {
-            return this.charId;
-        }
-
-        public void setCharId(int charid)
-        {
-            this.charId = charid;
-        }
-
-        public void setPropietary(string propietary)
-        {
-            this.propietary = propietary;
-        }
-        public int getId()
-        {
-            return this.id;
-        }
-
-        public void setId(int id)
-        {
-            this.id = id;
-        }
-
-        public string getName()
-        {
-            return this.name;
-        }
-
-        public Dictionary<string, int> getAllAmmo()
-        {
-            return this.ammo;
-        }
-
-        public List<string> getAllComponents()
-        {
-            return this.components;
-        }
-
-        public void setComponent(string component)
-        {
-            this.components.Add(component);
-        }
-
-        public void quitComponent(string component)
-        {
-            if (this.components.Contains(component))
+            if (Components.Contains(component))
             {
-                this.components.Remove(component);
+                Components.Remove(component);
             }
         }
 
-        public int getAmmo(string type)
+        public void AddAmmo(int ammo, string type)
         {
-            return this.ammo[type];
-        }
-
-        public void addAmmo(int ammo, string type)
-        {
-            if (this.ammo.ContainsKey(type))
+            if (Ammo.ContainsKey(type))
             {
-                this.ammo[type] += ammo;
+                Ammo[type] += ammo;
             }
             else
             {
-                this.ammo.Add(type, ammo);
+                Ammo.Add(type, ammo);
             }
+
             Exports["ghmattimysql"]
                 .execute(
-                    $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(getAllAmmo())}' WHERE id=?",
-                    new[] { id });
+                    $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(Ammo)}' WHERE id=?",
+                    new[] { Id });
         }
 
-        public void setAmmo(int ammo, string type)
+        public void SetAmmo(int ammo, string type)
         {
-            if (this.ammo.ContainsKey(type))
+            if (Ammo.ContainsKey(type))
             {
-                this.ammo[type] = ammo;
+                Ammo[type] = ammo;
             }
             else
             {
-                this.ammo.Add(type, ammo);
+                Ammo.Add(type, ammo);
             }
+
             Exports["ghmattimysql"]
                 .execute(
-                    $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(getAllAmmo())}' WHERE id=?",
-                    new[] { id });
+                    $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(Ammo)}' WHERE id=?",
+                    new[] { Id });
         }
-        public void subAmmo(int ammo, string type)
+
+        public void SubAmmo(int ammo, string type)
         {
-            if (this.ammo.ContainsKey(type))
+            if (Ammo.ContainsKey(type))
             {
-                this.ammo[type] -= ammo;
-                if (this.ammo[type] == 0)
+                Ammo[type] -= ammo;
+                if (Ammo[type] == 0)
                 {
-                    this.ammo.Remove(type);
+                    Ammo.Remove(type);
                 }
             }
+
             Exports["ghmattimysql"]
                 .execute(
-                    $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(getAllAmmo())}' WHERE id=?",
-                    new[] { id });
+                    $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(Ammo)}' WHERE id=?",
+                    new[] { Id });
         }
 
     }

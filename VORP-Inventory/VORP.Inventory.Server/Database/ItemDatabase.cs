@@ -126,12 +126,15 @@ namespace VORP.Inventory.Server.Database
                             {
                                 charId = row.charidentifier;
                             }
+
                             Dictionary<string, int> amunition = new Dictionary<string, int>();
                             List<string> components = new List<string>();
+
                             foreach (JProperty ammos in ammo.Properties())
                             {
                                 amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
                             }
+
                             foreach (JToken x in comp)
                             {
                                 components.Add(x.ToString());
@@ -142,13 +145,26 @@ namespace VORP.Inventory.Server.Database
                             {
                                 auused = true;
                             }
+
                             bool auused2 = false;
                             if (row.used2 == 1)
                             {
                                 auused2 = true;
                             }
-                            wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charId);
-                            UserWeapons[wp.getId()] = wp;
+
+                            wp = new WeaponClass
+                            {
+                                Id = int.Parse(row.id.ToString()), 
+                                Propietary = row.identifier.ToString(), 
+                                Name = row.name.ToString(), 
+                                Ammo = amunition, 
+                                Components = components, 
+                                Used = auused, 
+                                Used2 = auused2, 
+                                CharId = charId
+                            };
+
+                            UserWeapons[wp.Id] = wp;
                         }
                         catch (Exception ex)
                         {
@@ -156,6 +172,7 @@ namespace VORP.Inventory.Server.Database
                         }
                     }
                 }
+
                 Logger.Trace($"Loadouts setup completed; found {UserWeapons.Count} loadouts.");
             }));
         }

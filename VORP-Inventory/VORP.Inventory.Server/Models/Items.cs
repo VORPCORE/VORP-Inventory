@@ -11,8 +11,6 @@ namespace VORP.Inventory.Server.Models
         public string Type { get; set; }
         public bool Usable { get; set; }
 
-        //public Items(string item, string label, int limit, bool can_remove, string type, bool usable)
-
         public Dictionary<string, object> GetItemDictionary()
         {
             return new Dictionary<string, object>()
