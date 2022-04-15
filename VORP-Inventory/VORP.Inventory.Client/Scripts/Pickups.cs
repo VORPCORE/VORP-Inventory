@@ -81,10 +81,10 @@ namespace VORP.Inventory.Client.Scripts
                         if (InventoryAPI.UsersWeapons.ContainsKey(weaponKvp.Key))
                         {
                             WeaponClass wp = InventoryAPI.UsersWeapons[weaponKvp.Key];
-                            if (wp.getUsed())
+                            if (wp.Used)
                             {
-                                wp.setUsed(false);
-                                API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()), true, 0);
+                                wp.SetUsed(false);
+                                API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.Name), true, 0);
                             }
                             InventoryAPI.UsersWeapons.Remove(weaponKvp.Key);
                         }
