@@ -493,14 +493,13 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (ItemDatabase.UserInventory.ContainsKey(identifier))
                         {
-
-                            if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() != -1)
+                            if (ItemDatabase.ServerItems[Pickups[obj]["name"]].Limit != -1)
                             {
                                 if (ItemDatabase.UserInventory[identifier].ContainsKey(Pickups[obj]["name"]))
                                 {
                                     int totalcount = Pickups[obj]["amount"] + ItemDatabase.UserInventory[identifier][Pickups[obj]["name"]].Count;
 
-                                    if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() < totalcount)
+                                    if (ItemDatabase.ServerItems[Pickups[obj]["name"]].Limit < totalcount)
                                     {
                                         TriggerClientEvent(player, "vorp:TipRight", Configuration.GetTranslation("fullInventory"), 2000);
                                         return;
