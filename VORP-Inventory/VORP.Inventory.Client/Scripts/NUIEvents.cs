@@ -452,7 +452,7 @@ namespace VORP.Inventory.Client.Scripts
                         else if (data.Data.ID == 0)
                         {
                             int amount = (int)data.Data.Count;
-                            if (amount > 0 && InventoryAPI.UsersItems[itemname].getCount() >= amount)
+                            if (amount > 0 && InventoryAPI.UsersItems[itemname].Count >= amount)
                             {
                                 TriggerServerEvent("vorpinventory:serverGiveItem", itemname, amount, target, 1);
                             }
@@ -547,13 +547,11 @@ namespace VORP.Inventory.Client.Scripts
             {
                 if (aux["number"].ToString() != null && aux["number"].ToString() != "")
                 {
-
-
-                    if (int.Parse(aux["number"].ToString()) > 0 && InventoryAPI.UsersItems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
+                    if (int.Parse(aux["number"].ToString()) > 0 && InventoryAPI.UsersItems[itemname].Count >= int.Parse(aux["number"].ToString()))
                     {
                         TriggerServerEvent("vorpinventory:serverDropItem", itemname, int.Parse(aux["number"].ToString()), 1);
-                        InventoryAPI.UsersItems[itemname].quitCount(int.Parse(aux["number"].ToString()));
-                        if (InventoryAPI.UsersItems[itemname].getCount() == 0)
+                        InventoryAPI.UsersItems[itemname].Count -= int.Parse(aux["number"].ToString());
+                        if (InventoryAPI.UsersItems[itemname].Count == 0)
                         {
                             InventoryAPI.UsersItems.Remove(itemname);
                         }
@@ -644,13 +642,13 @@ namespace VORP.Inventory.Client.Scripts
                 ItemClass item = itemKvp.Value;
 
                 Dictionary<string, dynamic> userItem = new();
-                userItem.Add("count", item.getCount());
-                userItem.Add("limit", item.getLimit());
-                userItem.Add("label", item.getLabel());
-                userItem.Add("name", item.getName());
-                userItem.Add("type", item.getType());
-                userItem.Add("usable", item.getUsable());
-                userItem.Add("canRemove", item.getCanRemove());
+                userItem.Add("count", item.Count);
+                userItem.Add("limit", item.Limit);
+                userItem.Add("label", item.Label);
+                userItem.Add("name", item.Name);
+                userItem.Add("type", item.Type);
+                userItem.Add("usable", item.Usable);
+                userItem.Add("canRemove", item.CanRemove);
                 _userItemsCache.Add(userItem);
             }
         }

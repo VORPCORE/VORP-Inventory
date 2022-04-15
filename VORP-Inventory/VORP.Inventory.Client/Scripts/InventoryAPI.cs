@@ -93,12 +93,22 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersItems.ContainsKey(name))
             {
-                UsersItems[name].addCount(count);
+                UsersItems[name].Count += count;
             }
             else
             {
-                UsersItems.Add(name, new ItemClass(count, citems[name]["limit"], citems[name]["label"], name,
-                    "item_standard", true, citems[name]["can_remove"]));
+                ItemClass itemClass = new ItemClass
+                {
+                    Count = count,
+                    Limit = citems[name]["limit"],
+                    Label = citems[name]["label"],
+                    Name = name,
+                    Type = "item_standard",
+                    Usable = true,
+                    CanRemove = citems[name]["can_remove"]
+                };
+
+                UsersItems.Add(name, itemClass);
             }
 
             PluginManager.Instance.NUIEvents.LoadInventory();
@@ -106,8 +116,8 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnReceiveItemTwo(string name, int count)
         {
-            UsersItems[name].quitCount(count);
-            if (UsersItems[name].getCount() == 0)
+            UsersItems[name].Count -= count;
+            if (UsersItems[name].Count == 0)
             {
                 UsersItems.Remove(name);
             }
@@ -233,10 +243,20 @@ namespace VORP.Inventory.Client.Scripts
                         int cuantity = int.Parse(items[fitems.Key].ToString());
                         int limit = int.Parse(fitems.Value["limit"].ToString());
                         string label = fitems.Value["label"].ToString();
-                        bool can_remove = bool.Parse(fitems.Value["can_remove"].ToString());
+                        bool canRemove = bool.Parse(fitems.Value["can_remove"].ToString());
                         string type = fitems.Value["type"].ToString();
                         bool usable = bool.Parse(fitems.Value["usable"].ToString());
-                        ItemClass item = new ItemClass(cuantity, limit, label, fitems.Key, type, usable, can_remove);
+                        ItemClass item = new ItemClass
+                        {
+                            Count = cuantity, 
+                            Limit = limit, 
+                            Label = label, 
+                            Name = fitems.Key, 
+                            Type = type, 
+                            Usable = usable, 
+                            CanRemove = canRemove
+                        };
+
                         UsersItems.Add(fitems.Key, item);
                     }
                 }
@@ -325,8 +345,8 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersItems.ContainsKey(name))
             {
-                UsersItems[name].setCount(cuantity);
-                if (UsersItems[name].getCount() == 0)
+                UsersItems[name].Count = cuantity;
+                if (UsersItems[name].Count == 0)
                 {
                     UsersItems.Remove(name);
                 }
@@ -338,11 +358,21 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersItems.ContainsKey(name))
             {
-                UsersItems[name].addCount(count);
+                UsersItems[name].Count += count;
             }
             else
             {
-                ItemClass auxitem = new ItemClass(count, limit, label, name, type, usable, canRemove);
+                ItemClass auxitem = new ItemClass 
+                { 
+                    Count = count, 
+                    Limit = limit, 
+                    Label = label, 
+                    Name = name, 
+                    Type = type, 
+                    Usable = usable, 
+                    CanRemove = canRemove 
+                };
+
                 UsersItems.Add(name, auxitem);
             }
             PluginManager.Instance.NUIEvents.LoadInventory();

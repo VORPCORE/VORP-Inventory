@@ -59,9 +59,9 @@ namespace VORP.Inventory.Client.Scripts
                     foreach (KeyValuePair<string, ItemClass> itemKvp in items)
                     {
                         ItemClass item = itemKvp.Value;
-                        int itemCount = item.getCount();
-                        TriggerServerEvent("vorpinventory:serverDropItem", item.getName(), itemCount, 1);
-                        item.setCount(0);
+                        int itemCount = item.Count;
+                        TriggerServerEvent("vorpinventory:serverDropItem", item.Name, itemCount, 1);
+                        item.Count = 0;
 
                         if (InventoryAPI.UsersItems.ContainsKey(itemKvp.Key))
                             InventoryAPI.UsersItems.Remove(itemKvp.Key);
