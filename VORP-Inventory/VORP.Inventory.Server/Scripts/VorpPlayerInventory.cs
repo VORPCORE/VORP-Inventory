@@ -890,7 +890,7 @@ namespace VORP.Inventory.Server.Scripts
                 if (PluginManager.ActiveCharacters[player.Handle] != charIdentifier)
                     PluginManager.ActiveCharacters[player.Handle] = charIdentifier;
 
-                if (inventory is not null)
+                if (!string.IsNullOrEmpty(inventory))
                 {
                     // turn this into a class
                     dynamic coreInventory = JsonConvert.DeserializeObject<dynamic>(inventory);
