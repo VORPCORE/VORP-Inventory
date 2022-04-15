@@ -85,6 +85,13 @@ namespace VORP.Inventory.Client.Scripts
             NUI.RegisterCallback("TakeFromContainer", new Action<ExpandoObject>(NUITakeFromContainer));
             NUI.RegisterCallback("MoveToContainer", new Action<ExpandoObject>(NUIMoveToContainer));
 
+            // HOUSE
+            AddEvent("vorp_inventory:OpenHouseInventory", new Action<string, int>(OpenHouseInventory));
+            AddEvent("vorp_inventory:ReloadHouseInventory", new Action<string>(ReloadHouseInventory));
+
+            NUI.RegisterCallback("TakeFromHouse", new Action<ExpandoObject>(NUITakeFromHouse));
+            NUI.RegisterCallback("MoveToHouse", new Action<ExpandoObject>(NUIMoveToHouse));
+
             AttachTickHandler(OnOpenInventoryKeyAsync);
         }
 
