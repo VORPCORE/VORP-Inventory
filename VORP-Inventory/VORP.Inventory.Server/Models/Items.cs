@@ -33,7 +33,7 @@ namespace VORP.Inventory.Server.Models
                 {"limit", Limit},
                 {"can_remove", CanRemove},
                 {"type", Type},
-                {"usabel", Usable}
+                {"usable", Usable}
             };
         }
     }
