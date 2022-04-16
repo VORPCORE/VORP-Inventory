@@ -59,9 +59,9 @@ namespace VORP.Inventory.Client.Scripts
                     foreach (KeyValuePair<string, ItemClass> itemKvp in items)
                     {
                         ItemClass item = itemKvp.Value;
-                        int itemCount = item.getCount();
-                        TriggerServerEvent("vorpinventory:serverDropItem", item.getName(), itemCount, 1);
-                        item.setCount(0);
+                        int itemCount = item.Count;
+                        TriggerServerEvent("vorpinventory:serverDropItem", item.Name, itemCount, 1);
+                        item.Count = 0;
 
                         if (InventoryAPI.UsersItems.ContainsKey(itemKvp.Key))
                             InventoryAPI.UsersItems.Remove(itemKvp.Key);
@@ -81,10 +81,10 @@ namespace VORP.Inventory.Client.Scripts
                         if (InventoryAPI.UsersWeapons.ContainsKey(weaponKvp.Key))
                         {
                             WeaponClass wp = InventoryAPI.UsersWeapons[weaponKvp.Key];
-                            if (wp.getUsed())
+                            if (wp.Used)
                             {
-                                wp.setUsed(false);
-                                API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()), true, 0);
+                                wp.SetUsed(false);
+                                API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.Name), true, 0);
                             }
                             InventoryAPI.UsersWeapons.Remove(weaponKvp.Key);
                         }

@@ -15,7 +15,7 @@ namespace VORP.Inventory.Client.Scripts
     public class InventoryAPI : Manager
     {
         public static Dictionary<string, Dictionary<string, dynamic>> citems =
-    new Dictionary<string, Dictionary<string, dynamic>>();
+            new Dictionary<string, Dictionary<string, dynamic>>();
 
         public static Dictionary<string, ItemClass> UsersItems = new Dictionary<string, ItemClass>();
         public static Dictionary<int, WeaponClass> UsersWeapons = new Dictionary<int, WeaponClass>();
@@ -70,9 +70,9 @@ namespace VORP.Inventory.Client.Scripts
                 WeaponClass usedWeapon = null;
                 foreach (KeyValuePair<int, WeaponClass> weap in UsersWeapons.ToList())
                 {
-                    if (weaponName.Contains(weap.Value.getName()) && weap.Value.getUsed())
+                    if (weaponName.Contains(weap.Value.Name) && weap.Value.Used)
                     {
-                        ammoDict = weap.Value.getAllAmmo();
+                        ammoDict = weap.Value.Ammo;
                         usedWeapon = weap.Value;
                     }
                 }
@@ -83,7 +83,7 @@ namespace VORP.Inventory.Client.Scripts
                     int ammoQuantity = Function.Call<int>((Hash)0x39D22031557946C1, API.PlayerPedId(), API.GetHashKey(ammo.Key));
                     if (ammoQuantity != ammo.Value)
                     {
-                        usedWeapon.setAmmo(ammoQuantity, ammo.Key);
+                        usedWeapon.SetAmmo(ammoQuantity, ammo.Key);
                     }
                 }
             }
@@ -93,12 +93,22 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersItems.ContainsKey(name))
             {
-                UsersItems[name].addCount(count);
+                UsersItems[name].Count += count;
             }
             else
             {
-                UsersItems.Add(name, new ItemClass(count, citems[name]["limit"], citems[name]["label"], name,
-                    "item_standard", true, citems[name]["can_remove"]));
+                ItemClass itemClass = new ItemClass
+                {
+                    Count = count,
+                    Limit = citems[name]["limit"],
+                    Label = citems[name]["label"],
+                    Name = name,
+                    Type = "item_standard",
+                    Usable = true,
+                    CanRemove = citems[name]["can_remove"]
+                };
+
+                UsersItems.Add(name, itemClass);
             }
 
             PluginManager.Instance.NUIEvents.LoadInventory();
@@ -106,8 +116,8 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OnReceiveItemTwo(string name, int count)
         {
-            UsersItems[name].quitCount(count);
-            if (UsersItems[name].getCount() == 0)
+            UsersItems[name].Count -= count;
+            if (UsersItems[name].Count == 0)
             {
                 UsersItems.Remove(name);
             }
@@ -121,16 +131,29 @@ namespace VORP.Inventory.Client.Scripts
             {
                 ammoaux.Add(amo.Key, int.Parse(amo.Value.ToString()));
             }
+
             List<string> auxcomponents = new List<string>();
             foreach (var comp in components)
             {
                 auxcomponents.Add(comp.ToString());
             }
-            WeaponClass weapon = new WeaponClass(id, propietary, name, ammoaux, auxcomponents, false, false);
-            if (!UsersWeapons.ContainsKey(weapon.getId()))
+
+            WeaponClass weapon = new WeaponClass
             {
-                UsersWeapons.Add(weapon.getId(), weapon);
+                Id = id, 
+                Propietary = propietary, 
+                Name = name, 
+                Ammo = ammoaux, 
+                Components = auxcomponents, 
+                Used = false, 
+                Used2 = false
+            };
+
+            if (!UsersWeapons.ContainsKey(weapon.Id))
+            {
+                UsersWeapons.Add(weapon.Id, weapon);
             }
+
             PluginManager.Instance.NUIEvents.LoadInventory();
         }
 
@@ -192,6 +215,7 @@ namespace VORP.Inventory.Client.Scripts
                 {
                     ammos.Add(amunition.Name, int.Parse(amunition.Value.ToString()));
                 }
+
                 bool auused = false;
                 if (row.used == 1)
                 {
@@ -203,15 +227,25 @@ namespace VORP.Inventory.Client.Scripts
                 {
                     auused2 = true;
                 }
-                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), ammos, components, auused, auused2);
 
-                if (!UsersWeapons.ContainsKey(auxweapon.getId()))
+                WeaponClass auxweapon = new WeaponClass
                 {
-                    UsersWeapons.Add(auxweapon.getId(), auxweapon);
+                    Id = int.Parse(row.id.ToString()), 
+                    Propietary = row.identifier.ToString(), 
+                    Name = row.name.ToString(), 
+                    Ammo = ammos, 
+                    Components = components, 
+                    Used = auused, 
+                    Used2 = auused2
+                };
 
-                    if (auxweapon.getUsed())
+                if (!UsersWeapons.ContainsKey(auxweapon.Id))
+                {
+                    UsersWeapons.Add(auxweapon.Id, auxweapon);
+
+                    if (auxweapon.Used)
                     {
-                        Utils.UseWeapon(auxweapon.getId());
+                        Utils.UseWeapon(auxweapon.Id);
                     }
                 }
             }
@@ -233,10 +267,20 @@ namespace VORP.Inventory.Client.Scripts
                         int cuantity = int.Parse(items[fitems.Key].ToString());
                         int limit = int.Parse(fitems.Value["limit"].ToString());
                         string label = fitems.Value["label"].ToString();
-                        bool can_remove = bool.Parse(fitems.Value["can_remove"].ToString());
+                        bool canRemove = bool.Parse(fitems.Value["can_remove"].ToString());
                         string type = fitems.Value["type"].ToString();
                         bool usable = bool.Parse(fitems.Value["usable"].ToString());
-                        ItemClass item = new ItemClass(cuantity, limit, label, fitems.Key, type, usable, can_remove);
+                        ItemClass item = new ItemClass
+                        {
+                            Count = cuantity, 
+                            Limit = limit, 
+                            Label = label, 
+                            Name = fitems.Key, 
+                            Type = type, 
+                            Usable = usable, 
+                            CanRemove = canRemove
+                        };
+
                         UsersItems.Add(fitems.Key, item);
                     }
                 }
@@ -247,15 +291,15 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersWeapons.ContainsKey(weaponId))
             {
-                if (!UsersWeapons[weaponId].getAllComponents().Contains(component))
+                if (!UsersWeapons[weaponId].Components.Contains(component))
                 {
-                    UsersWeapons[weaponId].quitComponent(component);
-                    if (UsersWeapons[weaponId].getUsed())
+                    UsersWeapons[weaponId].QuitComponent(component);
+                    if (UsersWeapons[weaponId].Used)
                     {
                         Function.Call((Hash)0x4899CB088EDF59B8, API.PlayerPedId(),
-                            (uint)API.GetHashKey(UsersWeapons[weaponId].getName()), true, 0);
-                        UsersWeapons[weaponId].loadAmmo();
-                        UsersWeapons[weaponId].loadComponents();
+                            (uint)API.GetHashKey(UsersWeapons[weaponId].Name), true, 0);
+                        UsersWeapons[weaponId].LoadAmmo();
+                        UsersWeapons[weaponId].LoadComponents();
                     }
                 }
             }
@@ -265,15 +309,15 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersWeapons.ContainsKey(weaponId))
             {
-                if (!UsersWeapons[weaponId].getAllComponents().Contains(component))
+                if (!UsersWeapons[weaponId].Components.Contains(component))
                 {
-                    UsersWeapons[weaponId].setComponent(component);
-                    if (UsersWeapons[weaponId].getUsed())
+                    UsersWeapons[weaponId].Components.Add(component);
+                    if (UsersWeapons[weaponId].Used)
                     {
                         Function.Call((Hash)0x4899CB088EDF59B8, API.PlayerPedId(),
-                            (uint)API.GetHashKey(UsersWeapons[weaponId].getName()), true, 0);
-                        UsersWeapons[weaponId].loadAmmo();
-                        UsersWeapons[weaponId].loadComponents();
+                            (uint)API.GetHashKey(UsersWeapons[weaponId].Name), true, 0);
+                        UsersWeapons[weaponId].LoadAmmo();
+                        UsersWeapons[weaponId].LoadComponents();
                     }
                 }
             }
@@ -283,10 +327,10 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersWeapons.ContainsKey(weaponId))
             {
-                UsersWeapons[weaponId].subAmmo(cuantity, bulletType);
-                if (UsersWeapons[weaponId].getUsed())
+                UsersWeapons[weaponId].SubAmmo(cuantity, bulletType);
+                if (UsersWeapons[weaponId].Used)
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), UsersWeapons[weaponId].getAmmo(bulletType));
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), UsersWeapons[weaponId].GetAmmo(bulletType));
                 }
             }
             PluginManager.Instance.NUIEvents.LoadInventory();
@@ -296,10 +340,10 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersWeapons.ContainsKey(weaponId))
             {
-                UsersWeapons[weaponId].addAmmo(cuantity, bulletType);
-                if (UsersWeapons[weaponId].getUsed())
+                UsersWeapons[weaponId].AddAmmo(cuantity, bulletType);
+                if (UsersWeapons[weaponId].Used)
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), UsersWeapons[weaponId].getAmmo(bulletType));
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), UsersWeapons[weaponId].GetAmmo(bulletType));
                 }
             }
             PluginManager.Instance.NUIEvents.LoadInventory();
@@ -310,10 +354,10 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersWeapons.ContainsKey(weaponId))
             {
-                if (UsersWeapons[weaponId].getUsed())
+                if (UsersWeapons[weaponId].Used)
                 {
                     API.RemoveWeaponFromPed(API.PlayerPedId(),
-                        (uint)API.GetHashKey(UsersWeapons[weaponId].getName()),
+                        (uint)API.GetHashKey(UsersWeapons[weaponId].Name),
                         true, 0); //Falta revisar que pasa con esto
                 }
                 UsersWeapons.Remove(weaponId);
@@ -325,8 +369,8 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersItems.ContainsKey(name))
             {
-                UsersItems[name].setCount(cuantity);
-                if (UsersItems[name].getCount() == 0)
+                UsersItems[name].Count = cuantity;
+                if (UsersItems[name].Count == 0)
                 {
                     UsersItems.Remove(name);
                 }
@@ -338,11 +382,21 @@ namespace VORP.Inventory.Client.Scripts
         {
             if (UsersItems.ContainsKey(name))
             {
-                UsersItems[name].addCount(count);
+                UsersItems[name].Count += count;
             }
             else
             {
-                ItemClass auxitem = new ItemClass(count, limit, label, name, type, usable, canRemove);
+                ItemClass auxitem = new ItemClass 
+                { 
+                    Count = count, 
+                    Limit = limit, 
+                    Label = label, 
+                    Name = name, 
+                    Type = type, 
+                    Usable = usable, 
+                    CanRemove = canRemove 
+                };
+
                 UsersItems.Add(name, auxitem);
             }
             PluginManager.Instance.NUIEvents.LoadInventory();

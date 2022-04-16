@@ -1,111 +1,55 @@
-﻿namespace VORP.Inventory.Server.Models
+﻿using System.Runtime.Serialization;
+
+namespace VORP.Inventory.Server.Models
 {
+    [DataContract]
     public class ItemClass
     {
-        int count;
-        int limit;
-        string label;
-        string name;
-        string type;
-        bool usable;
-        bool canRemove;
+        [DataMember(Name = "count")]
+        public int Count { get; set; }
 
-        public ItemClass(int count, int limit, string label, string name, string type, bool usable, bool canRemove)
-        {
-            this.count = count;
-            this.limit = limit;
-            this.label = label;
-            this.name = name;
-            this.type = type;
-            this.usable = usable;
-            this.canRemove = canRemove;
-        }
+        [DataMember(Name = "limit")]
+        public int Limit { get; set; }
 
-        public void setCount(int count)
-        {
-            this.count = count;
-        }
+        [DataMember(Name = "label")]
+        public string Label { get; set; }
 
-        public int getCount()
-        {
-            return this.count;
-        }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
 
-        public void addCount(int count)
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
+
+        [DataMember(Name = "usable")]
+        public bool Usable { get; set; }
+
+        [DataMember(Name = "canRemove")]
+        public bool CanRemove { get; set; }
+
+        public void AddCount(int count)
         {
-            if (this.count + count <= limit)
+            if (Count + count <= Limit)
             {
-                this.count += count;
+                Count += count;
             }
         }
 
         public int Subtract(int amountToSubtract)
         {
             if (amountToSubtract < 0)
+            {
                 amountToSubtract = 0;
+            }
 
-            count -= amountToSubtract;
-            return count;
-        }
+            Count -= amountToSubtract;
 
-        public void setLimit(int limit)
-        {
-            this.limit = limit;
-        }
+            // prevent negative count
+            if (Count < 0)
+            {
+                Count = 0;
+            }
 
-        public int getLimit()
-        {
-            return this.limit;
-        }
-
-        public void setLabel(string label)
-        {
-            this.label = label;
-        }
-
-        public string getLabel()
-        {
-            return this.label;
-        }
-
-        public void setName(string name)
-        {
-            this.name = name;
-        }
-
-        public string getName()
-        {
-            return this.name;
-        }
-
-        public void setType(string type)
-        {
-            this.type = type;
-        }
-
-        public string getType()
-        {
-            return this.type;
-        }
-
-        public void setUsable(bool usable)
-        {
-            this.usable = usable;
-        }
-
-        public bool getUsable()
-        {
-            return this.usable;
-        }
-
-        public void setCanRemove(bool canRemove)
-        {
-            this.canRemove = canRemove;
-        }
-
-        public bool getCanRemove()
-        {
-            return this.canRemove;
+            return Count;
         }
     }
 }

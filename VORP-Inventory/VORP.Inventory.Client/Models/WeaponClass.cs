@@ -1,88 +1,94 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using VORP.Inventory.Shared;
 
 namespace VORP.Inventory.Client.Models
 {
+    [DataContract]
     public class WeaponClass : BaseScript
     {
-        private string name;
-        private int id;
-        private string propietary;
-        private Dictionary<string, int> ammo;
-        private List<string> components;
-        private bool used;
-        private bool used2;
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
 
-        public string weaponLabel
+        [DataMember(Name = "propietary")]
+        public string Propietary { get; set; }
+
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "ammo")]
+        public Dictionary<string, int> Ammo { get; set; }
+
+        [DataMember(Name = "components")]
+        public List<string> Components { get; set; }
+
+        [DataMember(Name = "used")]
+        public bool Used { get; set; }
+
+        [DataMember(Name = "used2")]
+        public bool Used2 { get; set; }
+
+        [DataMember(Name = "weaponLabel")]
+        public string WeaponLabel
         {
             get
             {
-                int hashKey = API.GetHashKey(name);
+                int hashKey = API.GetHashKey(Name);
                 string rtnName = Function.Call<string>((Hash)0x6D3AC61694A791C5, hashKey);
 
                 if (rtnName == "WNS_INVALID")
-                    return name;
+                {
+                    return Name;
+                }
 
                 return Configuration.GetWeaponLabel(rtnName);
             }
         }
 
-        public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used, bool used2)
-        {
-            this.id = id;
-            this.name = name;
-            this.ammo = ammo;
-            this.components = components;
-            this.propietary = propietary;
-            this.used = used;
-            this.used2 = used2;
-        }
-
-
         public void UnequipWeapon()
         {
-            setUsed(false);
-            setUsed2(false);
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, getUsed(), getUsed2());
-            int hash = API.GetHashKey(name);
+            SetUsed(false);
+            SetUsed2(false);
+            TriggerServerEvent("vorpinventory:setUsedWeapon", Id, Used, Used2);
+            //int hash = API.GetHashKey(Name);
             RemoveWeaponFromPed();
-            Utils.CleanAmmo(id);
+            Utils.CleanAmmo(Id);
         }
 
         public void RemoveWeaponFromPed()
         {
-            API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name), true, 0); //Falta revisar que pasa con esto
+            API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(Name), true, 0);
         }
 
-        public void loadAmmo()
+        public void LoadAmmo()
         {
-            if (this.name.StartsWith("WEAPON_MELEE"))
+            if (Name.StartsWith("WEAPON_MELEE"))
             {
-                Function.Call((Hash)0xB282DC6EBD803C75, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 500, true, 0);
+                Function.Call((Hash)0xB282DC6EBD803C75, API.PlayerPedId(), (uint)API.GetHashKey(Name), 500, true, 0);
             }
             else
             {
-                if (used2)
+                if (Used2)
                 {
                     // GETTING THE EQUIPED WEAPON
                     uint weaponHash = 0;
                     API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
 
                     Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), weaponHash, 1, 1, 1, 2, false, 0.5, 1.0, 752097756, 0, true, 0.0);
-                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 1, 1, 1, 3, false, 0.5, 1.0, 752097756, 0, true, 0.0);
+                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), (uint)API.GetHashKey(Name), 1, 1, 1, 3, false, 0.5, 1.0, 752097756, 0, true, 0.0);
                     Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), weaponHash, 0, 1, 0, 0);
-                    Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, 0, 0, 0);
+                    Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), (uint)API.GetHashKey(Name), 0, 0, 0, 0);
 
                 }
                 else
                 {
-                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, true, 0);
+                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(Name), 0, true, 0);
 
                 }
-                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0);
-                foreach (KeyValuePair<string, int> ammos in this.ammo)
+                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(Name), 0);
+                foreach (KeyValuePair<string, int> ammos in Ammo)
                 {
                     API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
                     Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
@@ -91,135 +97,88 @@ namespace VORP.Inventory.Client.Models
 
         }
 
-        public void loadComponents()
+        public void LoadComponents()
         {
-            foreach (string componente in getAllComponents())
+            foreach (string component in Components)
             {
-                Function.Call((Hash)0x74C9090FDD1BB48E, API.PlayerPedId(), (uint)API.GetHashKey(componente),
-                    (uint)API.GetHashKey(this.name), true);//Hay que mirar que hace el true
+                Function.Call((Hash)0x74C9090FDD1BB48E, API.PlayerPedId(), (uint)API.GetHashKey(component),
+                    (uint)API.GetHashKey(Name), true);//Hay que mirar que hace el true
             }
         }
 
-        public bool getUsed()
+        public void SetUsed(bool used)
         {
-            return this.used;
+            Used = used;
+            TriggerServerEvent("vorpinventory:setUsedWeapon", Id, used, Used2);
         }
 
-        public bool getUsed2()
+        public void SetUsed2(bool used2)
         {
-            return this.used2;
+            Used2 = used2;
+            TriggerServerEvent("vorpinventory:setUsedWeapon", Id, Used, used2); ;
         }
 
-        public void setUsed(bool used)
+        public void QuitComponent(string component)
         {
-            this.used = used;
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, used, this.used2);
-        }
-
-        public void setUsed2(bool used2)
-        {
-            this.used2 = used2;
-            TriggerServerEvent("vorpinventory:setUsedWeapon", id, this.used, used2); ;
-        }
-        public string getPropietary()
-        {
-            return this.propietary;
-        }
-
-        public void setPropietary(string propietary)
-        {
-            this.propietary = propietary;
-        }
-        public int getId()
-        {
-            return this.id;
-        }
-
-        public void setId(int id)
-        {
-            this.id = id;
-        }
-
-        public string getName()
-        {
-            return this.name;
-        }
-
-        public Dictionary<string, int> getAllAmmo()
-        {
-            return this.ammo;
-        }
-
-        public List<string> getAllComponents()
-        {
-            return this.components;
-        }
-
-        public void setComponent(string component)
-        {
-            this.components.Add(component);
-        }
-
-        public void quitComponent(string component)
-        {
-            if (this.components.Contains(component))
+            if (Components.Contains(component))
             {
-                this.components.Remove(component);
+                Components.Remove(component);
             }
         }
 
-        public int getAmmo(string type)
+        public int GetAmmo(string type)
         {
-            if (this.ammo.ContainsKey(type))
+            if (Ammo.ContainsKey(type))
             {
-                return this.ammo[type];
+                return Ammo[type];
             }
             else
             {
                 return 0;
             }
-
-
         }
 
-        //Update ammo on server by client
-        public void setAmmo(int ammo, string type)
+        /// <summary>
+        /// Update ammo on server by client
+        /// </summary>
+        /// <param name="ammo"></param>
+        /// <param name="type"></param>
+        public void SetAmmo(int ammo, string type)
         {
-            if (this.ammo.ContainsKey(type))
+            if (Ammo.ContainsKey(type))
             {
-                this.ammo[type] = ammo;
-                TriggerServerEvent("vorpinventory:setWeaponBullets", id, type, ammo);
+                Ammo[type] = ammo;
+                TriggerServerEvent("vorpinventory:setWeaponBullets", Id, type, ammo);
             }
             else
             {
-                this.ammo.Add(type, ammo);
-                TriggerServerEvent("vorpinventory:setWeaponBullets", id, type, ammo);
+                Ammo.Add(type, ammo);
+                TriggerServerEvent("vorpinventory:setWeaponBullets", Id, type, ammo);
             }
         }
 
-        public void addAmmo(int ammo, string type)
+        public void AddAmmo(int ammo, string type)
         {
-            if (this.ammo.ContainsKey(type))
+            if (Ammo.ContainsKey(type))
             {
-                this.ammo[type] += ammo;
+                Ammo[type] += ammo;
             }
             else
             {
-                this.ammo.Add(type, ammo);
+                Ammo.Add(type, ammo);
             }
         }
 
-        public void subAmmo(int ammo, string type)
+        public void SubAmmo(int ammo, string type)
         {
-            if (this.ammo.ContainsKey(type))
+            if (Ammo.ContainsKey(type))
             {
-                this.ammo[type] -= ammo;
-                if (this.ammo[type] == 0)
+                Ammo[type] -= ammo;
+                if (Ammo[type] == 0)
                 {
-                    this.ammo.Remove(type);
+                    Ammo.Remove(type);
                 }
             }
         }
-
     }
 }

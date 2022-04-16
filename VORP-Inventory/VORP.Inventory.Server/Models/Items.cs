@@ -1,77 +1,40 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace VORP.Inventory.Server.Models
 {
+    [DataContract]
     public class Items
     {
-        private string item;
-        private string label;
-        private int limit;
-        private bool can_remove;
-        private string type;
-        private bool usable;
+        [DataMember(Name = "item")]
+        public string Item { get; set; }
 
-        public Items(string item, string label, int limit, bool can_remove, string type, bool usable)
-        {
-            this.item = item;
-            this.limit = limit;
-            this.can_remove = can_remove;
-            this.label = label;
-            this.type = type;
-            this.usable = usable;
-        }
+        [DataMember(Name = "label")]
+        public string Label { get; set; }
 
-        public bool getUsable()
-        {
-            return this.usable;
-        }
+        [DataMember(Name = "limit")]
+        public int Limit { get; set; }
 
-        public void setUsable(bool usable)
-        {
-            this.usable = usable;
-        }
+        [DataMember(Name = "can_remove")]
+        public bool CanRemove { get; set; }
 
-        public string getType()
-        {
-            return this.type;
-        }
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
 
-        public void setType(string type)
-        {
-            this.type = type;
-        }
+        [DataMember(Name = "usable")]
+        public bool Usable { get; set; }
 
-        public string getName()
+        public Dictionary<string, object> GetItemDictionary()
         {
-            return this.item;
-        }
-
-        public string getLabel()
-        {
-            return this.label;
-        }
-
-        public int getLimit()
-        {
-            return this.limit;
-        }
-
-        public bool getCanRemove()
-        {
-            return this.can_remove;
-        }
-        public Dictionary<string, object> getItemDictionary()
-        {
-            Dictionary<string, object> dictionary = new Dictionary<string, object>()
+            return new Dictionary<string, object>()
             {
-                {"name", item},
-                {"label", label},
-                {"limit", limit},
-                {"can_remove", can_remove},
-                {"type", type},
-                {"usabel", usable}
+                {"name", Item},
+                {"label", Label},
+                {"limit", Limit},
+                {"can_remove", CanRemove},
+                {"type", Type},
+                {"usable", Usable}
             };
-            return dictionary;
         }
     }
 }

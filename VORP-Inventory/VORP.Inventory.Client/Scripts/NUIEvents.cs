@@ -459,7 +459,7 @@ namespace VORP.Inventory.Client.Scripts
                         else if (data.Data.ID == 0)
                         {
                             int amount = (int)data.Data.Count;
-                            if (amount > 0 && InventoryAPI.UsersItems[itemname].getCount() >= amount)
+                            if (amount > 0 && InventoryAPI.UsersItems[itemname].Count >= amount)
                             {
                                 TriggerServerEvent("vorpinventory:serverGiveItem", itemname, amount, target, 1);
                             }
@@ -505,8 +505,8 @@ namespace VORP.Inventory.Client.Scripts
                 int ItemId = int.Parse(data["id"].ToString());
                 WeaponClass weapon = InventoryAPI.UsersWeapons[ItemId];
 
-                bool isWeaponARevolver = Function.Call<bool>((Hash)0xC212F1D05A8232BB, API.GetHashKey(weapon.getName()));
-                bool isWeaponAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, API.GetHashKey(weapon.getName()));
+                bool isWeaponARevolver = Function.Call<bool>((Hash)0xC212F1D05A8232BB, API.GetHashKey(weapon.Name));
+                bool isWeaponAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, API.GetHashKey(weapon.Name));
                 string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
 
                 // Check if the weapon used is a pistol or a revolver and ped is not unarmed.
@@ -516,20 +516,20 @@ namespace VORP.Inventory.Client.Scripts
                     bool isWeaponUsedAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, weaponHash);
                     if (isWeaponUsedARevolver || isWeaponUsedAPistol)
                     {
-                        weapon.setUsed2(true);
-                        weapon.loadAmmo();
-                        weapon.loadComponents();
-                        weapon.setUsed(true);
+                        weapon.SetUsed2(true);
+                        weapon.LoadAmmo();
+                        weapon.LoadComponents();
+                        weapon.SetUsed(true);
                         TriggerServerEvent("syn_weapons:weaponused", data);
 
                     }
                 }
-                else if (!weapon.getUsed() &&
-                   !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(weapon.getName()), 0, true))
+                else if (!weapon.Used &&
+                   !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(weapon.Name), 0, true))
                 {
-                    weapon.loadAmmo();
-                    weapon.loadComponents();
-                    weapon.setUsed(true);
+                    weapon.LoadAmmo();
+                    weapon.LoadComponents();
+                    weapon.SetUsed(true);
                     TriggerServerEvent("syn_weapons:weaponused", data);
                 }
                 else
@@ -554,13 +554,11 @@ namespace VORP.Inventory.Client.Scripts
             {
                 if (aux["number"].ToString() != null && aux["number"].ToString() != "")
                 {
-
-
-                    if (int.Parse(aux["number"].ToString()) > 0 && InventoryAPI.UsersItems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
+                    if (int.Parse(aux["number"].ToString()) > 0 && InventoryAPI.UsersItems[itemname].Count >= int.Parse(aux["number"].ToString()))
                     {
                         TriggerServerEvent("vorpinventory:serverDropItem", itemname, int.Parse(aux["number"].ToString()), 1);
-                        InventoryAPI.UsersItems[itemname].quitCount(int.Parse(aux["number"].ToString()));
-                        if (InventoryAPI.UsersItems[itemname].getCount() == 0)
+                        InventoryAPI.UsersItems[itemname].Count -= int.Parse(aux["number"].ToString());
+                        if (InventoryAPI.UsersItems[itemname].Count == 0)
                         {
                             InventoryAPI.UsersItems.Remove(itemname);
                         }
@@ -573,10 +571,10 @@ namespace VORP.Inventory.Client.Scripts
                 if (InventoryAPI.UsersWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
                 {
                     WeaponClass wp = InventoryAPI.UsersWeapons[int.Parse(aux["id"].ToString())];
-                    if (wp.getUsed())
+                    if (wp.Used)
                     {
-                        wp.setUsed(false);
-                        API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.getName()),
+                        wp.SetUsed(false);
+                        API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(wp.Name),
                             true, 0);
                     }
                     InventoryAPI.UsersWeapons.Remove(int.Parse(aux["id"].ToString()));
@@ -651,13 +649,13 @@ namespace VORP.Inventory.Client.Scripts
                 ItemClass item = itemKvp.Value;
 
                 Dictionary<string, dynamic> userItem = new();
-                userItem.Add("count", item.getCount());
-                userItem.Add("limit", item.getLimit());
-                userItem.Add("label", item.getLabel());
-                userItem.Add("name", item.getName());
-                userItem.Add("type", item.getType());
-                userItem.Add("usable", item.getUsable());
-                userItem.Add("canRemove", item.getCanRemove());
+                userItem.Add("count", item.Count);
+                userItem.Add("limit", item.Limit);
+                userItem.Add("label", item.Label);
+                userItem.Add("name", item.Name);
+                userItem.Add("type", item.Type);
+                userItem.Add("usable", item.Usable);
+                userItem.Add("canRemove", item.CanRemove);
                 _userItemsCache.Add(userItem);
             }
         }
@@ -671,16 +669,16 @@ namespace VORP.Inventory.Client.Scripts
                 WeaponClass weapon = weaponKvp.Value;
 
                 Dictionary<string, dynamic> weaponItem = new();
-                weaponItem.Add("count", weapon.getAmmo("Hola"));
+                weaponItem.Add("count", weapon.GetAmmo("Hola"));
                 weaponItem.Add("limit", -1);
-                weaponItem.Add("label", weapon.weaponLabel);
-                weaponItem.Add("name", weapon.getName());
-                weaponItem.Add("hash", API.GetHashKey(weapon.getName()));
+                weaponItem.Add("label", weapon.WeaponLabel);
+                weaponItem.Add("name", weapon.Name);
+                weaponItem.Add("hash", API.GetHashKey(weapon.Name));
                 weaponItem.Add("type", "item_weapon");
                 weaponItem.Add("usable", true);
                 weaponItem.Add("canRemove", true);
-                weaponItem.Add("id", weapon.getId());
-                weaponItem.Add("used", weapon.getUsed());
+                weaponItem.Add("id", weapon.Id);
+                weaponItem.Add("used", weapon.Used);
                 _userWeaponsCache.Add(weaponItem);
             }
         }

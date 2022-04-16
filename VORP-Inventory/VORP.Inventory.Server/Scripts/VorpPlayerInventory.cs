@@ -235,7 +235,7 @@ namespace VORP.Inventory.Server.Scripts
             {
                 if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
                 {
-                    ItemDatabase.UserWeapons[weaponId].setAmmo(bullet, type);
+                    ItemDatabase.UserWeapons[weaponId].SetAmmo(bullet, type);
                 }
             }
             catch (Exception ex)
@@ -308,13 +308,13 @@ namespace VORP.Inventory.Server.Scripts
                 if (userInventory.ContainsKey(name))
                 {
                     ItemClass itemClass = userInventory[name];
-                    if (cuantity <= itemClass.getCount())
+                    if (cuantity <= itemClass.Count)
                     {
                         itemClass.Subtract(cuantity);
                         await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                     }
 
-                    if (itemClass.getCount() == 0)
+                    if (itemClass.Count == 0)
                     {
                         userInventory.Remove(name);
                         await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
@@ -348,7 +348,7 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (cuantity > 0)
                         {
-                            ItemDatabase.UserInventory[identifier][name].addCount(cuantity);
+                            ItemDatabase.UserInventory[identifier][name].AddCount(cuantity);
                             await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                         }
                     }
@@ -356,8 +356,17 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (ItemDatabase.ServerItems.ContainsKey(name))
                         {
-                            ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
-                                ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
+                            ItemDatabase.UserInventory[identifier].Add(name, new ItemClass 
+                            {
+                                Count = cuantity, 
+                                Limit = ItemDatabase.ServerItems[name].Limit,
+                                Label = ItemDatabase.ServerItems[name].Label,
+                                Name = name, 
+                                Type = "item_inventory", 
+                                Usable = true, 
+                                CanRemove = ItemDatabase.ServerItems[name].CanRemove
+                            });
+
                             await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                         }
                     }
@@ -368,8 +377,17 @@ namespace VORP.Inventory.Server.Scripts
                     ItemDatabase.UserInventory.Add(identifier, userinv);
                     if (ItemDatabase.ServerItems.ContainsKey(name))
                     {
-                        ItemDatabase.UserInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.ServerItems[name].getLimit(),
-                            ItemDatabase.ServerItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.ServerItems[name].getCanRemove()));
+                        ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
+                        { 
+                            Count = cuantity, 
+                            Limit = ItemDatabase.ServerItems[name].Limit,
+                            Label =  ItemDatabase.ServerItems[name].Label,
+                            Name = name, 
+                            Type = "item_inventory", 
+                            Usable = true, 
+                            CanRemove = ItemDatabase.ServerItems[name].CanRemove
+                        });
+
                         await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                     }
                 }
@@ -395,7 +413,7 @@ namespace VORP.Inventory.Server.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 if (ItemDatabase.UserWeapons.ContainsKey(weapId))
                 {
-                    ItemDatabase.UserWeapons[weapId].setPropietary(identifier);
+                    ItemDatabase.UserWeapons[weapId].Propietary = identifier;
 
                     dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                     if (coreUserCharacter == null)
@@ -407,7 +425,7 @@ namespace VORP.Inventory.Server.Scripts
                     int charIdentifier = coreUserCharacter.charIdentifier;
                     Exports["ghmattimysql"]
                         .execute(
-                            $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
+                            $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].Propietary}', charidentifier = '{charIdentifier}' WHERE id=?",
                             new[] { weapId });
                 }
             }
@@ -432,7 +450,7 @@ namespace VORP.Inventory.Server.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 if (ItemDatabase.UserWeapons.ContainsKey(weapId))
                 {
-                    ItemDatabase.UserWeapons[weapId].setPropietary("");
+                    ItemDatabase.UserWeapons[weapId].Propietary = "";
 
                     dynamic coreUserCharacter = await player.GetCoreUserCharacterAsync();
                     if (coreUserCharacter == null)
@@ -444,7 +462,7 @@ namespace VORP.Inventory.Server.Scripts
                     int charIdentifier = coreUserCharacter.charIdentifier;
                     Exports["ghmattimysql"]
                         .execute(
-                            $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].getPropietary()}', charidentifier = '{charIdentifier}' WHERE id=?",
+                            $"UPDATE loadout SET identifier = '{ItemDatabase.UserWeapons[weapId].Propietary}', charidentifier = '{charIdentifier}' WHERE id=?",
                             new[] { weapId });
                 }
             }
@@ -475,14 +493,13 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (ItemDatabase.UserInventory.ContainsKey(identifier))
                         {
-
-                            if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() != -1)
+                            if (ItemDatabase.ServerItems[Pickups[obj]["name"]].Limit != -1)
                             {
                                 if (ItemDatabase.UserInventory[identifier].ContainsKey(Pickups[obj]["name"]))
                                 {
-                                    int totalcount = Pickups[obj]["amount"] + ItemDatabase.UserInventory[identifier][Pickups[obj]["name"]].getCount();
+                                    int totalcount = Pickups[obj]["amount"] + ItemDatabase.UserInventory[identifier][Pickups[obj]["name"]].Count;
 
-                                    if (ItemDatabase.ServerItems[Pickups[obj]["name"]].getLimit() < totalcount)
+                                    if (ItemDatabase.ServerItems[Pickups[obj]["name"]].Limit < totalcount)
                                     {
                                         TriggerClientEvent(player, "vorp:TipRight", Configuration.GetTranslation("fullInventory"), 2000);
                                         return;
@@ -490,7 +507,7 @@ namespace VORP.Inventory.Server.Scripts
                                 }
                                 //int totalcount = Pickups[obj]["amount"] ItemDatabase.usersInventory[identifier];
                                 //totalcount += Pickups[obj]["amount"];
-                                //ItemDatabase.svItems[Pickups[obj]["name"]].getCount();
+                                //ItemDatabase.svItems[Pickups[obj]["name"]].Count;
 
                             }
 
@@ -530,7 +547,7 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (Configuration.INVENTORY_MAX_WEAPONS != 0)
                         {
-                            int totalcount = VorpCoreInventoryAPI.getUserTotalCountWeapons(identifier, charIdentifier);
+                            int totalcount = VorpCoreInventoryAPI.GetUserTotalCountWeapons(identifier, charIdentifier);
                             totalcount += 1;
                             if (totalcount <= Configuration.INVENTORY_MAX_WEAPONS)
                             {
@@ -540,8 +557,8 @@ namespace VORP.Inventory.Server.Scripts
                                 TriggerClientEvent("vorpInventory:sharePickupClient", Pickups[obj]["name"], Pickups[obj]["obj"],
                                     Pickups[obj]["amount"], Pickups[obj]["coords"], 2, Pickups[obj]["weaponid"]);
                                 TriggerClientEvent("vorpInventory:removePickupClient", Pickups[obj]["obj"]);
-                                player.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
-                                    ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
+                                player.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].Propietary,
+                                    ItemDatabase.UserWeapons[weaponId].Name, ItemDatabase.UserWeapons[weaponId].Ammo, ItemDatabase.UserWeapons[weaponId].Components);
                                 player.TriggerEvent("vorpInventory:playerAnim", obj);
                                 Pickups.Remove(obj);
                             }
@@ -630,7 +647,7 @@ namespace VORP.Inventory.Server.Scripts
             try
             {
                 SubtractWeaponAsync(int.Parse(source.Handle), weaponId);
-                source.TriggerEvent("vorpInventory:createPickup", ItemDatabase.UserWeapons[weaponId].getName(), 1, weaponId);
+                source.TriggerEvent("vorpInventory:createPickup", ItemDatabase.UserWeapons[weaponId].Name, 1, weaponId);
             }
             catch (Exception ex)
             {
@@ -670,8 +687,8 @@ namespace VORP.Inventory.Server.Scripts
                 {
                     SubtractWeaponAsync(int.Parse(player.Handle), weaponId);
                     AddWeaponAsync(int.Parse(targetPlayer.Handle), weaponId);
-                    targetPlayer.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].getPropietary(),
-                        ItemDatabase.UserWeapons[weaponId].getName(), ItemDatabase.UserWeapons[weaponId].getAllAmmo(), ItemDatabase.UserWeapons[weaponId].getAllComponents());
+                    targetPlayer.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.UserWeapons[weaponId].Propietary,
+                        ItemDatabase.UserWeapons[weaponId].Name, ItemDatabase.UserWeapons[weaponId].Ammo, ItemDatabase.UserWeapons[weaponId].Components);
                 }
             }
             catch (Exception ex)
@@ -734,7 +751,7 @@ namespace VORP.Inventory.Server.Scripts
                 }
 
                 ItemClass item = userInventory[itemName];
-                int itemCount = item.getCount();
+                int itemCount = item.Count;
 
                 int targetTotalItems = 0;
                 int targetItemLimit = 0;
@@ -746,8 +763,8 @@ namespace VORP.Inventory.Server.Scripts
                 if (targetInventory.ContainsKey(itemName))
                 {
                     targetItem = targetInventory[itemName];
-                    targetTotalItems = targetItem.getCount();
-                    targetItemLimit = targetItem.getLimit();
+                    targetTotalItems = targetItem.Count;
+                    targetItemLimit = targetItem.Limit;
 
                     if (targetTotalItems + amount >= targetItemLimit)
                         canGiveItemToTarget = false;
@@ -766,14 +783,23 @@ namespace VORP.Inventory.Server.Scripts
 
                 if (targetItem is not null)
                 {
-                    targetItem.addCount(amount);
+                    targetItem.AddCount(amount);
                 }
                 else
                 {
                     if (ItemDatabase.ServerItems.ContainsKey(itemName))
                     {
                         Items serverItem = ItemDatabase.ServerItems[itemName];
-                        targetInventory.Add(itemName, new ItemClass(amount, serverItem.getLimit(), serverItem.getLabel(), itemName, "item_inventory", true, serverItem.getCanRemove()));
+                        targetInventory.Add(itemName, new ItemClass
+                        {
+                            Count = amount, 
+                            Limit = serverItem.Limit,
+                            Label = serverItem.Label, 
+                            Name = itemName, 
+                            Type = "item_inventory", 
+                            Usable = true, 
+                            CanRemove = serverItem.CanRemove
+                        });
                     }
                     else
                     {
@@ -786,7 +812,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 item.Subtract(amount);
 
-                if (item.getCount() == 0)
+                if (item.Count == 0)
                     userInventory.Remove(itemName);
 
                 await SaveInventoryItemsSupportAsync(identifier, playerCharId);
@@ -863,7 +889,7 @@ namespace VORP.Inventory.Server.Scripts
                 if (PluginManager.ActiveCharacters[player.Handle] != charIdentifier)
                     PluginManager.ActiveCharacters[player.Handle] = charIdentifier;
 
-                if (inventory is not null)
+                if (!string.IsNullOrEmpty(inventory))
                 {
                     // turn this into a class
                     dynamic coreInventory = JsonConvert.DeserializeObject<dynamic>(inventory);
@@ -872,8 +898,17 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (coreInventory[itemname.item.ToString()] != null)
                         {
-                            ItemClass item = new ItemClass(int.Parse(coreInventory[itemname.item.ToString()].ToString()), int.Parse(itemname.limit.ToString()),
-                                itemname.label, itemname.item, itemname.type, itemname.usable, itemname.can_remove);
+                            ItemClass item = new ItemClass
+                            {
+                                Count = int.Parse(coreInventory[itemname.item.ToString()].ToString()), 
+                                Limit = int.Parse(itemname.limit.ToString()),
+                                Label = itemname.label, 
+                                Name = itemname.item, 
+                                Type = itemname.type, 
+                                Usable = itemname.usable, 
+                                CanRemove = itemname.can_remove
+                            };
+
                             userinv.Add(itemname.item.ToString(), item);
                         }
                     }
@@ -893,7 +928,6 @@ namespace VORP.Inventory.Server.Scripts
                 {
                     if (weaponsinvento.Count > 0)
                     {
-                        WeaponClass wp;
                         foreach (var row in weaponsinvento)
                         {
                             JObject ammo = JsonConvert.DeserializeObject(row.ammo.ToString());
@@ -904,6 +938,7 @@ namespace VORP.Inventory.Server.Scripts
                             {
                                 amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
                             }
+                            
                             foreach (JToken x in comp)
                             {
                                 components.Add(x.ToString());
@@ -920,8 +955,20 @@ namespace VORP.Inventory.Server.Scripts
                             {
                                 auused2 = true;
                             }
-                            wp = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), amunition, components, auused, auused2, charIdentifier);
-                            ItemDatabase.UserWeapons[wp.getId()] = wp;
+
+                            WeaponClass wp = new WeaponClass
+                            {
+                                Id = int.Parse(row.id.ToString()), 
+                                Propietary = row.identifier.ToString(), 
+                                Name = row.name.ToString(), 
+                                Ammo = amunition, 
+                                Components = components, 
+                                Used = auused, 
+                                Used2 = auused2, 
+                                CharId = charIdentifier
+                            };
+
+                            ItemDatabase.UserWeapons[wp.Id] = wp;
                         }
 
                         Logger.Trace($"OnGetInventoryAsync[{identifier}]: {weaponsinvento}");
