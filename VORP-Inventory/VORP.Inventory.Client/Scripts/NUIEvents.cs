@@ -682,6 +682,8 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OpenInventory()
         {
+            if (IsInventoryOpen) return;
+
             if (PluginManager.BLOCK_INVENTORY_WHEN_DEAD)
                 AttachTickHandler(OnCheckPlayerDeathAsync);
 
