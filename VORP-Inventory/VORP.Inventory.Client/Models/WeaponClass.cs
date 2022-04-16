@@ -1,5 +1,6 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using VORP.Inventory.Shared;
@@ -9,6 +10,9 @@ namespace VORP.Inventory.Client.Models
     [DataContract]
     public class WeaponClass : BaseScript
     {
+        private long _hashkey;
+        private string _name;
+
         [DataMember(Name = "id")]
         public int Id { get; set; }
 
@@ -16,7 +20,15 @@ namespace VORP.Inventory.Client.Models
         public string Propietary { get; set; }
 
         [DataMember(Name = "name")]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                _hashkey = GetHashKey(value);
+            }
+        }
 
         [DataMember(Name = "ammo")]
         public Dictionary<string, int> Ammo { get; set; }
@@ -47,6 +59,12 @@ namespace VORP.Inventory.Client.Models
             }
         }
 
+        [JsonIgnore]
+        public long Hash
+        {
+            get => _hashkey;
+        }
+
         public void UnequipWeapon()
         {
             SetUsed(false);
@@ -59,39 +77,42 @@ namespace VORP.Inventory.Client.Models
 
         public void RemoveWeaponFromPed()
         {
-            API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(Name), true, 0);
+            API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)Hash, true, 0);
         }
 
         public void LoadAmmo()
         {
+            int playerPedId = PlayerPedId();
+
             if (Name.StartsWith("WEAPON_MELEE"))
             {
-                Function.Call((Hash)0xB282DC6EBD803C75, API.PlayerPedId(), (uint)API.GetHashKey(Name), 500, true, 0);
+                Function.Call((Hash)0xB282DC6EBD803C75, playerPedId, Hash, 500, true, 0);
             }
             else
             {
                 if (Used2)
                 {
                     // GETTING THE EQUIPED WEAPON
-                    uint weaponHash = 0;
-                    API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
+                    uint currentPedWeaponHash = 0;
+                    API.GetCurrentPedWeapon(playerPedId, ref currentPedWeaponHash, false, 0, false);
 
-                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), weaponHash, 1, 1, 1, 2, false, 0.5, 1.0, 752097756, 0, true, 0.0);
-                    Function.Call((Hash)0x5E3BDDBCB83F3D84, API.PlayerPedId(), (uint)API.GetHashKey(Name), 1, 1, 1, 3, false, 0.5, 1.0, 752097756, 0, true, 0.0);
-                    Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), weaponHash, 0, 1, 0, 0);
-                    Function.Call((Hash)0xADF692B254977C0C, API.PlayerPedId(), (uint)API.GetHashKey(Name), 0, 0, 0, 0);
+                    Function.Call((Hash)0x5E3BDDBCB83F3D84, playerPedId, currentPedWeaponHash, 1, 1, 1, 2, false, 0.5, 1.0, 752097756, 0, true, 0.0);
+                    Function.Call((Hash)0x5E3BDDBCB83F3D84, playerPedId, Hash, 1, 1, 1, 3, false, 0.5, 1.0, 752097756, 0, true, 0.0);
+                    Function.Call((Hash)0xADF692B254977C0C, playerPedId, currentPedWeaponHash, 0, 1, 0, 0);
+                    Function.Call((Hash)0xADF692B254977C0C, playerPedId, Hash, 0, 0, 0, 0);
 
                 }
                 else
                 {
-                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(Name), 0, true, 0);
+                    API.GiveDelayedWeaponToPed(playerPedId, (uint)Hash, 0, true, 0);
 
                 }
-                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(Name), 0);
+                API.SetPedAmmo(playerPedId, (uint)Hash, 0);
                 foreach (KeyValuePair<string, int> ammos in Ammo)
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
-                    Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
+                    long ammoHash = GetHashKey(ammos.Key);
+                    Function.Call((Hash)0x5FD1E1F011E76D7E, playerPedId, ammoHash, ammos.Value); // SetPedAmmoByType
+                    Logger.Trace($"SetPedAmmoByType: {ammoHash}: {ammos.Key}, Amount: {ammos.Value}");
                 }
             }
 
@@ -101,8 +122,7 @@ namespace VORP.Inventory.Client.Models
         {
             foreach (string component in Components)
             {
-                Function.Call((Hash)0x74C9090FDD1BB48E, API.PlayerPedId(), (uint)API.GetHashKey(component),
-                    (uint)API.GetHashKey(Name), true);//Hay que mirar que hace el true
+                Function.Call((Hash)0x74C9090FDD1BB48E, API.PlayerPedId(), (uint)API.GetHashKey(component), Hash, true);
             }
         }
 
