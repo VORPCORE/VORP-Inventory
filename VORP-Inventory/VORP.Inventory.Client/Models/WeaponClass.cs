@@ -1,6 +1,5 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using VORP.Inventory.Shared;
@@ -59,7 +58,6 @@ namespace VORP.Inventory.Client.Models
             }
         }
 
-        [JsonIgnore]
         public long Hash
         {
             get => _hashkey;
