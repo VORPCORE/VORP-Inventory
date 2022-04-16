@@ -42,6 +42,13 @@ namespace VORP.Inventory.Server.Models
             }
 
             Count -= amountToSubtract;
+
+            // prevent negative count
+            if (Count < 0)
+            {
+                Count = 0;
+            }
+
             return Count;
         }
     }
