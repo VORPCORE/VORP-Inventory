@@ -789,7 +789,7 @@ namespace VORP.Inventory.Server.Scripts
                 {
                     if (ItemDatabase.ServerItems.ContainsKey(itemName))
                     {
-                        Items serverItem = ItemDatabase.ServerItems[itemName];
+                        ItemClass serverItem = ItemDatabase.ServerItems[itemName];
                         targetInventory.Add(itemName, new ItemClass
                         {
                             Count = amount, 

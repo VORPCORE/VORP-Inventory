@@ -199,7 +199,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 string identifier = "steam:" + player.Identifiers["steam"];
 
-                Items item = ItemDatabase.GetItem(itemName);
+                ItemClass item = ItemDatabase.GetItem(itemName);
                 if (item == null)
                 {
                     Logger.Error($"canCarryItem: Item '{itemName}' does not exist.");
@@ -337,7 +337,7 @@ namespace VORP.Inventory.Server.Scripts
                     return;
                 }
 
-                Items item = ItemDatabase.GetItem(itemName);
+                ItemClass item = ItemDatabase.GetItem(itemName);
                 if (item == null)
                 {
                     Logger.Error($"Item '{itemName}' not found in Server Items.");

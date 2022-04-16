@@ -27,7 +27,7 @@ namespace VORP.Inventory.Server.Database
         public static Dictionary<string, Dictionary<string, ItemClass>> UserInventory = new Dictionary<string, Dictionary<string, ItemClass>>();
 
         public static Dictionary<int, WeaponClass> UserWeapons = new Dictionary<int, WeaponClass>();
-        public static Dictionary<string, Items> ServerItems = new Dictionary<string, Items>();
+        public static Dictionary<string, ItemClass> ServerItems = new Dictionary<string, ItemClass>();
 
         public void Init()
         {
@@ -42,7 +42,7 @@ namespace VORP.Inventory.Server.Database
             return UserInventory[identifier];
         }
 
-        public static Items GetItem(string itemName)
+        public static ItemClass GetItem(string itemName)
         {
             if (!ServerItems.ContainsKey(itemName)) return null;
             return ServerItems[itemName];
@@ -79,9 +79,9 @@ namespace VORP.Inventory.Server.Database
                         items = result;
                         foreach (dynamic item in items)
                         {
-                            ServerItems.Add(item.item.ToString(), new Items
+                            ServerItems.Add(item.item.ToString(), new ItemClass
                             {
-                                Item = item.item, 
+                                Name = item.item, 
                                 Label = item.label, 
                                 Limit = int.Parse(item.limit.ToString()), 
                                 CanRemove = item.can_remove, 

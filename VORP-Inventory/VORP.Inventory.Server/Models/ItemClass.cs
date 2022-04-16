@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace VORP.Inventory.Server.Models
 {
@@ -50,6 +51,19 @@ namespace VORP.Inventory.Server.Models
             }
 
             return Count;
+        }
+
+        public Dictionary<string, object> GetItemDictionary()
+        {
+            return new Dictionary<string, object>()
+            {
+                {"name", Name},
+                {"label", Label},
+                {"limit", Limit},
+                {"can_remove", CanRemove},
+                {"type", Type},
+                {"usable", Usable}
+            };
         }
     }
 }
