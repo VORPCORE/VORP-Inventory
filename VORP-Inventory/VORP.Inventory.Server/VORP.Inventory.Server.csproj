@@ -64,7 +64,6 @@
     <Compile Include="Extensions\Common.cs" />
     <Compile Include="Scripts\Manager.cs" />
     <Compile Include="Scripts\VorpCoreInventoryAPI.cs" />
-    <Compile Include="Models\ItemClass.cs" />
     <Compile Include="Database\ItemDatabase.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Scripts\VorpPlayerInventory.cs" />

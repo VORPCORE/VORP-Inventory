@@ -1,5 +1,4 @@
-﻿using CitizenFX.Core;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using VORP.Inventory.Client.Interface;
 

@@ -1,6 +1,4 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using VORP.Inventory.Client.RedM;
 
 namespace VORP.Inventory.Client.Models

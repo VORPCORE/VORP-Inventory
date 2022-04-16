@@ -1,5 +1,4 @@
-﻿using CitizenFX.Core;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using VORP.Inventory.Server.Database;
 using VORP.Inventory.Server.Extensions;
-using VORP.Inventory.Server.Models;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Shared.Models;
 
@@ -288,7 +286,7 @@ namespace VORP.Inventory.Server.Scripts
         }
 
         //Sub items for other scripts
-        private async Task SubItemAsync(int source, string name, int cuantity)
+        private async Task SubItemAsync(int source, string name, int quantity)
         {
             try
             {
@@ -303,14 +301,14 @@ namespace VORP.Inventory.Server.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 int coreUserCharacterId = await player.GetCoreUserCharacterIdAsync();
 
-                Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+                Dictionary<string, Item> userInventory = ItemDatabase.GetInventory(identifier);
 
                 if (userInventory.ContainsKey(name))
                 {
-                    ItemClass itemClass = userInventory[name];
-                    if (cuantity <= itemClass.Count)
+                    Item itemClass = userInventory[name];
+                    if (quantity <= itemClass.Count)
                     {
-                        itemClass.Subtract(cuantity);
+                        itemClass.Subtract(quantity);
                         await SaveInventoryItemsSupportAsync(identifier, coreUserCharacterId);
                     }
 
@@ -356,14 +354,14 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (ItemDatabase.ServerItems.ContainsKey(name))
                         {
-                            ItemDatabase.UserInventory[identifier].Add(name, new ItemClass 
+                            ItemDatabase.UserInventory[identifier].Add(name, new Item
                             {
-                                Count = cuantity, 
+                                Count = cuantity,
                                 Limit = ItemDatabase.ServerItems[name].Limit,
                                 Label = ItemDatabase.ServerItems[name].Label,
-                                Name = name, 
-                                Type = "item_inventory", 
-                                Usable = true, 
+                                Name = name,
+                                Type = "item_inventory",
+                                Usable = true,
                                 CanRemove = ItemDatabase.ServerItems[name].CanRemove
                             });
 
@@ -373,18 +371,18 @@ namespace VORP.Inventory.Server.Scripts
                 }
                 else
                 {
-                    Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+                    Dictionary<string, Item> userinv = new();
                     ItemDatabase.UserInventory.Add(identifier, userinv);
                     if (ItemDatabase.ServerItems.ContainsKey(name))
                     {
-                        ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
-                        { 
-                            Count = cuantity, 
+                        ItemDatabase.UserInventory[identifier].Add(name, new Item
+                        {
+                            Count = cuantity,
                             Limit = ItemDatabase.ServerItems[name].Limit,
-                            Label =  ItemDatabase.ServerItems[name].Label,
-                            Name = name, 
-                            Type = "item_inventory", 
-                            Usable = true, 
+                            Label = ItemDatabase.ServerItems[name].Label,
+                            Name = name,
+                            Type = "item_inventory",
+                            Usable = true,
                             CanRemove = ItemDatabase.ServerItems[name].CanRemove
                         });
 
@@ -727,7 +725,7 @@ namespace VORP.Inventory.Server.Scripts
                     return;
                 }
 
-                Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+                Dictionary<string, Item> userInventory = ItemDatabase.GetInventory(identifier);
 
                 if (userInventory is null)
                 {
@@ -735,7 +733,7 @@ namespace VORP.Inventory.Server.Scripts
                     return;
                 }
 
-                Dictionary<string, ItemClass> targetInventory = ItemDatabase.GetInventory(targetIdentifier);
+                Dictionary<string, Item> targetInventory = ItemDatabase.GetInventory(targetIdentifier);
 
                 if (targetInventory is null)
                 {
@@ -750,7 +748,7 @@ namespace VORP.Inventory.Server.Scripts
                     return;
                 }
 
-                ItemClass item = userInventory[itemName];
+                Item item = userInventory[itemName];
                 int itemCount = item.Count;
 
                 int targetTotalItems = 0;
@@ -759,7 +757,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 bool canGiveItemToTarget = true;
 
-                ItemClass targetItem = null;
+                Item targetItem = null;
                 if (targetInventory.ContainsKey(itemName))
                 {
                     targetItem = targetInventory[itemName];
@@ -789,15 +787,15 @@ namespace VORP.Inventory.Server.Scripts
                 {
                     if (ItemDatabase.ServerItems.ContainsKey(itemName))
                     {
-                        ItemClass serverItem = ItemDatabase.ServerItems[itemName];
-                        targetInventory.Add(itemName, new ItemClass
+                        Item serverItem = ItemDatabase.ServerItems[itemName];
+                        targetInventory.Add(itemName, new Item
                         {
-                            Count = amount, 
+                            Count = amount,
                             Limit = serverItem.Limit,
-                            Label = serverItem.Label, 
-                            Name = itemName, 
-                            Type = "item_inventory", 
-                            Usable = true, 
+                            Label = serverItem.Label,
+                            Name = itemName,
+                            Type = "item_inventory",
+                            Usable = true,
                             CanRemove = serverItem.CanRemove
                         });
                     }
@@ -880,7 +878,7 @@ namespace VORP.Inventory.Server.Scripts
                 int charIdentifier = coreUserCharacter.charIdentifier;
                 string inventory = coreUserCharacter.inventory;
 
-                Dictionary<string, ItemClass> userinv = new();
+                Dictionary<string, Item> userinv = new();
                 List<Weapon> userwep = new();
 
                 if (!PluginManager.ActiveCharacters.ContainsKey(player.Handle))
@@ -898,14 +896,14 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         if (coreInventory[itemname.item.ToString()] != null)
                         {
-                            ItemClass item = new ItemClass
+                            Item item = new()
                             {
-                                Count = int.Parse(coreInventory[itemname.item.ToString()].ToString()), 
+                                Count = int.Parse(coreInventory[itemname.item.ToString()].ToString()),
                                 Limit = int.Parse(itemname.limit.ToString()),
-                                Label = itemname.label, 
-                                Name = itemname.item, 
-                                Type = itemname.type, 
-                                Usable = itemname.usable, 
+                                Label = itemname.label,
+                                Name = itemname.item,
+                                Type = itemname.type,
+                                Usable = itemname.usable,
                                 CanRemove = itemname.can_remove
                             };
 
@@ -938,7 +936,7 @@ namespace VORP.Inventory.Server.Scripts
                             {
                                 amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
                             }
-                            
+
                             foreach (JToken x in comp)
                             {
                                 components.Add(x.ToString());
@@ -958,13 +956,13 @@ namespace VORP.Inventory.Server.Scripts
 
                             Weapon wp = new()
                             {
-                                Id = int.Parse(row.id.ToString()), 
-                                Propietary = row.identifier.ToString(), 
-                                Name = row.name.ToString(), 
-                                Ammo = amunition, 
-                                Components = components, 
-                                Used = auused, 
-                                Used2 = auused2, 
+                                Id = int.Parse(row.id.ToString()),
+                                Propietary = row.identifier.ToString(),
+                                Name = row.name.ToString(),
+                                Ammo = amunition,
+                                Components = components,
+                                Used = auused,
+                                Used2 = auused2,
                                 CharId = charIdentifier
                             };
 

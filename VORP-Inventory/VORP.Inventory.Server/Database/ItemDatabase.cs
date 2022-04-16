@@ -1,9 +1,7 @@
-﻿using CitizenFX.Core;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using VORP.Inventory.Server.Models;
 using VORP.Inventory.Server.Scripts;
 using VORP.Inventory.Shared.Models;
 
@@ -25,10 +23,10 @@ namespace VORP.Inventory.Server.Database
             set { _items = value; }
         }
         // List of itemclass with the name of its owner to be able to do the whole theme of adding and removing when it is stolen and others
-        public static Dictionary<string, Dictionary<string, ItemClass>> UserInventory = new Dictionary<string, Dictionary<string, ItemClass>>();
+        public static Dictionary<string, Dictionary<string, Item>> UserInventory = new Dictionary<string, Dictionary<string, Item>>();
 
         public static Dictionary<int, Weapon> UserWeapons = new Dictionary<int, Weapon>();
-        public static Dictionary<string, ItemClass> ServerItems = new Dictionary<string, ItemClass>();
+        public static Dictionary<string, Item> ServerItems = new Dictionary<string, Item>();
 
         public void Init()
         {
@@ -37,21 +35,21 @@ namespace VORP.Inventory.Server.Database
             SetupLoadouts();
         }
 
-        public static Dictionary<string, ItemClass> GetInventory(string identifier)
+        public static Dictionary<string, Item> GetInventory(string identifier)
         {
             if (!UserInventory.ContainsKey(identifier)) return null;
             return UserInventory[identifier];
         }
 
-        public static ItemClass GetItem(string itemName)
+        public static Item GetItem(string itemName)
         {
             if (!ServerItems.ContainsKey(itemName)) return null;
             return ServerItems[itemName];
         }
 
-        public static ItemClass GetUserItem(string identifier, string itemName)
+        public static Item GetUserItem(string identifier, string itemName)
         {
-            Dictionary<string, ItemClass> userItems = GetInventory(identifier);
+            Dictionary<string, Item> userItems = GetInventory(identifier);
             if (userItems == null) return null;
             if (!userItems.ContainsKey(itemName)) return null;
             return userItems[itemName];
@@ -80,13 +78,13 @@ namespace VORP.Inventory.Server.Database
                         items = result;
                         foreach (dynamic item in items)
                         {
-                            ServerItems.Add(item.item.ToString(), new ItemClass
+                            ServerItems.Add(item.item.ToString(), new Item
                             {
-                                Name = item.item, 
-                                Label = item.label, 
-                                Limit = int.Parse(item.limit.ToString()), 
-                                CanRemove = item.can_remove, 
-                                Type = item.type, 
+                                Name = item.item,
+                                Label = item.label,
+                                Limit = int.Parse(item.limit.ToString()),
+                                CanRemove = item.can_remove,
+                                Type = item.type,
                                 Usable = item.usable
                             });
                         }
@@ -155,13 +153,13 @@ namespace VORP.Inventory.Server.Database
 
                             wp = new Weapon
                             {
-                                Id = int.Parse(row.id.ToString()), 
-                                Propietary = row.identifier.ToString(), 
-                                Name = row.name.ToString(), 
-                                Ammo = amunition, 
-                                Components = components, 
-                                Used = auused, 
-                                Used2 = auused2, 
+                                Id = int.Parse(row.id.ToString()),
+                                Propietary = row.identifier.ToString(),
+                                Name = row.name.ToString(),
+                                Ammo = amunition,
+                                Components = components,
+                                Used = auused,
+                                Used2 = auused2,
                                 CharId = charId
                             };
 

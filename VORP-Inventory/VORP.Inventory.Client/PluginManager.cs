@@ -1,7 +1,7 @@
-﻿global using VORP.Inventory.Shared.Diagnostics;
-global using static CitizenFX.Core.Native.API;
+﻿global using CitizenFX.Core;
 global using CitizenFX.Core.Native;
-global using CitizenFX.Core;
+global using VORP.Inventory.Shared.Diagnostics;
+global using static CitizenFX.Core.Native.API;
 using System;
 using System.Threading.Tasks;
 using VORP.Inventory.Client.Extensions;

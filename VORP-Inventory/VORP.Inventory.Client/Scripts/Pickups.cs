@@ -1,6 +1,4 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,11 +53,11 @@ namespace VORP.Inventory.Client.Scripts
                 if (Configuration.Config.DropOnRespawn.Items)
                 {
                     Logger.Trace($"Dropping Items");
-                    Dictionary<string, ItemClass> items = InventoryAPI.UsersItems.ToDictionary(p => p.Key, p => p.Value);
+                    Dictionary<string, Item> items = InventoryAPI.UsersItems.ToDictionary(p => p.Key, p => p.Value);
 
-                    foreach (KeyValuePair<string, ItemClass> itemKvp in items)
+                    foreach (KeyValuePair<string, Item> itemKvp in items)
                     {
-                        ItemClass item = itemKvp.Value;
+                        Item item = itemKvp.Value;
                         int itemCount = item.Count;
                         TriggerServerEvent("vorpinventory:serverDropItem", item.Name, itemCount, 1);
                         item.Count = 0;

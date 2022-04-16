@@ -1,6 +1,4 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -8,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using VORP.Inventory.Server.Database;
 using VORP.Inventory.Server.Extensions;
-using VORP.Inventory.Server.Models;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Shared.Models;
 
@@ -59,11 +56,11 @@ namespace VORP.Inventory.Server.Scripts
 
                 if (coreCharacterId == -1) return false; // no characterId provided
 
-                Dictionary<string, ItemClass> itemClasses = ItemDatabase.GetInventory(steamIdendifier);
+                Dictionary<string, Item> itemClasses = ItemDatabase.GetInventory(steamIdendifier);
 
                 if (itemClasses is not null)
                 {
-                    foreach (KeyValuePair<string, ItemClass> item in itemClasses)
+                    foreach (KeyValuePair<string, Item> item in itemClasses)
                     {
                         items.Add(item.Key, item.Value.Count);
                     }
@@ -200,7 +197,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 string identifier = "steam:" + player.Identifiers["steam"];
 
-                ItemClass item = ItemDatabase.GetItem(itemName);
+                Item item = ItemDatabase.GetItem(itemName);
                 if (item == null)
                 {
                     Logger.Error($"canCarryItem: Item '{itemName}' does not exist.");
@@ -208,7 +205,7 @@ namespace VORP.Inventory.Server.Scripts
                 }
 
                 int maxLimitItem = item.Limit;
-                Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+                Dictionary<string, Item> userInventory = ItemDatabase.GetInventory(identifier);
 
                 int maxLimitConfig = Configuration.INVENTORY_MAX_ITEMS;
                 int newTotalAmountOfCurrentItems = GetTotalAmountOfItems(identifier) + amountToCarry;
@@ -232,7 +229,7 @@ namespace VORP.Inventory.Server.Scripts
                 }
 
                 // If the user has the item, we still check to see how many
-                ItemClass userItem = userInventory[itemName];
+                Item userItem = userInventory[itemName];
                 int itemQuantity = userItem.Count;
 
                 amountToCarry = itemQuantity + amountToCarry;
@@ -283,7 +280,7 @@ namespace VORP.Inventory.Server.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
-                    Dictionary<string, ItemClass> itemsDBO = ItemDatabase.UserInventory[identifier];
+                    Dictionary<string, Item> itemsDBO = ItemDatabase.UserInventory[identifier];
 
                     if (itemsDBO == null)
                     {
@@ -293,9 +290,9 @@ namespace VORP.Inventory.Server.Scripts
                             cb.Invoke(useritems);
                     }
 
-                    foreach (KeyValuePair<string, ItemClass> items in itemsDBO)
+                    foreach (KeyValuePair<string, Item> items in itemsDBO)
                     {
-                        ItemClass itemClass = items.Value;
+                        Item itemClass = items.Value;
                         if (itemClass == null) continue;
 
                         Dictionary<string, object> item = new Dictionary<string, object>()
@@ -338,7 +335,7 @@ namespace VORP.Inventory.Server.Scripts
                     return;
                 }
 
-                ItemClass item = ItemDatabase.GetItem(itemName);
+                Item item = ItemDatabase.GetItem(itemName);
                 if (item == null)
                 {
                     Logger.Error($"Item '{itemName}' not found in Server Items.");
@@ -675,7 +672,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 if (ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
-                    Dictionary<string, ItemClass> inventory = ItemDatabase.GetInventory(identifier);
+                    Dictionary<string, Item> inventory = ItemDatabase.GetInventory(identifier);
 
                     if (inventory == null)
                     {
@@ -685,7 +682,7 @@ namespace VORP.Inventory.Server.Scripts
 
                     if (inventory.ContainsKey(item))
                     {
-                        ItemClass itemClass = inventory[item];
+                        Item itemClass = inventory[item];
                         funcion.Invoke(itemClass.Count);
                     }
                     else
@@ -724,7 +721,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 if (!ItemDatabase.UserInventory.ContainsKey(identifier))
                 {
-                    Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+                    Dictionary<string, Item> userinv = new Dictionary<string, Item>();
                     ItemDatabase.UserInventory.Add(identifier, userinv);
                 }
 
@@ -788,7 +785,7 @@ namespace VORP.Inventory.Server.Scripts
                                 if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                 {
                                     added = true;
-                                    ItemDatabase.UserInventory[identifier].Add(name, new ItemClass 
+                                    ItemDatabase.UserInventory[identifier].Add(name, new Item
                                     {
                                         Count = quantity,
                                         Limit = ItemDatabase.ServerItems[name].Limit,
@@ -803,8 +800,8 @@ namespace VORP.Inventory.Server.Scripts
                             else
                             {
                                 added = true;
-                                ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
-                                { 
+                                ItemDatabase.UserInventory[identifier].Add(name, new Item
+                                {
                                     Count = quantity,
                                     Limit = ItemDatabase.ServerItems[name].Limit,
                                     Label = ItemDatabase.ServerItems[name].Label,
@@ -826,14 +823,14 @@ namespace VORP.Inventory.Server.Scripts
                                 if (totalcount <= Configuration.INVENTORY_MAX_ITEMS)
                                 {
                                     added = true;
-                                    ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
-                                    { 
-                                        Count = quantity, 
+                                    ItemDatabase.UserInventory[identifier].Add(name, new Item
+                                    {
+                                        Count = quantity,
                                         Limit = ItemDatabase.ServerItems[name].Limit,
-                                        Label = ItemDatabase.ServerItems[name].Label, 
-                                        Name = name, 
+                                        Label = ItemDatabase.ServerItems[name].Label,
+                                        Name = name,
                                         Type = ItemDatabase.ServerItems[name].Type,
-                                        Usable = true, 
+                                        Usable = true,
                                         CanRemove = ItemDatabase.ServerItems[name].CanRemove
                                     });
                                 }
@@ -841,7 +838,7 @@ namespace VORP.Inventory.Server.Scripts
                             else
                             {
                                 added = true;
-                                ItemDatabase.UserInventory[identifier].Add(name, new ItemClass
+                                ItemDatabase.UserInventory[identifier].Add(name, new Item
                                 {
                                     Count = quantity,
                                     Limit = ItemDatabase.ServerItems[name].Limit,
@@ -909,7 +906,7 @@ namespace VORP.Inventory.Server.Scripts
                 string identifier = "steam:" + player.Identifiers["steam"];
                 int coreUserCharacterId = await player.GetCoreUserCharacterIdAsync();
 
-                Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+                Dictionary<string, Item> userInventory = ItemDatabase.GetInventory(identifier);
                 if (userInventory == null)
                 {
                     Logger.Error($"subItem: Player '{source}' inventory does not exist.");
@@ -918,7 +915,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 if (userInventory.ContainsKey(itemName))
                 {
-                    ItemClass item = userInventory[itemName];
+                    Item item = userInventory[itemName];
                     int itemCount = item.Count;
 
                     if (quantity <= itemCount)
@@ -1174,10 +1171,10 @@ namespace VORP.Inventory.Server.Scripts
         {
             int t_count = 0;
 
-            Dictionary<string, ItemClass> userInventory = ItemDatabase.GetInventory(identifier);
+            Dictionary<string, Item> userInventory = ItemDatabase.GetInventory(identifier);
             if (userInventory == null) return 0;
 
-            foreach (ItemClass item in userInventory.Values)
+            foreach (Item item in userInventory.Values)
             {
                 t_count += item.Count;
             }

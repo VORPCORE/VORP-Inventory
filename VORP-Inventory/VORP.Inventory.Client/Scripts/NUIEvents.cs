@@ -1,13 +1,10 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
-using VORP.Inventory.Client.Models;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Shared.Models;
 
@@ -644,9 +641,9 @@ namespace VORP.Inventory.Client.Scripts
         {
             _userItemsCache.Clear();
 
-            foreach (KeyValuePair<string, ItemClass> itemKvp in InventoryAPI.UsersItems)
+            foreach (KeyValuePair<string, Item> itemKvp in InventoryAPI.UsersItems)
             {
-                ItemClass item = itemKvp.Value;
+                Item item = itemKvp.Value;
 
                 Dictionary<string, dynamic> userItem = new();
                 userItem.Add("count", item.Count);
