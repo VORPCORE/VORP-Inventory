@@ -59,7 +59,6 @@ namespace VORP.Inventory.Client
             Dictionary<string, dynamic> aux = new Dictionary<string, dynamic>();
             foreach (var o in dynObject)
             {
-                Logger.Trace($"{o.Key}");
                 aux.Add(o.Key, o.Value);
             }
             return aux;
