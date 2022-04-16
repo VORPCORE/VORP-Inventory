@@ -595,7 +595,7 @@ namespace VORP.Inventory.Client.Scripts
         private async Task OnOpenInventoryKeyAsync()
         {
             bool isDead = API.IsEntityDead(API.PlayerPedId());
-            if (isDead && PluginManager.BLOCK_INVENTORY_WHEN_DEAD)
+            if (isDead && PluginManager.BLOCK_INVENTORY_WHEN_DEAD && IsInventoryOpen)
             {
                 await Delay(1000);
                 return;
