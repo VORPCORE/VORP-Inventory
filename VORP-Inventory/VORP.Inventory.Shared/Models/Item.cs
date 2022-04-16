@@ -65,5 +65,10 @@ namespace VORP.Inventory.Shared.Models
                 {"usable", Usable}
             };
         }
+
+        public override string ToString()
+        {
+            return this.ToJson();
+        }
     }
 }

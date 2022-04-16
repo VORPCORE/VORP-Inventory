@@ -238,5 +238,10 @@ namespace VORP.Inventory.Shared.Models
         }
 #endif
 
+        public override string ToString()
+        {
+            return this.ToJson();
+        }
+
     }
 }
