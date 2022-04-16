@@ -1,17 +1,34 @@
 ﻿using CitizenFX.Core;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace VORP.Inventory.Server.Models
 {
+    [DataContract]
     public class WeaponClass : BaseScript
     {
+        [DataMember(Name = "id")]
         public int Id { get; set; }
+
+        [DataMember(Name = "propietary")]
         public string Propietary { get; set; }
+        
+        [DataMember(Name = "name")]
         public string Name { get; set; }
+
+        [DataMember(Name = "ammo")]
         public Dictionary<string, int> Ammo { get; set; }
+
+        [DataMember(Name = "components")]
         public List<string> Components { get; set; }
+
+        [DataMember(Name = "used")]
         public bool Used { get; set; }
+
+        [DataMember(Name = "used2")]
         public bool Used2 { get; set; }
+
+        [DataMember(Name = "charid")]
         public int CharId { get; set; }
 
         public void QuitComponent(string component)
