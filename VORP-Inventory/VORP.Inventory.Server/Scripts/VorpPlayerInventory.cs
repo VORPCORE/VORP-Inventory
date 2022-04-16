@@ -71,7 +71,7 @@ namespace VORP.Inventory.Server.Scripts
                     List<string> auxiliaryBullets = new List<string>();
                     Dictionary<string, int> receivedBullets = new Dictionary<string, int>();
 
-                    Weapon weapon = Configuration.Config.Weapons.FirstOrDefault(x => x.HashName == weaponData.Key);
+                    WeaponConfig weapon = Configuration.Config.Weapons.FirstOrDefault(x => x.HashName == weaponData.Key);
 
                     Dictionary<string, double> ammoHash = weapon.AmmoHash;
                     foreach (KeyValuePair<string, double> bullets in ammoHash)

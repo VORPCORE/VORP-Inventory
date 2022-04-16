@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Configuration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Weapon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Config.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GeneralExtensions.cs" />
