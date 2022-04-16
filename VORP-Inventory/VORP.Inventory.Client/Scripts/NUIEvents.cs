@@ -151,7 +151,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Title = clanName;
             nui.ClanId = clanId;
 
-            NUI.SendMessage(nui.ToJson());
+            NUI.SendMessage(nui);
 
             IsInventoryOpen = true;
         }
