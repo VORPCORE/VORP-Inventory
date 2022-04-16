@@ -72,7 +72,6 @@
     <Compile Include="RedM\Prompt.cs" />
     <Compile Include="Scripts\InventoryAPI.cs" />
     <Compile Include="Models\ItemClass.cs" />
-    <Compile Include="Models\Weapon.cs" />
     <Compile Include="Scripts\Manager.cs" />
     <Compile Include="Scripts\NUIEvents.cs" />
     <Compile Include="Scripts\Pickups.cs" />
