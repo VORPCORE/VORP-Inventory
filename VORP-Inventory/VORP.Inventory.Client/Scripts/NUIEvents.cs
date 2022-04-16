@@ -716,7 +716,7 @@ namespace VORP.Inventory.Client.Scripts
         {
             bool isDead = API.IsEntityDead(API.PlayerPedId());
 
-            if (isDead)
+            if (isDead && IsInventoryOpen)
             {
                 DetachTickHandler(OnCheckPlayerDeathAsync);
                 OnCloseInventory();
