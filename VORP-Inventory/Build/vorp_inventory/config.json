@@ -861,11 +861,17 @@
       "Price": 100.0,
       "AmmoHash": {
         "AMMO_ARROW": 0.25,
+        "AMMO_ARROW_CONFUSION": 0.25,
+        "AMMO_ARROW_DISORIENT": 0.25,
+        "AMMO_ARROW_DRAIN": 0.25,
         "AMMO_ARROW_DYNAMITE": 0.25,
         "AMMO_ARROW_FIRE": 0.25,
         "AMMO_ARROW_IMPROVED": 0.25,
         "AMMO_ARROW_POISON": 0.25,
-        "AMMO_ARROW_SMALL_GAME": 0.25
+        "AMMO_ARROW_SMALL_GAME": 0.25,
+        "AMMO_ARROW_TRACKING": 0.25,
+        "AMMO_ARROW_TRAIL": 0.25,
+        "AMMO_ARROW_WOUND": 0.25
       }
     },
     {
