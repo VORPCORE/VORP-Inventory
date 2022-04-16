@@ -58,6 +58,9 @@ namespace VORP.Inventory.Client.Scripts
                     foreach (KeyValuePair<string, Item> itemKvp in items)
                     {
                         Item item = itemKvp.Value;
+
+                        Logger.Trace($"Dropping Item: {item}");
+
                         int itemCount = item.Count;
                         TriggerServerEvent("vorpinventory:serverDropItem", item.Name, itemCount, 1);
                         item.Count = 0;
@@ -76,6 +79,8 @@ namespace VORP.Inventory.Client.Scripts
 
                     foreach (KeyValuePair<int, Weapon> weaponKvp in weapons)
                     {
+                        Logger.Trace($"Dropping Weapon: {weaponKvp.Value}");
+
                         TriggerServerEvent("vorpinventory:serverDropWeapon", weaponKvp.Key);
                         if (InventoryAPI.UsersWeapons.ContainsKey(weaponKvp.Key))
                         {
