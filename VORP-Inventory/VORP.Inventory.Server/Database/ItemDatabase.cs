@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using VORP.Inventory.Server.Models;
 using VORP.Inventory.Server.Scripts;
+using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Server.Database
 {
@@ -26,7 +27,7 @@ namespace VORP.Inventory.Server.Database
         // List of itemclass with the name of its owner to be able to do the whole theme of adding and removing when it is stolen and others
         public static Dictionary<string, Dictionary<string, ItemClass>> UserInventory = new Dictionary<string, Dictionary<string, ItemClass>>();
 
-        public static Dictionary<int, WeaponClass> UserWeapons = new Dictionary<int, WeaponClass>();
+        public static Dictionary<int, Weapon> UserWeapons = new Dictionary<int, Weapon>();
         public static Dictionary<string, ItemClass> ServerItems = new Dictionary<string, ItemClass>();
 
         public void Init()
@@ -114,7 +115,7 @@ namespace VORP.Inventory.Server.Database
 
                 if (loadout.Count != 0)
                 {
-                    WeaponClass wp;
+                    Weapon wp;
                     foreach (var row in loadout)
                     {
                         try
@@ -152,7 +153,7 @@ namespace VORP.Inventory.Server.Database
                                 auused2 = true;
                             }
 
-                            wp = new WeaponClass
+                            wp = new Weapon
                             {
                                 Id = int.Parse(row.id.ToString()), 
                                 Propietary = row.identifier.ToString(), 

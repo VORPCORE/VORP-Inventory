@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VORP.Inventory.Client.Extensions;
 using VORP.Inventory.Client.Models;
 using VORP.Inventory.Shared;
+using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Client.Scripts
 {
@@ -18,7 +19,7 @@ namespace VORP.Inventory.Client.Scripts
             new Dictionary<string, Dictionary<string, dynamic>>();
 
         public static Dictionary<string, ItemClass> UsersItems = new Dictionary<string, ItemClass>();
-        public static Dictionary<int, WeaponClass> UsersWeapons = new Dictionary<int, WeaponClass>();
+        public static Dictionary<int, Weapon> UsersWeapons = new Dictionary<int, Weapon>();
         public static Dictionary<int, string> bulletsHash = new Dictionary<int, string>();
 
         public void Init()
@@ -67,8 +68,8 @@ namespace VORP.Inventory.Client.Scripts
                 if (weaponName.Contains("UNARMED")) { return; }
 
                 Dictionary<string, int> ammoDict = new Dictionary<string, int>();
-                WeaponClass usedWeapon = null;
-                foreach (KeyValuePair<int, WeaponClass> weap in UsersWeapons.ToList())
+                Weapon usedWeapon = null;
+                foreach (KeyValuePair<int, Weapon> weap in UsersWeapons.ToList())
                 {
                     if (weaponName.Contains(weap.Value.Name) && weap.Value.Used)
                     {
@@ -138,7 +139,7 @@ namespace VORP.Inventory.Client.Scripts
                 auxcomponents.Add(comp.ToString());
             }
 
-            WeaponClass weapon = new WeaponClass
+            Weapon weapon = new()
             {
                 Id = id, 
                 Propietary = propietary, 
@@ -228,7 +229,7 @@ namespace VORP.Inventory.Client.Scripts
                     auused2 = true;
                 }
 
-                WeaponClass auxweapon = new WeaponClass
+                Weapon auxweapon = new()
                 {
                     Id = int.Parse(row.id.ToString()), 
                     Propietary = row.identifier.ToString(), 

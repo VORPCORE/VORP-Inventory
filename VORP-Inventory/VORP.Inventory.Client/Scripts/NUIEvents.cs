@@ -503,7 +503,7 @@ namespace VORP.Inventory.Client.Scripts
                 API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
 
                 int ItemId = int.Parse(data["id"].ToString());
-                WeaponClass weapon = InventoryAPI.UsersWeapons[ItemId];
+                Weapon weapon = InventoryAPI.UsersWeapons[ItemId];
 
                 bool isWeaponARevolver = Function.Call<bool>((Hash)0xC212F1D05A8232BB, API.GetHashKey(weapon.Name));
                 bool isWeaponAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, API.GetHashKey(weapon.Name));
@@ -570,7 +570,7 @@ namespace VORP.Inventory.Client.Scripts
                 TriggerServerEvent("vorpinventory:serverDropWeapon", int.Parse(aux["id"].ToString()));
                 if (InventoryAPI.UsersWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
                 {
-                    WeaponClass wp = InventoryAPI.UsersWeapons[int.Parse(aux["id"].ToString())];
+                    Weapon wp = InventoryAPI.UsersWeapons[int.Parse(aux["id"].ToString())];
                     if (wp.Used)
                     {
                         wp.SetUsed(false);
@@ -664,9 +664,9 @@ namespace VORP.Inventory.Client.Scripts
         {
             _userWeaponsCache.Clear();
 
-            foreach (KeyValuePair<int, WeaponClass> weaponKvp in InventoryAPI.UsersWeapons)
+            foreach (KeyValuePair<int, Weapon> weaponKvp in InventoryAPI.UsersWeapons)
             {
-                WeaponClass weapon = weaponKvp.Value;
+                Weapon weapon = weaponKvp.Value;
 
                 Dictionary<string, dynamic> weaponItem = new();
                 weaponItem.Add("count", weapon.GetAmmo("Hola"));

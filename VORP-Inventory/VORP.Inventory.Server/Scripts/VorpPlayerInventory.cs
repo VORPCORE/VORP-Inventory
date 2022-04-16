@@ -880,8 +880,8 @@ namespace VORP.Inventory.Server.Scripts
                 int charIdentifier = coreUserCharacter.charIdentifier;
                 string inventory = coreUserCharacter.inventory;
 
-                Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
-                List<WeaponClass> userwep = new List<WeaponClass>();
+                Dictionary<string, ItemClass> userinv = new();
+                List<Weapon> userwep = new();
 
                 if (!PluginManager.ActiveCharacters.ContainsKey(player.Handle))
                     PluginManager.ActiveCharacters.Add(player.Handle, charIdentifier);
@@ -956,7 +956,7 @@ namespace VORP.Inventory.Server.Scripts
                                 auused2 = true;
                             }
 
-                            WeaponClass wp = new WeaponClass
+                            Weapon wp = new()
                             {
                                 Id = int.Parse(row.id.ToString()), 
                                 Propietary = row.identifier.ToString(), 

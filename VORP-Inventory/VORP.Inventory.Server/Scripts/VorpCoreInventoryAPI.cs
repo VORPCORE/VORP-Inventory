@@ -10,6 +10,7 @@ using VORP.Inventory.Server.Database;
 using VORP.Inventory.Server.Extensions;
 using VORP.Inventory.Server.Models;
 using VORP.Inventory.Shared;
+using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Server.Scripts
 {
@@ -457,7 +458,7 @@ namespace VORP.Inventory.Server.Scripts
 
                 Dictionary<string, dynamic> weapons = new Dictionary<string, dynamic>();
                 bool found = false;
-                foreach (KeyValuePair<int, WeaponClass> weapon in ItemDatabase.UserWeapons)
+                foreach (KeyValuePair<int, Weapon> weapon in ItemDatabase.UserWeapons)
                 {
                     if (weapon.Value.Id == weapId && !found)
                     {
@@ -506,7 +507,7 @@ namespace VORP.Inventory.Server.Scripts
                 Dictionary<string, dynamic> weapons;
                 List<Dictionary<string, dynamic>> userWeapons = new List<Dictionary<string, dynamic>>();
 
-                foreach (KeyValuePair<int, WeaponClass> weapon in ItemDatabase.UserWeapons)
+                foreach (KeyValuePair<int, Weapon> weapon in ItemDatabase.UserWeapons)
                 {
                     if (weapon.Value.Propietary == identifier)
                     {
@@ -1028,7 +1029,7 @@ namespace VORP.Inventory.Server.Scripts
                 Exports["ghmattimysql"].execute("INSERT INTO loadout (`identifier`,`charidentifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?,?)", new object[] { identifier, charIdentifier, hashName, JsonConvert.SerializeObject(ammoaux), JsonConvert.SerializeObject(auxcomponents) }, new Action<dynamic>((result) =>
                 {
                     int weaponId = result.insertId;
-                    WeaponClass auxWeapon = new WeaponClass
+                    Weapon auxWeapon = new()
                     {
                         Id = weaponId,
                         Propietary = identifier,

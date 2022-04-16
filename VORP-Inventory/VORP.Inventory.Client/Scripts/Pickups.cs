@@ -8,6 +8,7 @@ using VORP.Inventory.Client.Models;
 using VORP.Inventory.Client.RedM;
 using VORP.Inventory.Client.RedM.Enums;
 using VORP.Inventory.Shared;
+using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Client.Scripts
 {
@@ -73,14 +74,14 @@ namespace VORP.Inventory.Client.Scripts
                 if (Configuration.Config.DropOnRespawn.Weapons)
                 {
                     Logger.Trace($"Dropping Weapons");
-                    Dictionary<int, WeaponClass> weapons = InventoryAPI.UsersWeapons.ToDictionary(p => p.Key, p => p.Value);
+                    Dictionary<int, Weapon> weapons = InventoryAPI.UsersWeapons.ToDictionary(p => p.Key, p => p.Value);
 
-                    foreach (KeyValuePair<int, WeaponClass> weaponKvp in weapons)
+                    foreach (KeyValuePair<int, Weapon> weaponKvp in weapons)
                     {
                         TriggerServerEvent("vorpinventory:serverDropWeapon", weaponKvp.Key);
                         if (InventoryAPI.UsersWeapons.ContainsKey(weaponKvp.Key))
                         {
-                            WeaponClass wp = InventoryAPI.UsersWeapons[weaponKvp.Key];
+                            Weapon wp = InventoryAPI.UsersWeapons[weaponKvp.Key];
                             if (wp.Used)
                             {
                                 wp.SetUsed(false);
