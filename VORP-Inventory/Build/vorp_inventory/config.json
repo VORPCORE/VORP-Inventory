@@ -858,7 +858,15 @@
       "Name": "Improved Bow",
       "HashName": "WEAPON_BOW_IMPROVED",
       "WeaponModel": "",
-      "Price": 100.0
+      "Price": 100.0,
+      "AmmoHash": {
+        "AMMO_ARROW": 0.25,
+        "AMMO_ARROW_DYNAMITE": 0.25,
+        "AMMO_ARROW_FIRE": 0.25,
+        "AMMO_ARROW_IMPROVED": 0.25,
+        "AMMO_ARROW_POISON": 0.25,
+        "AMMO_ARROW_SMALL_GAME": 0.25
+      }
     },
     {
       "Name": "Machete Collector",
@@ -888,7 +896,13 @@
       "Name": "Bolas",
       "HashName": "WEAPON_THROWN_BOLAS",
       "WeaponModel": "",
-      "Price": 100.0
+      "Price": 100.0,
+      "AmmoHash": {
+        "AMMO_BOLAS": 0.25,
+        "AMMO_BOLAS_HAWKMOTH": 0.25,
+        "AMMO_BOLAS_INTERTWINED": 0.25,
+        "AMMO_BOLAS_IRONSPIKED": 0.25
+      }
     },
     {
       "Name": "Bolas Hawkmoth",
