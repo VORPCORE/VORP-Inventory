@@ -343,7 +343,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Action = "display";
             nui.Type = "hideout";
             nui.Title = hideoutName;
-            nui.Hideout = hideoutId;
+            nui.HideoutId = hideoutId;
 
             NUI.SendMessage(nui);
 
