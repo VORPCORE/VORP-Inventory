@@ -104,39 +104,39 @@ namespace VORP.Inventory.Server.Database
             Logger.Trace($"Setting up Loadouts");
             Exports["ghmattimysql"].execute("SELECT * FROM loadout;", new object[] { }, new Action<dynamic>(async loadout =>
             {
-                await BaseScript.Delay(0);
-                if (loadout == null)
-                {
-                    Logger.Warn($"No loadouts returned from the database");
-                    return;
-                }
+            await BaseScript.Delay(0);
+            if (loadout == null)
+            {
+                Logger.Warn($"No loadouts returned from the database");
+                return;
+            }
 
-                if (loadout.Count != 0)
-                {
-                    Weapon wp;
+            if (loadout.Count != 0)
+            {
+                Weapon wp;
                     foreach (var row in loadout)
                     {
                         try
                         {
-                            JObject ammo = JsonConvert.DeserializeObject(row.ammo.ToString());
-                            JArray comp = JsonConvert.DeserializeObject(row.components.ToString());
+                            string ammo = row.ammo.ToString();
+                            Dictionary<string, int> amunition = new();
+                            string components = row.components.ToString();
+                            List<string> lstComponents = new();
+
+                            if (!string.IsNullOrEmpty(ammo))
+                            {
+                                amunition = JsonConvert.DeserializeObject<Dictionary<string, int>>(row.ammo.ToString());
+                            }
+
+                            if (!string.IsNullOrEmpty(components))
+                            {
+                                lstComponents = JsonConvert.DeserializeObject<List<string>>(row.components.ToString());
+                            }
+
                             int charId = -1;
                             if (row.charidentifier != null)
                             {
                                 charId = row.charidentifier;
-                            }
-
-                            Dictionary<string, int> amunition = new Dictionary<string, int>();
-                            List<string> components = new List<string>();
-
-                            foreach (JProperty ammos in ammo.Properties())
-                            {
-                                amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
-                            }
-
-                            foreach (JToken x in comp)
-                            {
-                                components.Add(x.ToString());
                             }
 
                             bool auused = false;
@@ -157,7 +157,7 @@ namespace VORP.Inventory.Server.Database
                                 Propietary = row.identifier.ToString(),
                                 Name = row.name.ToString(),
                                 Ammo = amunition,
-                                Components = components,
+                                Components = lstComponents,
                                 Used = auused,
                                 Used2 = auused2,
                                 CharId = charId
