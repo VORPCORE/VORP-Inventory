@@ -1,6 +1,4 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +6,7 @@ using VORP.Inventory.Client.Models;
 using VORP.Inventory.Client.RedM;
 using VORP.Inventory.Client.RedM.Enums;
 using VORP.Inventory.Shared;
+using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Client.Scripts
 {
@@ -54,11 +53,14 @@ namespace VORP.Inventory.Client.Scripts
                 if (Configuration.Config.DropOnRespawn.Items)
                 {
                     Logger.Trace($"Dropping Items");
-                    Dictionary<string, ItemClass> items = InventoryAPI.UsersItems.ToDictionary(p => p.Key, p => p.Value);
+                    Dictionary<string, Item> items = InventoryAPI.UsersItems.ToDictionary(p => p.Key, p => p.Value);
 
-                    foreach (KeyValuePair<string, ItemClass> itemKvp in items)
+                    foreach (KeyValuePair<string, Item> itemKvp in items)
                     {
-                        ItemClass item = itemKvp.Value;
+                        Item item = itemKvp.Value;
+
+                        Logger.Trace($"Dropping Item: {item}");
+
                         int itemCount = item.Count;
                         TriggerServerEvent("vorpinventory:serverDropItem", item.Name, itemCount, 1);
                         item.Count = 0;
@@ -73,14 +75,16 @@ namespace VORP.Inventory.Client.Scripts
                 if (Configuration.Config.DropOnRespawn.Weapons)
                 {
                     Logger.Trace($"Dropping Weapons");
-                    Dictionary<int, WeaponClass> weapons = InventoryAPI.UsersWeapons.ToDictionary(p => p.Key, p => p.Value);
+                    Dictionary<int, Weapon> weapons = InventoryAPI.UsersWeapons.ToDictionary(p => p.Key, p => p.Value);
 
-                    foreach (KeyValuePair<int, WeaponClass> weaponKvp in weapons)
+                    foreach (KeyValuePair<int, Weapon> weaponKvp in weapons)
                     {
+                        Logger.Trace($"Dropping Weapon: {weaponKvp.Value}");
+
                         TriggerServerEvent("vorpinventory:serverDropWeapon", weaponKvp.Key);
                         if (InventoryAPI.UsersWeapons.ContainsKey(weaponKvp.Key))
                         {
-                            WeaponClass wp = InventoryAPI.UsersWeapons[weaponKvp.Key];
+                            Weapon wp = InventoryAPI.UsersWeapons[weaponKvp.Key];
                             if (wp.Used)
                             {
                                 wp.SetUsed(false);

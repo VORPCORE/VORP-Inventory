@@ -1,7 +1,4 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-
-namespace VORP.Inventory.Client.RedM
+﻿namespace VORP.Inventory.Client.RedM
 {
     public interface ISpatial
     {

@@ -1,14 +1,12 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using VORP.Inventory.Client.Extensions;
-using VORP.Inventory.Client.Models;
 using VORP.Inventory.Shared;
+using VORP.Inventory.Shared.Models;
 
 namespace VORP.Inventory.Client.Scripts
 {
@@ -17,8 +15,8 @@ namespace VORP.Inventory.Client.Scripts
         public static Dictionary<string, Dictionary<string, dynamic>> citems =
             new Dictionary<string, Dictionary<string, dynamic>>();
 
-        public static Dictionary<string, ItemClass> UsersItems = new Dictionary<string, ItemClass>();
-        public static Dictionary<int, WeaponClass> UsersWeapons = new Dictionary<int, WeaponClass>();
+        public static Dictionary<string, Item> UsersItems = new Dictionary<string, Item>();
+        public static Dictionary<int, Weapon> UsersWeapons = new Dictionary<int, Weapon>();
         public static Dictionary<int, string> bulletsHash = new Dictionary<int, string>();
 
         public void Init()
@@ -67,8 +65,8 @@ namespace VORP.Inventory.Client.Scripts
                 if (weaponName.Contains("UNARMED")) { return; }
 
                 Dictionary<string, int> ammoDict = new Dictionary<string, int>();
-                WeaponClass usedWeapon = null;
-                foreach (KeyValuePair<int, WeaponClass> weap in UsersWeapons.ToList())
+                Weapon usedWeapon = null;
+                foreach (KeyValuePair<int, Weapon> weap in UsersWeapons.ToList())
                 {
                     if (weaponName.Contains(weap.Value.Name) && weap.Value.Used)
                     {
@@ -97,7 +95,7 @@ namespace VORP.Inventory.Client.Scripts
             }
             else
             {
-                ItemClass itemClass = new ItemClass
+                Item itemClass = new()
                 {
                     Count = count,
                     Limit = citems[name]["limit"],
@@ -138,14 +136,14 @@ namespace VORP.Inventory.Client.Scripts
                 auxcomponents.Add(comp.ToString());
             }
 
-            WeaponClass weapon = new WeaponClass
+            Weapon weapon = new()
             {
-                Id = id, 
-                Propietary = propietary, 
-                Name = name, 
-                Ammo = ammoaux, 
-                Components = auxcomponents, 
-                Used = false, 
+                Id = id,
+                Propietary = propietary,
+                Name = name,
+                Ammo = ammoaux,
+                Components = auxcomponents,
+                Used = false,
                 Used2 = false
             };
 
@@ -228,14 +226,14 @@ namespace VORP.Inventory.Client.Scripts
                     auused2 = true;
                 }
 
-                WeaponClass auxweapon = new WeaponClass
+                Weapon auxweapon = new()
                 {
-                    Id = int.Parse(row.id.ToString()), 
-                    Propietary = row.identifier.ToString(), 
-                    Name = row.name.ToString(), 
-                    Ammo = ammos, 
-                    Components = components, 
-                    Used = auused, 
+                    Id = int.Parse(row.id.ToString()),
+                    Propietary = row.identifier.ToString(),
+                    Name = row.name.ToString(),
+                    Ammo = ammos,
+                    Components = components,
+                    Used = auused,
                     Used2 = auused2
                 };
 
@@ -270,14 +268,14 @@ namespace VORP.Inventory.Client.Scripts
                         bool canRemove = bool.Parse(fitems.Value["can_remove"].ToString());
                         string type = fitems.Value["type"].ToString();
                         bool usable = bool.Parse(fitems.Value["usable"].ToString());
-                        ItemClass item = new ItemClass
+                        Item item = new()
                         {
-                            Count = cuantity, 
-                            Limit = limit, 
-                            Label = label, 
-                            Name = fitems.Key, 
-                            Type = type, 
-                            Usable = usable, 
+                            Count = cuantity,
+                            Limit = limit,
+                            Label = label,
+                            Name = fitems.Key,
+                            Type = type,
+                            Usable = usable,
                             CanRemove = canRemove
                         };
 
@@ -386,15 +384,15 @@ namespace VORP.Inventory.Client.Scripts
             }
             else
             {
-                ItemClass auxitem = new ItemClass 
-                { 
-                    Count = count, 
-                    Limit = limit, 
-                    Label = label, 
-                    Name = name, 
-                    Type = type, 
-                    Usable = usable, 
-                    CanRemove = canRemove 
+                Item auxitem = new()
+                {
+                    Count = count,
+                    Limit = limit,
+                    Label = label,
+                    Name = name,
+                    Type = type,
+                    Usable = usable,
+                    CanRemove = canRemove
                 };
 
                 UsersItems.Add(name, auxitem);

@@ -64,13 +64,10 @@
     <Compile Include="Extensions\Common.cs" />
     <Compile Include="Scripts\Manager.cs" />
     <Compile Include="Scripts\VorpCoreInventoryAPI.cs" />
-    <Compile Include="Models\ItemClass.cs" />
     <Compile Include="Database\ItemDatabase.cs" />
-    <Compile Include="Models\Items.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Scripts\VorpPlayerInventory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Models\WeaponClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

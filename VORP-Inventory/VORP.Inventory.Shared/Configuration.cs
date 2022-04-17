@@ -13,7 +13,7 @@ namespace VORP.Inventory.Shared
     {
         private static Config _config;
         private static Dictionary<string, string> _language = new();
-        public static Dictionary<string, Weapon> Weapons = new();
+        public static Dictionary<string, WeaponConfig> Weapons = new();
 
 #if CLIENT
         public static long KEY_OPEN_INVENTORY = 0xC1989F95;

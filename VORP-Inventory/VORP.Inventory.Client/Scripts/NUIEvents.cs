@@ -1,13 +1,10 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
-using VORP.Inventory.Client.Models;
 using VORP.Inventory.Shared;
 using VORP.Inventory.Shared.Models;
 
@@ -151,7 +148,7 @@ namespace VORP.Inventory.Client.Scripts
             nui.Title = clanName;
             nui.ClanId = clanId;
 
-            NUI.SendMessage(nui.ToJson());
+            NUI.SendMessage(nui);
 
             IsInventoryOpen = true;
         }
@@ -503,7 +500,7 @@ namespace VORP.Inventory.Client.Scripts
                 API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false);
 
                 int ItemId = int.Parse(data["id"].ToString());
-                WeaponClass weapon = InventoryAPI.UsersWeapons[ItemId];
+                Weapon weapon = InventoryAPI.UsersWeapons[ItemId];
 
                 bool isWeaponARevolver = Function.Call<bool>((Hash)0xC212F1D05A8232BB, API.GetHashKey(weapon.Name));
                 bool isWeaponAPistol = Function.Call<bool>((Hash)0xDDC64F5E31EEDAB6, API.GetHashKey(weapon.Name));
@@ -570,7 +567,7 @@ namespace VORP.Inventory.Client.Scripts
                 TriggerServerEvent("vorpinventory:serverDropWeapon", int.Parse(aux["id"].ToString()));
                 if (InventoryAPI.UsersWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
                 {
-                    WeaponClass wp = InventoryAPI.UsersWeapons[int.Parse(aux["id"].ToString())];
+                    Weapon wp = InventoryAPI.UsersWeapons[int.Parse(aux["id"].ToString())];
                     if (wp.Used)
                     {
                         wp.SetUsed(false);
@@ -598,7 +595,7 @@ namespace VORP.Inventory.Client.Scripts
         private async Task OnOpenInventoryKeyAsync()
         {
             bool isDead = API.IsEntityDead(API.PlayerPedId());
-            if (isDead && PluginManager.BLOCK_INVENTORY_WHEN_DEAD)
+            if (isDead && PluginManager.BLOCK_INVENTORY_WHEN_DEAD && IsInventoryOpen)
             {
                 await Delay(1000);
                 return;
@@ -644,9 +641,9 @@ namespace VORP.Inventory.Client.Scripts
         {
             _userItemsCache.Clear();
 
-            foreach (KeyValuePair<string, ItemClass> itemKvp in InventoryAPI.UsersItems)
+            foreach (KeyValuePair<string, Item> itemKvp in InventoryAPI.UsersItems)
             {
-                ItemClass item = itemKvp.Value;
+                Item item = itemKvp.Value;
 
                 Dictionary<string, dynamic> userItem = new();
                 userItem.Add("count", item.Count);
@@ -664,9 +661,9 @@ namespace VORP.Inventory.Client.Scripts
         {
             _userWeaponsCache.Clear();
 
-            foreach (KeyValuePair<int, WeaponClass> weaponKvp in InventoryAPI.UsersWeapons)
+            foreach (KeyValuePair<int, Weapon> weaponKvp in InventoryAPI.UsersWeapons)
             {
-                WeaponClass weapon = weaponKvp.Value;
+                Weapon weapon = weaponKvp.Value;
 
                 Dictionary<string, dynamic> weaponItem = new();
                 weaponItem.Add("count", weapon.GetAmmo("Hola"));
@@ -685,6 +682,8 @@ namespace VORP.Inventory.Client.Scripts
 
         private void OpenInventory()
         {
+            if (IsInventoryOpen) return;
+
             if (PluginManager.BLOCK_INVENTORY_WHEN_DEAD)
                 AttachTickHandler(OnCheckPlayerDeathAsync);
 
@@ -717,7 +716,7 @@ namespace VORP.Inventory.Client.Scripts
         {
             bool isDead = API.IsEntityDead(API.PlayerPedId());
 
-            if (isDead)
+            if (isDead && IsInventoryOpen)
             {
                 DetachTickHandler(OnCheckPlayerDeathAsync);
                 OnCloseInventory();

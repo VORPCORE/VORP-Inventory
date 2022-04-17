@@ -1,6 +1,4 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using VORP.Inventory.Client.Scripts;
 
 namespace VORP.Inventory.Client
@@ -59,7 +57,6 @@ namespace VORP.Inventory.Client
             Dictionary<string, dynamic> aux = new Dictionary<string, dynamic>();
             foreach (var o in dynObject)
             {
-                Logger.Trace($"{o.Key}");
                 aux.Add(o.Key, o.Value);
             }
             return aux;

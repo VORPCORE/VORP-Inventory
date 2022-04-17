@@ -48,7 +48,7 @@ namespace VORP.Inventory.Shared.Models
     }
 
     [DataContract]
-    public class Weapon
+    public class WeaponConfig
     {
         [DataMember(Name = "Name")]
         public string Name { get; set; }
@@ -94,6 +94,6 @@ namespace VORP.Inventory.Shared.Models
         public Dictionary<string, Dictionary<string, double>> StartWeapons { get; set; }
 
         [DataMember(Name = "Weapons")]
-        public List<Weapon> Weapons { get; set; }
+        public List<WeaponConfig> Weapons { get; set; }
     }
 }

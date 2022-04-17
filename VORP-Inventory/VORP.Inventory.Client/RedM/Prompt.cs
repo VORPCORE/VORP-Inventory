@@ -1,6 +1,4 @@
-﻿using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using VORP.Inventory.Client.RedM.Enums;
 
 namespace VORP.Inventory.Client.RedM
