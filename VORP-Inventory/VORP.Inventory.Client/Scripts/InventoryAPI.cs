@@ -20,7 +20,7 @@ namespace VORP.Inventory.Client.Scripts
         public static Dictionary<int, string> bulletsHash = new Dictionary<int, string>();
 
         private long _lastGameTick = 0;
-        private long _gameTickDelay = (2 * 1000); // 2 seconds
+        private long _gameTickDelay = 500;
 
         public void Init()
         {
@@ -64,8 +64,8 @@ namespace VORP.Inventory.Client.Scripts
         {
             try
             {
-                //if (GetGameTimer() - _lastGameTick < _gameTickDelay) return;
-                //_lastGameTick = GetGameTimer();
+                if (GetGameTimer() - _lastGameTick < _gameTickDelay) return;
+                _lastGameTick = GetGameTimer();
 
                 int playerPedId = API.PlayerPedId();
 
@@ -75,7 +75,7 @@ namespace VORP.Inventory.Client.Scripts
                     string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
                     if (weaponName.Contains("UNARMED")) { return; }
 
-                    Weapon usedWeapon = UsersWeapons.Where(x => x.Value.Hash == weaponHash && x.Value.Used).Select(x => x.Value).FirstOrDefault();
+                    Weapon usedWeapon = UsersWeapons.Where(x => x.Value.Name == weaponName && x.Value.Used).Select(x => x.Value).FirstOrDefault();
 
                     if (usedWeapon == null) return;
                     Dictionary<string, int> ammoDictCopy = new(usedWeapon.Ammo);
