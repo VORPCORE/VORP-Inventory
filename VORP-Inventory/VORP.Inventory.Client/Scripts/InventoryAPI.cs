@@ -64,8 +64,8 @@ namespace VORP.Inventory.Client.Scripts
         {
             try
             {
-                if (GetGameTimer() - _lastGameTick < _gameTickDelay) return;
-                _lastGameTick = GetGameTimer();
+                //if (GetGameTimer() - _lastGameTick < _gameTickDelay) return;
+                //_lastGameTick = GetGameTimer();
 
                 int playerPedId = API.PlayerPedId();
 
@@ -75,20 +75,10 @@ namespace VORP.Inventory.Client.Scripts
                     string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
                     if (weaponName.Contains("UNARMED")) { return; }
 
-                    Dictionary<string, int> ammoDict = new();
-                    Dictionary<int, Weapon> userWeaponsCopy = new(UsersWeapons);
-                    Weapon usedWeapon = null;
-                    foreach (KeyValuePair<int, Weapon> weap in userWeaponsCopy)
-                    {
-                        if (weaponName.Contains(weap.Value.Name) && weap.Value.Used)
-                        {
-                            ammoDict = weap.Value.Ammo;
-                            usedWeapon = weap.Value;
-                        }
-                    }
+                    Weapon usedWeapon = UsersWeapons.Where(x => x.Value.Hash == weaponHash && x.Value.Used).Select(x => x.Value).FirstOrDefault();
 
                     if (usedWeapon == null) return;
-                    Dictionary<string, int> ammoDictCopy = new(ammoDict);
+                    Dictionary<string, int> ammoDictCopy = new(usedWeapon.Ammo);
 
                     foreach (KeyValuePair<string, int> ammo in ammoDictCopy)
                     {
