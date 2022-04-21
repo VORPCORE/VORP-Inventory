@@ -609,7 +609,6 @@ namespace VORP.Inventory.Server.Scripts
                     if (ItemDatabase.UserWeapons[weaponId].Propietary == identifier)
                     {
                         ItemDatabase.UserWeapons[weaponId].AddAmmo(cuantity, bulletType);
-                        p.TriggerEvent("vorpCoreClient:addBullets", weaponId, bulletType, cuantity);
                     }
                 }
                 else
@@ -642,7 +641,6 @@ namespace VORP.Inventory.Server.Scripts
                     if (ItemDatabase.UserWeapons[weaponId].Propietary == identifier)
                     {
                         ItemDatabase.UserWeapons[weaponId].SubAmmo(cuantity, bulletType);
-                        p.TriggerEvent("vorpCoreClient:subBullets", weaponId, bulletType, cuantity);
                     }
                 }
                 else
