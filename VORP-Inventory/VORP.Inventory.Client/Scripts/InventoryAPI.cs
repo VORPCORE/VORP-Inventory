@@ -19,6 +19,9 @@ namespace VORP.Inventory.Client.Scripts
         public static Dictionary<int, Weapon> UsersWeapons = new Dictionary<int, Weapon>();
         public static Dictionary<int, string> bulletsHash = new Dictionary<int, string>();
 
+        private long _lastGameTick = 0;
+        private long _gameTickDelay = 500;
+
         public void Init()
         {
             AddEvent("vorp:SelectedCharacter", new Action<int>(OnSelectedCharacterAsync));
@@ -53,37 +56,50 @@ namespace VORP.Inventory.Client.Scripts
                     return Configuration.Weapons[hash].Name;
                 return hash;
             }));
+
+            _lastGameTick = GetGameTimer();
         }
 
         private async Task UpdateAmmoInWeaponAsync()
         {
-            await Delay(500);
-            uint weaponHash = 0;
-            if (API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false))
+            try
             {
-                string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
-                if (weaponName.Contains("UNARMED")) { return; }
+                if (GetGameTimer() - _lastGameTick < _gameTickDelay) return;
+                _lastGameTick = GetGameTimer();
 
-                Dictionary<string, int> ammoDict = new Dictionary<string, int>();
-                Weapon usedWeapon = null;
-                foreach (KeyValuePair<int, Weapon> weap in UsersWeapons.ToList())
+                int playerPedId = API.PlayerPedId();
+
+                uint weaponHash = 0;
+                if (API.GetCurrentPedWeapon(playerPedId, ref weaponHash, false, 0, false))
                 {
-                    if (weaponName.Contains(weap.Value.Name) && weap.Value.Used)
+                    string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
+                    if (weaponName.Contains("UNARMED")) { return; }
+
+                    Weapon usedWeapon = UsersWeapons.Where(x => x.Value.Name == weaponName && x.Value.Used).Select(x => x.Value).FirstOrDefault();
+
+                    if (usedWeapon == null) return;
+                    Dictionary<string, int> ammoDictCopy = new(usedWeapon.Ammo);
+
+                    foreach (KeyValuePair<string, int> ammo in ammoDictCopy)
                     {
-                        ammoDict = weap.Value.Ammo;
-                        usedWeapon = weap.Value;
+                        int ammoQuantity = Function.Call<int>((Hash)0x39D22031557946C1, playerPedId, API.GetHashKey(ammo.Key));
+
+                        if (ammoQuantity != ammo.Value)
+                        {
+                            usedWeapon.SetAmmo(ammoQuantity, ammo.Key);
+                            bool isMoreThan = (ammoQuantity > ammo.Value);
+                            string eventName = isMoreThan ? "vorpCore:addBullets" : "vorpCore:subBullets";
+                            int amount = isMoreThan ? ammoQuantity - ammo.Value : ammo.Value - ammoQuantity;
+                            TriggerServerEvent(eventName, GetPlayerServerId(PlayerId()), usedWeapon.Id, ammo.Key, amount);
+                            Logger.Trace($"Updating ammo: {eventName} : {usedWeapon.Name} {ammo.Key} {amount}");
+                            await BaseScript.Delay(500); // delay 500 frames
+                        }
                     }
                 }
-
-                if (usedWeapon == null) return;
-                foreach (var ammo in ammoDict.ToList())
-                {
-                    int ammoQuantity = Function.Call<int>((Hash)0x39D22031557946C1, API.PlayerPedId(), API.GetHashKey(ammo.Key));
-                    if (ammoQuantity != ammo.Value)
-                    {
-                        usedWeapon.SetAmmo(ammoQuantity, ammo.Key);
-                    }
-                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "UpdateAmmoInWeaponAsync");
             }
         }
 
