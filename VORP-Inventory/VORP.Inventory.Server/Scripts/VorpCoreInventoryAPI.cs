@@ -33,6 +33,10 @@ namespace VORP.Inventory.Server.Scripts
             AddEvent("vorpCore:canCarryWeapons", new Action<int, int, CallbackDelegate>(OnCanCarryAmountWeaponsAsync));
             AddEvent("vorpCore:subBullets", new Action<int, int, string, int>(OnSubtractBullets));
             AddEvent("vorpCore:addBullets", new Action<int, int, string, int>(OnAddBullets));
+
+            AddEvent("vorpCore:subAmmo", new Action<int, int, string, int>(OnSubtractAmmo));
+            AddEvent("vorpCore:addAmmo", new Action<int, int, string, int>(OnAddAmmo));
+
             AddEvent("vorpCore:getWeaponComponents", new Action<int, CallbackDelegate, int>(OnGetWeaponComponents));
             AddEvent("vorpCore:getWeaponBullets", new Action<int, CallbackDelegate, int>(OnGetWeaponBullets));
             AddEvent("vorpCore:getUserWeapons", new Action<int, CallbackDelegate>(OnGetUserWeaponsAsync));
@@ -609,7 +613,7 @@ namespace VORP.Inventory.Server.Scripts
                     if (ItemDatabase.UserWeapons[weaponId].Propietary == identifier)
                     {
                         ItemDatabase.UserWeapons[weaponId].AddAmmo(cuantity, bulletType);
-                        // p.TriggerEvent("vorpCoreClient:addBullets", weaponId, bulletType, cuantity);
+                        p.TriggerEvent("vorpCoreClient:addBullets", weaponId, bulletType, cuantity);
                     }
                 }
                 else
@@ -642,7 +646,71 @@ namespace VORP.Inventory.Server.Scripts
                     if (ItemDatabase.UserWeapons[weaponId].Propietary == identifier)
                     {
                         ItemDatabase.UserWeapons[weaponId].SubAmmo(cuantity, bulletType);
-                        // p.TriggerEvent("vorpCoreClient:subBullets", weaponId, bulletType, cuantity);
+                        p.TriggerEvent("vorpCoreClient:subBullets", weaponId, bulletType, cuantity);
+                    }
+                }
+                else
+                {
+                    Logger.Trace("Weapon not found in DB");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"subBullets");
+            }
+        }
+
+        private void OnAddAmmo(int player, int weaponId, string bulletType, int cuantity)
+        {
+            try
+            {
+                Player p = PlayerList[player];
+
+                if (p == null)
+                {
+                    Logger.Error($"addBullets: Player '{player}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    if (ItemDatabase.UserWeapons[weaponId].Propietary == identifier)
+                    {
+                        ItemDatabase.UserWeapons[weaponId].AddAmmo(cuantity, bulletType);
+                    }
+                }
+                else
+                {
+                    Logger.Trace("Weapon not found in DBa");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"addBullets");
+            }
+        }
+
+        private void OnSubtractAmmo(int player, int weaponId, string bulletType, int cuantity)
+        {
+            try
+            {
+                Player p = PlayerList[player];
+
+                if (p == null)
+                {
+                    Logger.Error($"subBullets: Player '{player}' does not exist.");
+                    return;
+                }
+
+                string identifier = "steam:" + p.Identifiers["steam"];
+
+                if (ItemDatabase.UserWeapons.ContainsKey(weaponId))
+                {
+                    if (ItemDatabase.UserWeapons[weaponId].Propietary == identifier)
+                    {
+                        ItemDatabase.UserWeapons[weaponId].SubAmmo(cuantity, bulletType);
                     }
                 }
                 else

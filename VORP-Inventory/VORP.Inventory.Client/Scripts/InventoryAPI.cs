@@ -88,7 +88,7 @@ namespace VORP.Inventory.Client.Scripts
                         {
                             usedWeapon.SetAmmo(ammoQuantity, ammo.Key);
                             bool isMoreThan = (ammoQuantity > ammo.Value);
-                            string eventName = isMoreThan ? "vorpCore:addBullets" : "vorpCore:subBullets";
+                            string eventName = isMoreThan ? "vorpCore:addAmmo" : "vorpCore:subAmmo";
                             int amount = isMoreThan ? ammoQuantity - ammo.Value : ammo.Value - ammoQuantity;
                             TriggerServerEvent(eventName, GetPlayerServerId(PlayerId()), usedWeapon.Id, ammo.Key, amount);
                             Logger.Trace($"Updating ammo: {eventName} : {usedWeapon.Name} {ammo.Key} {amount}");
