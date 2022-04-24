@@ -928,19 +928,8 @@ namespace VORP.Inventory.Server.Scripts
                     {
                         foreach (var row in weaponsinvento)
                         {
-                            JObject ammo = JsonConvert.DeserializeObject(row.ammo.ToString());
-                            JArray comp = JsonConvert.DeserializeObject(row.components.ToString());
-                            Dictionary<string, int> amunition = new Dictionary<string, int>();
-                            List<string> components = new List<string>();
-                            foreach (JProperty ammos in ammo.Properties())
-                            {
-                                amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
-                            }
-
-                            foreach (JToken x in comp)
-                            {
-                                components.Add(x.ToString());
-                            }
+                            Dictionary<string, int> amunition = JsonConvert.DeserializeObject<Dictionary<string, int>>(row.ammo.ToString());
+                            List<string> components = JsonConvert.DeserializeObject<List<string>>(row.components.ToString());
 
                             bool auused = false;
                             if (row.used == 1)
